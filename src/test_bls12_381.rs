@@ -880,6 +880,7 @@ pub(crate) mod tests_bls12_381 {
     use ark_bls12_381::{Fr, G1Affine, G1Projective};
     use ark_ec::{msm::VariableBaseMSM, AffineCurve, ProjectiveCurve};
     use ark_ff::{FftField, Field, Zero};
+    use ark_poly::{EvaluationDomain, GeneralEvaluationDomain};
     use ark_std::UniformRand;
     use rand::{rngs::StdRng, RngCore, SeedableRng};
     use std::ops::Add;
@@ -1048,12 +1049,45 @@ pub(crate) mod tests_bls12_381 {
     fn test_ntt() {
         //NTT
         let seed = None; //some value to fix the rng
-        let test_size = 1 << 3;
+        let test_size = 1 << 5;
 
         let scalars = generate_random_scalars_bls12_381(test_size, get_rng_bls12_381(seed));
 
         let mut ntt_result = scalars.clone();
+
+        let domain = GeneralEvaluationDomain::<Fr>::new(test_size).unwrap();
+
+        let arc_values = scalars
+            .clone()
+            .iter()
+            .map(|v| Fr::new(v.to_ark()))
+            .collect::<Vec<Fr>>();
+        let mut vs = arc_values.clone();
+
+        domain.fft_in_place(&mut vs);
+
+        assert_ne!(vs, arc_values);
+
+        let sc_ark = scalars
+            .iter()
+            .map(|p| Fr::new(p.to_ark()))
+            .collect::<Vec<Fr>>();
+        assert_eq!(arc_values, sc_ark);
+
+        // let sc_from_ark = arc_values
+        //     .iter()
+        //     .map(|p| ScalarField_BLS12_381::from_ark(p.into_repr()))
+        //     .collect::<Vec<_>>();
+        // assert_eq!(scalars, sc_from_ark);
+
         ntt_bls12_381(&mut ntt_result, 0);
+
+        let ntt_sc_ark = ntt_result
+            .iter()
+            .map(|p| Fr::new(p.to_ark()))
+            .collect::<Vec<Fr>>();
+
+        assert_eq!(vs, ntt_sc_ark);
 
         assert_ne!(ntt_result, scalars);
 
