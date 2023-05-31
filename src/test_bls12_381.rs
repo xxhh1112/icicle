@@ -798,6 +798,7 @@ pub fn get_rng_bls12_381(seed: Option<u64>) -> Box<dyn RngCore> {
 }
 
 fn set_up_device_bls12_381() {
+    //TODO: NOT device specific
     // Set up the context, load the module, and create a stream to run kernels in.
     rustacuda::init(CudaFlags::empty()).unwrap();
     let device = Device::get_device(0).unwrap();
@@ -867,9 +868,9 @@ pub fn set_up_scalars_bls12_381(
     let d_domain = build_domain_bls12_381(1 << log_domain_size, log_domain_size, inverse);
 
     let seed = Some(0); // fix the rng to get two equal scalars
-    let mut vector_mut = generate_random_scalars_bls12_381(test_size, get_rng_bls12_381(seed));
+    let vector_mut = generate_random_scalars_bls12_381(test_size, get_rng_bls12_381(seed));
 
-    let mut d_vector = DeviceBuffer::from_slice(&vector_mut[..]).unwrap();
+    let d_vector = DeviceBuffer::from_slice(&vector_mut[..]).unwrap();
     (vector_mut, d_vector, d_domain)
 }
 
@@ -1068,12 +1069,6 @@ pub(crate) mod tests_bls12_381 {
 
         assert_ne!(vs, arc_values);
 
-        let sc_ark = scalars
-            .iter()
-            .map(|p| Fr::new(p.to_ark()))
-            .collect::<Vec<Fr>>();
-        assert_eq!(arc_values, sc_ark);
-
         // let sc_from_ark = arc_values
         //     .iter()
         //     .map(|p| ScalarField_BLS12_381::from_ark(p.into_repr()))
@@ -1269,15 +1264,37 @@ pub(crate) mod tests_bls12_381 {
         let (mut evals_mut, mut d_evals, mut d_domain) =
             set_up_scalars_bls12_381(test_size, log_test_size, true);
 
+        let init_evals = evals_mut.clone();
+
         reverse_order_scalars_bls12_381(&mut d_evals);
-        let mut d_coeffs = interpolate_scalars_bls12_381(&mut d_evals, &mut d_domain);
-        intt_bls12_381(&mut evals_mut, 0);
+        let d_coeffs = interpolate_scalars_bls12_381(&mut d_evals, &mut d_domain);
+        intt_batch_bls12_381(&mut evals_mut, test_size, 0);
         let mut h_coeffs: Vec<ScalarField_BLS12_381> = (0..test_size)
             .map(|_| ScalarField_BLS12_381::zero())
             .collect();
         d_coeffs.copy_to(&mut h_coeffs[..]).unwrap();
 
         assert_eq!(h_coeffs, evals_mut);
+
+        // Ark
+        let domain = GeneralEvaluationDomain::<Fr>::new(test_size).unwrap();
+
+        let values_ark = init_evals
+            .clone()
+            .iter()
+            .map(|v| Fr::new(v.to_ark()))
+            .collect::<Vec<Fr>>();
+        let mut ark_ntt_result = values_ark.clone();
+
+        domain.ifft_in_place(&mut ark_ntt_result);
+
+        assert_ne!(ark_ntt_result, values_ark);
+
+        let ntt_result_as_ark = h_coeffs
+            .iter()
+            .map(|p| Fr::new(p.to_ark()))
+            .collect::<Vec<Fr>>();
+        assert_eq!(ark_ntt_result, ntt_result_as_ark);
     }
 
     #[test]
@@ -1285,19 +1302,42 @@ pub(crate) mod tests_bls12_381 {
         let batch_size = 4;
         let log_test_size = 10;
         let test_size = 1 << log_test_size;
+        let total_test_batch_size = test_size * batch_size;
         let (mut evals_mut, mut d_evals, mut d_domain) =
-            set_up_scalars_bls12_381(test_size * batch_size, log_test_size, true);
+            set_up_scalars_bls12_381(total_test_batch_size, log_test_size, true);
+
+        let init_evals = evals_mut.clone();
 
         reverse_order_scalars_batch_bls12_381(&mut d_evals, batch_size);
-        let mut d_coeffs =
-            interpolate_scalars_batch_bls12_381(&mut d_evals, &mut d_domain, batch_size);
+        let d_coeffs = interpolate_scalars_batch_bls12_381(&mut d_evals, &mut d_domain, batch_size);
         intt_batch_bls12_381(&mut evals_mut, test_size, 0);
-        let mut h_coeffs: Vec<ScalarField_BLS12_381> = (0..test_size * batch_size)
-            .map(|_| ScalarField_BLS12_381::zero())
-            .collect();
+        let mut h_coeffs: Vec<ScalarField_BLS12_381> =
+            vec![ScalarField_BLS12_381::zero(); total_test_batch_size];
         d_coeffs.copy_to(&mut h_coeffs[..]).unwrap();
 
         assert_eq!(h_coeffs, evals_mut);
+
+        let domain = GeneralEvaluationDomain::<Fr>::new(test_size).unwrap();
+
+        init_evals.chunks(test_size).zip(h_coeffs.chunks(test_size)).for_each(|(chunk, comp)| {
+            // Ark
+            let values_ark = chunk
+                .clone()
+                .iter()
+                .map(|v| Fr::new(v.to_ark()))
+                .collect::<Vec<Fr>>();
+            let mut ark_ntt_result = values_ark.clone();
+
+            domain.ifft_in_place(&mut ark_ntt_result);
+
+            assert_ne!(ark_ntt_result, values_ark);
+
+            let ntt_result_as_ark = comp
+                .iter()
+                .map(|p| Fr::new(p.to_ark()))
+                .collect::<Vec<Fr>>();
+            assert_eq!(ark_ntt_result, ntt_result_as_ark);
+        });
     }
 
     #[test]
@@ -1345,13 +1385,48 @@ pub(crate) mod tests_bls12_381 {
 
     #[test]
     fn test_scalar_evaluation() {
-        let log_test_domain_size = 8;
-        let coeff_size = 1 << 6;
+        let log_test_domain_size = 6;
+        let coeff_size = 1 << log_test_domain_size;
         let (h_coeffs, mut d_coeffs, mut d_domain) =
             set_up_scalars_bls12_381(coeff_size, log_test_domain_size, false);
         let (_, _, mut d_domain_inv) = set_up_scalars_bls12_381(0, log_test_domain_size, true);
 
-        let mut d_evals = evaluate_scalars_bls12_381(&mut d_coeffs, &mut d_domain);
+        reverse_order_scalars_bls12_381(&mut d_coeffs);
+        // for _ in 0..10 {
+        //     Some(evaluate_scalars_bls12_381(&mut d_coeffs, &mut d_domain));
+        // }
+
+        let d_evals = Some(evaluate_scalars_bls12_381(&mut d_coeffs, &mut d_domain));
+
+        let mut ntt_result = h_coeffs.clone();
+
+        let domain = GeneralEvaluationDomain::<Fr>::new(1 << log_test_domain_size).unwrap();
+
+        let values_ark = h_coeffs
+            .clone()
+            .iter()
+            .map(|v| Fr::new(v.to_ark()))
+            .collect::<Vec<Fr>>();
+        let mut ark_ntt_result = values_ark.clone();
+
+        domain.fft_in_place(&mut ark_ntt_result);
+
+        assert_ne!(ark_ntt_result, values_ark);
+
+        ntt_bls12_381(&mut ntt_result, 0);
+
+        let ntt_result_as_ark = ntt_result
+            .iter()
+            .map(|p| Fr::new(p.to_ark()))
+            .collect::<Vec<Fr>>();
+        assert_eq!(ark_ntt_result, ntt_result_as_ark);
+
+        let mut h_res_coeffs = vec![ScalarField_BLS12_381::zero(); coeff_size];
+        let mut d_evals = d_evals.unwrap();
+        d_evals.copy_to(&mut h_res_coeffs[..]).unwrap();
+
+        assert_eq!(ntt_result, h_res_coeffs);
+
         let mut d_coeffs_domain = interpolate_scalars_bls12_381(&mut d_evals, &mut d_domain_inv);
         let mut h_coeffs_domain: Vec<ScalarField_BLS12_381> = (0..1 << log_test_domain_size)
             .map(|_| ScalarField_BLS12_381::zero())
