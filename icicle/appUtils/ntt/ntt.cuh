@@ -396,28 +396,24 @@ uint32_t ntt_end2end_batch_template(E *arr, uint32_t arr_size, uint32_t n, bool 
   E *d_arr;
   cudaMalloc(&d_arr, size_E);
   cudaMemcpy(d_arr, arr, size_E, cudaMemcpyHostToDevice);
-  E *arr_reversed;
-  cudaMalloc(&arr_reversed, n * batches * sizeof(E));
-  int number_of_threads = MAX_THREADS_BATCH;
-  int number_of_blocks = (arr_size + number_of_threads - 1) / number_of_threads;
-  // ntt_template_kernel_rev_ord<E, S><<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, n, logn, batches);
-  reverse_order_kernel<<<number_of_blocks, number_of_threads>>>(d_arr, arr_reversed, n, logn, batches);
+  int NUM_THREADS = MAX_THREADS_BATCH;
+  int NUM_BLOCKS = (batches + NUM_THREADS - 1) / NUM_THREADS;
+  ntt_template_kernel_rev_ord<E, S><<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, n, logn, batches);
 
-
-  int NUM_THREADS = min(n / 2, MAX_THREADS_BATCH);
+  NUM_THREADS = min(n / 2, MAX_THREADS_BATCH);
   int chunks = max(int((n / 2) / NUM_THREADS), 1);
   int total_tasks = batches * chunks;
-  int NUM_BLOCKS = total_tasks;
+  NUM_BLOCKS = total_tasks;
 
   for (uint32_t s = 0; s < logn; s++) // TODO: this loop also can be unrolled
   {
-    ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, n, d_twiddles, n_twiddles, total_tasks, s, false);
+    ntt_template_kernel<E, S><<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, n, d_twiddles, n_twiddles, total_tasks, s, false);
   }
   if (inverse == true)
   {
-    NUM_THREADS = 64;
+    NUM_THREADS = MAX_NUM_THREADS;
     NUM_BLOCKS = (arr_size + NUM_THREADS - 1) / NUM_THREADS;
-    template_normalize_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, arr_size, S::inv_log_size(logn));
+    template_normalize_kernel<E, S><<<NUM_THREADS, NUM_BLOCKS>>>(d_arr, arr_size, S::inv_log_size(logn));
   }
   cudaMemcpy(arr, d_arr, size_E, cudaMemcpyDeviceToHost);
   cudaFree(d_arr);
