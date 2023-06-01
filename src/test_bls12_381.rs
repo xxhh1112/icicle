@@ -1299,8 +1299,8 @@ pub(crate) mod tests_bls12_381 {
 
     #[test]
     fn test_scalar_batch_interpolation() {
-        let batch_size = 4;
-        let log_test_size = 10;
+        let batch_size = 2;
+        let log_test_size = 23;
         let test_size = 1 << log_test_size;
         let total_test_batch_size = test_size * batch_size;
         let (mut evals_mut, mut d_evals, mut d_domain) =
