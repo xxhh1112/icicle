@@ -402,7 +402,7 @@ uint32_t ntt_end2end_batch_template(E *arr, uint32_t arr_size, uint32_t n, bool 
   int number_of_blocks = (arr_size + number_of_threads - 1) / number_of_threads;
   // ntt_template_kernel_rev_ord<E, S><<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, n, logn, batches);
   reverse_order_kernel<<<number_of_blocks, number_of_threads>>>(d_arr, arr_reversed, n, logn, batches);
-
+  d_arr = arr_reversed;
 
   int NUM_THREADS = min(n / 2, MAX_THREADS_BATCH);
   int chunks = max(int((n / 2) / NUM_THREADS), 1);
