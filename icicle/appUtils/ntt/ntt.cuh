@@ -2,6 +2,8 @@
 #define NTT
 #pragma once
 
+#include "../../utils/sharedmem.cuh"
+
 const uint32_t MAX_NUM_THREADS = 1024;
 const uint32_t MAX_THREADS_BATCH = 256;
 
@@ -302,6 +304,88 @@ __device__ __host__ void butterfly(E *arrReversed, S *omegas, uint32_t n, uint32
   arrReversed[offset + k] = u - v;
 }
 
+//************************************************************************************************
+/**
+ * Cooley-Tuckey NTT.
+ * NOTE! this function assumes that d_twiddles are located in the device memory.
+ * @param arr input array of type E (elements).
+ * @param n length of d_arr.
+ * @param twiddles twiddle factors of type S (scalars) array allocated on the device memory (must be a power of 2).
+ * @param n_twiddles length of twiddles.
+ * @param max_task max count of parallel tasks.
+ * @param s log2(n) loop index.
+ */
+template <typename E, typename S>
+__global__ void ntt_template_kernel_shared(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t s, uint32_t logn, bool rev)
+{
+  SharedMemory<E> smem;
+  E *arr = smem.getPointer();
+
+  uint32_t task = blockIdx.x;
+  uint32_t loop_limit = blockDim.x;
+  uint32_t chunks = n / (loop_limit * 2);
+  uint32_t offset = (task / chunks) * n;
+  if (task < max_task)
+  {
+    // flattened loop allows parallel processing
+    uint32_t l = threadIdx.x;
+
+    if (l < loop_limit)
+    {
+#pragma unroll 8
+      for (; s < logn; s++) // TODO: this loop also can be unrolled
+      {
+        // if (s == 0) //this actually can be faster even by introducing extra read and (see below)...
+        // {
+        //   arr[l] = arr_g[offset + l];
+        //   arr[loop_limit + l] = arr_g[offset + loop_limit + l];
+        //   __syncthreads();
+        // }
+
+        uint32_t ntw_i = task % chunks;
+
+        uint32_t n_twiddles_div = n_twiddles >> (s + 1);
+
+        uint32_t shift_s = 1 << s;
+        uint32_t shift2_s = 1 << (s + 1);
+
+        l = ntw_i * loop_limit + l; // to l from chunks to full
+
+        uint32_t j = l & (shift_s - 1);               // Equivalent to: l % (1 << s)
+        uint32_t i = ((l >> s) * shift2_s) & (n - 1); // (..) % n (assuming n is power of 2)
+        uint32_t oij = i + j;
+        uint32_t k = oij + shift_s;
+
+        E u = s == 0 ? arr_g[offset + oij] : arr[oij];
+        E v = rev ? (s == 0 ? arr_g[offset + k] : arr[k]) : (r_twiddles[j * n_twiddles_div] * (s == 0 ? arr_g[offset + k] : arr[k]));
+        if (s == (logn - 1))
+        {
+          arr_g[offset + oij] = u + v;
+          if (rev)
+            arr_g[offset + k] = r_twiddles[j * n_twiddles_div] * (u - v);
+          else
+            arr_g[offset + k] = u - v;
+        }
+        else
+        {
+          arr[oij] = u + v;
+          arr[k] = u - v;
+          if (rev)
+            arr[k] = r_twiddles[j * n_twiddles_div] * arr[k];
+        }
+
+        __syncthreads();
+      }
+
+      // ... and extra write
+      // arr_g[offset + l] = arr[l];
+      // arr_g[offset + loop_limit + l] = arr[l + loop_limit];
+      // __syncthreads();
+    }
+  }
+}
+//************************************************************************************************
+
 /**
  * Cooley-Tukey NTT.
  * NOTE! this function assumes that d_twiddles are located in the device memory.
@@ -334,8 +418,8 @@ __global__ void ntt_template_kernel(E *arr, uint32_t n, S *twiddles, uint32_t n_
 
       l = ntw_i * blockDim.x + l; // to l from chunks to full
 
-      uint32_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-      uint32_t i = ((l / shift_s) * shift2_s) % n;
+      uint32_t j = l & (shift_s - 1);               // Equivalent to: l % (1 << s)
+      uint32_t i = ((l >> s) * shift2_s) & (n - 1); // (..) % n (assuming n is power of 2)
       uint32_t k = i + j + shift_s;
 
       uint32_t offset = (task / chunks) * n;
@@ -408,8 +492,12 @@ uint32_t ntt_end2end_batch_template(E *arr, uint32_t arr_size, uint32_t n, bool 
   int chunks = max(int((n / 2) / NUM_THREADS), 1);
   int total_tasks = batches * chunks;
   int NUM_BLOCKS = total_tasks;
+  int max_sharedmem = 512 * sizeof(E);
+  int shared_mem = 2 * NUM_THREADS * sizeof(E); // TODO: calculator, as shared mem size may be more efficient less then max to allow more concurrent blocks on SM
+  uint32_t logn_shmem = uint32_t(log(2 * NUM_THREADS) / log(2));
+  ntt_template_kernel_shared<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_arr, 1 << logn_shmem, d_twiddles, n, total_tasks, 0, logn_shmem, false);
 
-  for (uint32_t s = 0; s < logn; s++) // TODO: this loop also can be unrolled
+  for (uint32_t s = logn_shmem; s < logn; s++) // TODO: this loop also can be unrolled
   {
     ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_arr, n, d_twiddles, n_twiddles, total_tasks, s, false);
   }

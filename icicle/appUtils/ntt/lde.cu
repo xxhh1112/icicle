@@ -20,10 +20,17 @@ template <typename E, typename S> int interpolate_batch(E * d_out, E * d_evaluat
   cudaMemcpy(d_out, d_evaluations, sizeof(E) * n * batch_size, cudaMemcpyDeviceToDevice);
   
   int NUM_THREADS = min(n / 2, MAX_THREADS_BATCH);
-  int NUM_BLOCKS = batch_size * max(int((n / 2) / NUM_THREADS), 1);
-  for (uint32_t s = 0; s < logn; s++) //TODO: this loop also can be unrolled
+  int chunks = max(int((n / 2) / NUM_THREADS), 1);
+  int total_tasks = batch_size * chunks;
+  int NUM_BLOCKS = total_tasks;
+  int max_sharedmem = 512 * sizeof(E);
+  int shared_mem = 2 * NUM_THREADS * sizeof(E); // TODO: calculator, as shared mem size may be more efficient less then max to allow more concurrent blocks on SM
+  uint32_t logn_shmem = uint32_t(log(2 * NUM_THREADS) / log(2));
+  ntt_template_kernel_shared<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n, total_tasks, 0, logn_shmem, false);
+
+  for (uint32_t s = logn_shmem; s < logn; s++) // TODO: this loop also can be unrolled
   {
-    ntt_template_kernel <E, S> <<<NUM_BLOCKS, NUM_THREADS>>>(d_out, n, d_domain, n, NUM_BLOCKS, s, false);
+    ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_out, n, d_domain, n, total_tasks, s, false);
   }
 
   NUM_BLOCKS = (n * batch_size + NUM_THREADS - 1) / NUM_THREADS;
