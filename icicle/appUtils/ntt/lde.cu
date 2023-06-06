@@ -103,11 +103,18 @@ int evaluate_batch(E *d_out, E *d_coefficients, S *d_domain, unsigned domain_siz
 
   int NUM_THREADS = min(domain_size / 2, MAX_THREADS_BATCH);
   int chunks = max(int((domain_size / 2) / NUM_THREADS), 1);
-  int NUM_BLOCKS = batch_size * chunks;
-  for (uint32_t s = 0; s < logn; s++) // TODO: this loop also can be unrolled
+  int total_tasks = batch_size * chunks;
+  int NUM_BLOCKS = total_tasks;
+  int max_sharedmem = 512 * sizeof(E);
+  int shared_mem = 2 * NUM_THREADS * sizeof(E); // TODO: calculator, as shared mem size may be more efficient less then max to allow more concurrent blocks on SM
+  uint32_t logn_shmem = uint32_t(log(2 * NUM_THREADS) / log(2));
+  for (uint32_t s = logn - 1; s >= logn_shmem; s--) // TODO: this loop also can be unrolled
   {
-    ntt_template_kernel<E, S><<<NUM_BLOCKS, NUM_THREADS>>>(d_out, domain_size, d_domain, domain_size, batch_size * chunks, logn - s - 1, true);
+    ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_out, domain_size, d_domain, domain_size, total_tasks, s, true);
   }
+
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n, total_tasks, 0, logn_shmem, true);
+
   return 0;
 }
 

@@ -316,6 +316,92 @@ __device__ __host__ void butterfly(E *arrReversed, S *omegas, uint32_t n, uint32
  * @param s log2(n) loop index.
  */
 template <typename E, typename S>
+__global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t ss, uint32_t logn, bool rev)
+{
+  SharedMemory<E> smem;
+  E *arr = smem.getPointer();
+
+  uint32_t task = blockIdx.x;
+  uint32_t loop_limit = blockDim.x;
+  uint32_t chunks = n / (loop_limit * 2);
+  uint32_t offset = (task / chunks) * n;
+  if (task < max_task)
+  {
+    // flattened loop allows parallel processing
+    uint32_t l = threadIdx.x;
+
+    if (l < loop_limit)
+    {
+#pragma unroll 8
+      for (; ss < logn; ss++)
+      {
+        int s = logn - ss - 1;
+        bool is_beginning = ss == 0;
+        bool is_end = ss == (logn - 1);
+
+        // if (is_beginning) //this actually can be faster even by introducing extra read and (see below)...
+        // {
+        //   arr[l] = arr_g[offset + l];
+        //   arr[loop_limit + l] = arr_g[offset + loop_limit + l];
+        //   __syncthreads();
+        // }
+
+        uint32_t ntw_i = task % chunks;
+
+        uint32_t n_twiddles_div = n_twiddles >> (s + 1);
+
+        uint32_t shift_s = 1 << s;
+        uint32_t shift2_s = 1 << (s + 1);
+
+        l = ntw_i * loop_limit + l; // to l from chunks to full
+
+        uint32_t j = l & (shift_s - 1);               // Equivalent to: l % (1 << s)
+        uint32_t i = ((l >> s) * shift2_s) & (n - 1); // (..) % n (assuming n is power of 2)
+        uint32_t oij = i + j;
+        uint32_t k = oij + shift_s;
+
+        E u = is_beginning ? arr_g[offset + oij] : arr[oij];
+        E v = rev ? (is_beginning ? arr_g[offset + k] : arr[k]) : (r_twiddles[j * n_twiddles_div] * (is_beginning ? arr_g[offset + k] : arr[k]));
+        if (is_end)
+        {
+          arr_g[offset + oij] = u + v;
+          if (rev)
+            arr_g[offset + k] = r_twiddles[j * n_twiddles_div] * (u - v);
+          else
+            arr_g[offset + k] = u - v;
+        }
+        else
+        {
+          arr[oij] = u + v;
+          arr[k] = u - v;
+          if (rev)
+            arr[k] = r_twiddles[j * n_twiddles_div] * arr[k];
+        }
+
+        __syncthreads();
+      }
+
+      // ... and extra write
+      // arr_g[offset + l] = arr[l];
+      // arr_g[offset + loop_limit + l] = arr[l + loop_limit];
+      // __syncthreads();
+    }
+  }
+}
+//************************************************************************************************
+
+//************************************************************************************************
+/**
+ * Cooley-Tuckey NTT.
+ * NOTE! this function assumes that d_twiddles are located in the device memory.
+ * @param arr input array of type E (elements).
+ * @param n length of d_arr.
+ * @param twiddles twiddle factors of type S (scalars) array allocated on the device memory (must be a power of 2).
+ * @param n_twiddles length of twiddles.
+ * @param max_task max count of parallel tasks.
+ * @param s log2(n) loop index.
+ */
+template <typename E, typename S>
 __global__ void ntt_template_kernel_shared(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t s, uint32_t logn, bool rev)
 {
   SharedMemory<E> smem;
