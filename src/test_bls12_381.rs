@@ -1498,10 +1498,10 @@ pub(crate) mod tests_bls12_381 {
 
     #[test]
     fn test_point_batch_evaluation() {
-        let batch_size = 4;
-        let log_test_domain_size = 6;
+        let batch_size = 16;
+        let log_test_domain_size = 8;
         let domain_size = 1 << log_test_domain_size;
-        let coeff_size = 1 << 5;
+        let coeff_size = domain_size;
         let (h_coeffs, mut d_coeffs, mut d_domain) =
             set_up_points_bls12_381(coeff_size * batch_size, log_test_domain_size, false);
         let (_, _, mut d_domain_inv) = set_up_points_bls12_381(0, log_test_domain_size, true);
