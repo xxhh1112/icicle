@@ -339,19 +339,7 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
         bool is_beginning = ss == 0;
         bool is_end = ss == logn_m_1;
 
-        // if (is_beginning) //this actually can be faster even by introducing extra read and (see below)...
-        // {
-        //   arr[l] = arr_g[offset + l];
-        //   arr[loop_limit + l] = arr_g[offset + loop_limit + l];
-        //   __syncthreads();
-        // }
-
-        // uint32_t ntw_i = task % chunks;
-
-        // uint32_t n_twiddles_div = n_twiddles >> (s + 1);
-
         uint32_t shift_s = 1 << s;
-        // uint32_t shift2_s = 1 << (s + 1);
 
         l = (task % chunks) * loop_limit + l; // to l from chunks to full
 
@@ -361,31 +349,20 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
         uint32_t k = oij + shift_s;
 
         E u = is_beginning ? arr_g[offset + oij] : arr[oij];
-        // E v = rev ? (is_beginning ? arr_g[offset + k] : arr[k]) : (r_twiddles[j * n_twiddles_div] * (is_beginning ? arr_g[offset + k] : arr[k]));
         E v = is_beginning ? arr_g[offset + k] : arr[k];
         if (is_end)
         {
           arr_g[offset + oij] = u + v;
-          // if (rev)
           arr_g[offset + k] = r_twiddles[j * (n_twiddles >> (s + 1))] * (u - v);
-          // else
-          //   arr_g[offset + k] = u - v;
         }
         else
         {
           arr[oij] = u + v;
           arr[k] = r_twiddles[j * (n_twiddles >> (s + 1))] * (u - v);
-          // if (rev)
-          //   arr[k] = r_twiddles[j * n_twiddles_div] * arr[k];
         }
 
         __syncthreads();
       }
-
-      // ... and extra write
-      // arr_g[offset + l] = arr[l];
-      // arr_g[offset + loop_limit + l] = arr[l + loop_limit];
-      // __syncthreads();
     }
   }
 }
