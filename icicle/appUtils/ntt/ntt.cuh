@@ -332,7 +332,7 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
 
     if (l < loop_limit)
     {
-// #pragma unroll 8
+      // #pragma unroll 8
       for (; ss <= logn_m_1; ss++)
       {
         int s = logn_m_1 - ss;
@@ -348,15 +348,15 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
 
         // uint32_t ntw_i = task % chunks;
 
-        uint32_t n_twiddles_div = n_twiddles >> (s + 1);
+        // uint32_t n_twiddles_div = n_twiddles >> (s + 1);
 
         uint32_t shift_s = 1 << s;
-        uint32_t shift2_s = 1 << (s + 1);
+        // uint32_t shift2_s = 1 << (s + 1);
 
         l = (task % chunks) * loop_limit + l; // to l from chunks to full
 
-        uint32_t j = l & (shift_s - 1);               // Equivalent to: l % (1 << s)
-        uint32_t i = ((l >> s) * shift2_s) & (n - 1); // (..) % n (assuming n is power of 2)
+        uint32_t j = l & (shift_s - 1);                     // Equivalent to: l % (1 << s)
+        uint32_t i = ((l >> s) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
         uint32_t oij = i + j;
         uint32_t k = oij + shift_s;
 
@@ -367,14 +367,14 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
         {
           arr_g[offset + oij] = u + v;
           // if (rev)
-          arr_g[offset + k] = r_twiddles[j * n_twiddles_div] * (u - v);
+          arr_g[offset + k] = r_twiddles[j * (n_twiddles >> (s + 1))] * (u - v);
           // else
           //   arr_g[offset + k] = u - v;
         }
         else
         {
           arr[oij] = u + v;
-          arr[k] = r_twiddles[j * n_twiddles_div] * (u - v);
+          arr[k] = r_twiddles[j * (n_twiddles >> (s + 1))] * (u - v);
           // if (rev)
           //   arr[k] = r_twiddles[j * n_twiddles_div] * arr[k];
         }
