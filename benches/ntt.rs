@@ -11,11 +11,11 @@ use icicle_utils::test_bls12_381::{
 };
 use rustacuda::prelude::DeviceBuffer;
 
-const LOG_NTT_SIZES: [usize; 8] = [24, 26, 8, 9, 10, 11, 12, 18];
-const BATCH_SIZES: [usize; 8] = [1, 4, 8, 16, 256, 512, 1024, 1 << 14];
+const LOG_NTT_SIZES: [usize; 5] = [23, 24, 10, 12, 18];
+const BATCH_SIZES: [usize; 4] = [1, 2, 4, 1 << 16];
 
 const MAX_POINTS_LOG2: usize = 18;
-const MAX_SCALARS_LOG2: usize = 24;
+const MAX_SCALARS_LOG2: usize = 25;
 
 fn bench_ntt(c: &mut Criterion) {
     for log_ntt_size in LOG_NTT_SIZES {
