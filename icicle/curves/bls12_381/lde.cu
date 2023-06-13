@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _BLS12_381_LDE
 #define _BLS12_381_LDE
 #include <cuda.h>

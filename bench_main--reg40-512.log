@@ -1,0 +1,1403 @@
+   Compiling proc-macro2 v1.0.59
+   Compiling quote v1.0.28
+   Compiling libc v0.2.144
+   Compiling crossbeam-utils v0.8.15
+   Compiling memoffset v0.8.0
+   Compiling syn v1.0.109
+   Compiling num-traits v0.2.15
+   Compiling crossbeam-epoch v0.9.14
+   Compiling thiserror v1.0.40
+   Compiling num-integer v0.1.45
+   Compiling rayon-core v1.11.0
+   Compiling either v1.8.1
+   Compiling num-bigint v0.4.3
+   Compiling typenum v1.16.0
+   Compiling generic-array v0.14.7
+   Compiling paste v1.0.12
+   Compiling ahash v0.7.6
+   Compiling serde v1.0.163
+   Compiling cuda-driver-sys v0.3.0
+   Compiling bitflags v1.3.2
+   Compiling indexmap v1.9.3
+   Compiling serde_json v1.0.96
+   Compiling os_str_bytes v6.5.0
+   Compiling half v1.8.2
+   Compiling ryu v1.0.13
+   Compiling crossbeam-channel v0.5.8
+   Compiling plotters-backend v0.3.4
+   Compiling ciborium-io v0.2.1
+   Compiling syn v2.0.18
+   Compiling getrandom v0.2.9
+   Compiling num_cpus v1.15.0
+   Compiling crossbeam-deque v0.8.3
+   Compiling jobserver v0.1.26
+   Compiling rand_core v0.6.4
+   Compiling itoa v1.0.6
+   Compiling hashbrown v0.12.3
+   Compiling cc v1.0.79
+   Compiling rustacuda_core v0.1.2
+   Compiling ciborium-ll v0.2.1
+   Compiling rand_chacha v0.3.1
+   Compiling hashbrown v0.11.2
+   Compiling plotters-svg v0.3.3
+   Compiling clap_lex v0.2.4
+   Compiling digest v0.9.0
+   Compiling rand v0.8.5
+   Compiling itertools v0.10.5
+   Compiling rayon v1.7.0
+   Compiling textwrap v0.16.0
+   Compiling regex-syntax v0.7.2
+   Compiling same-file v1.0.6
+   Compiling cast v0.3.0
+   Compiling hex v0.4.3
+   Compiling walkdir v2.3.3
+   Compiling clap v3.2.25
+   Compiling plotters v0.3.4
+   Compiling atty v0.2.14
+   Compiling nvtx v1.1.1
+   Compiling icicle-utils v0.1.0 (/home/vlad/Projects/icicle_clean/icicle)
+   Compiling lazy_static v1.4.0
+   Compiling oorandom v11.1.3
+   Compiling anes v0.1.6
+   Compiling criterion-plot v0.5.0
+   Compiling regex v1.8.3
+   Compiling ark-std v0.3.0
+   Compiling ark-serialize-derive v0.3.0
+   Compiling ark-ff-macros v0.3.0
+   Compiling derivative v2.2.0
+   Compiling ark-ff-asm v0.3.0
+   Compiling rustacuda_derive v0.1.2
+   Compiling thiserror-impl v1.0.40
+   Compiling zeroize_derive v1.4.2
+   Compiling serde_derive v1.0.163
+   Compiling ark-serialize v0.3.0
+   Compiling rustacuda v0.1.3
+   Compiling zeroize v1.6.0
+   Compiling pest v2.6.0
+   Compiling semver-parser v0.10.2
+   Compiling semver v0.11.0
+   Compiling rustc_version v0.3.3
+   Compiling ark-ff v0.3.0
+   Compiling ciborium v0.2.1
+   Compiling tinytemplate v1.2.1
+   Compiling criterion v0.4.0
+   Compiling ark-ec v0.3.0
+   Compiling ark-poly v0.3.0
+   Compiling ark-bls12-381 v0.3.0
+   Compiling ark-bn254 v0.3.0
+   Compiling ark-bls12-377 v0.3.0
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh(581): warning #177-D: variable "max_sharedmem" was declared but never referenced
+warning:     int max_sharedmem = 512 * sizeof(E);
+warning:         ^
+warning: 
+warning: Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+warning: 
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu(27): warning #177-D: variable "max_sharedmem" was declared but never referenced
+warning:     int max_sharedmem = 512 * sizeof(E);
+warning:         ^
+warning: 
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu(108): warning #177-D: variable "max_sharedmem" was declared but never referenced
+warning:     int max_sharedmem = 512 * sizeof(E);
+warning:         ^
+warning: 
+warning: ./icicle/curves/bls12_381/../../primitives/field.cuh:182: warning: ignoring #pragma unroll  [-Wunknown-pragmas]
+warning:   182 |     for (unsigned i = 1; i < (CARRY_OUT ? TLC : TLC - 1); i++)
+warning:       |
+warning: ./icicle/curves/bls12_381/../../primitives/field.cuh:200: warning: ignoring #pragma unroll  [-Wunknown-pragmas]
+warning:   200 |     for (unsigned i = 1; i < (CARRY_OUT ? 2 * TLC : 2 * TLC - 1); i++)
+warning:       |
+warning: ./icicle/curves/bls12_381/projective.cu: In function ‘bool eq_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, size_t)’:
+warning: ./icicle/curves/bls12_381/projective.cu:5:103: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:     5 | extern "C" bool eq_bls12_381(BLS12_381::projective_t *point1, BLS12_381::projective_t *point2, size_t device_id = 0)
+warning:       |                                                                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In function ‘uint32_t reverseBits(uint32_t, uint32_t)’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:58:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning:    58 |   for (int i = 0; i < logn; i++)
+warning:       |                 ~~^~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘BLS12_381::scalar_t* build_domain_cuda_bls12_381(uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:9:119: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:     9 | extern "C" BLS12_381::scalar_t* build_domain_cuda_bls12_381(uint32_t domain_size, uint32_t logn, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int ntt_cuda_bls12_381(BLS12_381::scalar_t*, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:26:94: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    26 | extern "C" int ntt_cuda_bls12_381(BLS12_381::scalar_t *arr, uint32_t n, bool inverse, size_t device_id = 0)
+warning:       |                                                                                       ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int ecntt_cuda_bls12_381(BLS12_381::projective_t*, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:40:100: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    40 | extern "C" int ecntt_cuda_bls12_381(BLS12_381::projective_t *arr, uint32_t n, bool inverse, size_t device_id = 0)
+warning:       |                                                                                             ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int ntt_batch_cuda_bls12_381(BLS12_381::scalar_t*, uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:53:128: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    53 | extern "C" int ntt_batch_cuda_bls12_381(BLS12_381::scalar_t *arr, uint32_t arr_size, uint32_t batch_size, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                         ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int ecntt_batch_cuda_bls12_381(BLS12_381::projective_t*, uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:66:134: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    66 | extern "C" int ecntt_batch_cuda_bls12_381(BLS12_381::projective_t *arr, uint32_t arr_size, uint32_t batch_size, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                               ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int interpolate_scalars_cuda_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, unsigned int, unsigned int)’:
+warning: ./icicle/curves/bls12_381/lde.cu:79:167: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    79 | extern "C" int interpolate_scalars_cuda_bls12_381(BLS12_381::scalar_t* d_out, BLS12_381::scalar_t *d_evaluations, BLS12_381::scalar_t *d_domain, unsigned n, unsigned device_id = 0)
+warning:       |                                                                                                                                                              ~~~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int interpolate_scalars_batch_cuda_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:93:20: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    93 |                                               unsigned batch_size, size_t device_id = 0)
+warning:       |                    ^
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int interpolate_points_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, BLS12_381::scalar_t*, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:106:172: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   106 | extern "C" int interpolate_points_cuda_bls12_381(BLS12_381::projective_t* d_out, BLS12_381::projective_t *d_evaluations, BLS12_381::scalar_t *d_domain, unsigned n, size_t device_id = 0)
+warning:       |                                                                                                                                                                     ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int interpolate_points_batch_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:120:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   120 |                                              unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_scalars_cuda_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, unsigned int)’:
+warning: ./icicle/curves/bls12_381/lde.cu:134:35: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   134 |                                      unsigned domain_size, unsigned n, unsigned device_id = 0)
+warning:       |                                   ^  ~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_scalars_batch_cuda_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:149:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   149 |                                            unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^           ~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_points_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:164:33: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   164 |                                     unsigned domain_size, unsigned n, size_t device_id = 0)
+warning:       |                                 ^   ~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_points_batch_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:179:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   179 |                                           unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^          ~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_scalars_on_coset_cuda_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, BLS12_381::scalar_t*, unsigned int)’:
+warning: ./icicle/curves/bls12_381/lde.cu:194:48: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   194 |                                               unsigned n, BLS12_381::scalar_t *coset_powers, unsigned device_id = 0)
+warning:       |                                               ~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_scalars_on_coset_batch_cuda_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, unsigned int, BLS12_381::scalar_t*, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:208:67: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   208 |                                                     unsigned n, unsigned batch_size, BLS12_381::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                                            ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_points_on_coset_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, BLS12_381::scalar_t*, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:222:46: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   222 |                                              unsigned n, BLS12_381::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                              ^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int evaluate_points_on_coset_batch_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::projective_t*, BLS12_381::scalar_t*, unsigned int, unsigned int, unsigned int, BLS12_381::scalar_t*, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:236:67: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   236 |                                                    unsigned n, unsigned batch_size, BLS12_381::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                                            ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int reverse_order_scalars_cuda_bls12_381(BLS12_381::scalar_t*, int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:249:93: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   249 | extern "C" int reverse_order_scalars_cuda_bls12_381(BLS12_381::scalar_t* arr, int n, size_t device_id = 0)
+warning:       |                                                                                      ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int reverse_order_scalars_batch_cuda_bls12_381(BLS12_381::scalar_t*, int, int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:264:115: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   264 | extern "C" int reverse_order_scalars_batch_cuda_bls12_381(BLS12_381::scalar_t* arr, int n, int batch_size, size_t device_id = 0)
+warning:       |                                                                                                            ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int reverse_order_points_cuda_bls12_381(BLS12_381::projective_t*, int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:279:96: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   279 | extern "C" int reverse_order_points_cuda_bls12_381(BLS12_381::projective_t* arr, int n, size_t device_id = 0)
+warning:       |                                                                                         ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/lde.cu: In function ‘int reverse_order_points_batch_cuda_bls12_381(BLS12_381::projective_t*, int, int, size_t)’:
+warning: ./icicle/curves/bls12_381/lde.cu:294:118: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   294 | extern "C" int reverse_order_points_batch_cuda_bls12_381(BLS12_381::projective_t* arr, int n, int batch_size, size_t device_id = 0)
+warning:       |                                                                                                               ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu: In function ‘unsigned int get_optimal_c(unsigned int)’:
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu:529:39: warning: unused parameter ‘size’ [-Wunused-parameter]
+warning:   529 | unsigned get_optimal_c(const unsigned size) {
+warning:       |                        ~~~~~~~~~~~~~~~^~~~
+warning: ./icicle/curves/bls12_381/msm.cu: In function ‘int msm_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::affine_t*, BLS12_381::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/msm.cu:11:33: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    11 |               BLS12_381::scalar_t scalars[], size_t count, size_t device_id = 0)
+warning:       |                          ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/msm.cu: In function ‘int msm_batch_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::affine_t*, BLS12_381::scalar_t*, size_t, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/msm.cu:32:55: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    32 |                               BLS12_381::scalar_t scalars[], size_t batch_size, size_t msm_size, size_t device_id = 0)
+warning:       |                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/msm.cu: In function ‘int commit_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::scalar_t*, BLS12_381::affine_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/msm.cu:56:154: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    56 |  int commit_cuda_bls12_381(BLS12_381::projective_t* d_out, BLS12_381::scalar_t* d_scalars, BLS12_381::affine_t* d_points, size_t count, size_t device_id = 0)
+warning:       |                                                                                                                                                   ~~~~~~~^~~~
+warning: ./icicle/curves/bls12_381/msm.cu: In function ‘int commit_batch_cuda_bls12_381(BLS12_381::projective_t*, BLS12_381::scalar_t*, BLS12_381::affine_t*, size_t, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/msm.cu:80:179: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    80 |  int commit_batch_cuda_bls12_381(BLS12_381::projective_t* d_out, BLS12_381::scalar_t* d_scalars, BLS12_381::affine_t* d_points, size_t count, size_t batch_size, size_t device_id = 0)
+warning:       |                                                                                                                                                                            ~~~~~~~^~~~
+warning: ./icicle/curves/bls12_381/ve_mod_mult.cu: In function ‘int32_t vec_mod_mult_point_bls12_381(BLS12_381::projective_t*, BLS12_381::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/ve_mod_mult.cu:14:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    13 |                                       size_t n_elments,
+warning:       |                                       ~~~~~~~~~~~~~~~~~
+warning:    14 |                                       size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bls12_381/ve_mod_mult.cu: In function ‘int32_t vec_mod_mult_scalar_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/ve_mod_mult.cu:32:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    31 |                                        size_t n_elments,
+warning:       |                                        ~~~~~~~~~~~~~~~~~
+warning:    32 |                                        size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bls12_381/ve_mod_mult.cu: In function ‘int32_t matrix_vec_mod_mult_bls12_381(BLS12_381::scalar_t*, BLS12_381::scalar_t*, BLS12_381::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_381/ve_mod_mult.cu:51:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    50 |                                        size_t n_elments,
+warning:       |                                        ~~~~~~~~~~~~~~~~~
+warning:    51 |                                        size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bls12_377/projective.cu: In function ‘bool eq_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, size_t)’:
+warning: ./icicle/curves/bls12_377/projective.cu:8:103: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:     8 | extern "C" bool eq_bls12_377(BLS12_377::projective_t *point1, BLS12_377::projective_t *point2, size_t device_id = 0)
+warning:       |                                                                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘BLS12_377::scalar_t* build_domain_cuda_bls12_377(uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:9:119: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:     9 | extern "C" BLS12_377::scalar_t* build_domain_cuda_bls12_377(uint32_t domain_size, uint32_t logn, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int ntt_cuda_bls12_377(BLS12_377::scalar_t*, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:26:94: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    26 | extern "C" int ntt_cuda_bls12_377(BLS12_377::scalar_t *arr, uint32_t n, bool inverse, size_t device_id = 0)
+warning:       |                                                                                       ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int ecntt_cuda_bls12_377(BLS12_377::projective_t*, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:40:100: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    40 | extern "C" int ecntt_cuda_bls12_377(BLS12_377::projective_t *arr, uint32_t n, bool inverse, size_t device_id = 0)
+warning:       |                                                                                             ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int ntt_batch_cuda_bls12_377(BLS12_377::scalar_t*, uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:53:128: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    53 | extern "C" int ntt_batch_cuda_bls12_377(BLS12_377::scalar_t *arr, uint32_t arr_size, uint32_t batch_size, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                         ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int ecntt_batch_cuda_bls12_377(BLS12_377::projective_t*, uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:66:134: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    66 | extern "C" int ecntt_batch_cuda_bls12_377(BLS12_377::projective_t *arr, uint32_t arr_size, uint32_t batch_size, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                               ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int interpolate_scalars_cuda_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, unsigned int, unsigned int)’:
+warning: ./icicle/curves/bls12_377/lde.cu:79:167: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    79 | extern "C" int interpolate_scalars_cuda_bls12_377(BLS12_377::scalar_t* d_out, BLS12_377::scalar_t *d_evaluations, BLS12_377::scalar_t *d_domain, unsigned n, unsigned device_id = 0)
+warning:       |                                                                                                                                                              ~~~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int interpolate_scalars_batch_cuda_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:93:20: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    93 |                                               unsigned batch_size, size_t device_id = 0)
+warning:       |                    ^
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int interpolate_points_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, BLS12_377::scalar_t*, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:106:172: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   106 | extern "C" int interpolate_points_cuda_bls12_377(BLS12_377::projective_t* d_out, BLS12_377::projective_t *d_evaluations, BLS12_377::scalar_t *d_domain, unsigned n, size_t device_id = 0)
+warning:       |                                                                                                                                                                     ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int interpolate_points_batch_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:120:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   120 |                                              unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_scalars_cuda_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, unsigned int)’:
+warning: ./icicle/curves/bls12_377/lde.cu:134:35: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   134 |                                      unsigned domain_size, unsigned n, unsigned device_id = 0)
+warning:       |                                   ^  ~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_scalars_batch_cuda_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:149:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   149 |                                            unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^           ~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_points_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:164:33: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   164 |                                     unsigned domain_size, unsigned n, size_t device_id = 0)
+warning:       |                                 ^   ~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_points_batch_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:179:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   179 |                                           unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^          ~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_scalars_on_coset_cuda_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, BLS12_377::scalar_t*, unsigned int)’:
+warning: ./icicle/curves/bls12_377/lde.cu:194:48: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   194 |                                               unsigned n, BLS12_377::scalar_t *coset_powers, unsigned device_id = 0)
+warning:       |                                               ~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_scalars_on_coset_batch_cuda_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, unsigned int, BLS12_377::scalar_t*, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:208:67: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   208 |                                                     unsigned n, unsigned batch_size, BLS12_377::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                                            ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_points_on_coset_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, BLS12_377::scalar_t*, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:222:46: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   222 |                                              unsigned n, BLS12_377::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                              ^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int evaluate_points_on_coset_batch_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::projective_t*, BLS12_377::scalar_t*, unsigned int, unsigned int, unsigned int, BLS12_377::scalar_t*, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:236:67: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   236 |                                                    unsigned n, unsigned batch_size, BLS12_377::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                                            ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int reverse_order_scalars_cuda_bls12_377(BLS12_377::scalar_t*, int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:249:93: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   249 | extern "C" int reverse_order_scalars_cuda_bls12_377(BLS12_377::scalar_t* arr, int n, size_t device_id = 0)
+warning:       |                                                                                      ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int reverse_order_scalars_batch_cuda_bls12_377(BLS12_377::scalar_t*, int, int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:264:115: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   264 | extern "C" int reverse_order_scalars_batch_cuda_bls12_377(BLS12_377::scalar_t* arr, int n, int batch_size, size_t device_id = 0)
+warning:       |                                                                                                            ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int reverse_order_points_cuda_bls12_377(BLS12_377::projective_t*, int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:279:96: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   279 | extern "C" int reverse_order_points_cuda_bls12_377(BLS12_377::projective_t* arr, int n, size_t device_id = 0)
+warning:       |                                                                                         ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/lde.cu: In function ‘int reverse_order_points_batch_cuda_bls12_377(BLS12_377::projective_t*, int, int, size_t)’:
+warning: ./icicle/curves/bls12_377/lde.cu:294:118: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   294 | extern "C" int reverse_order_points_batch_cuda_bls12_377(BLS12_377::projective_t* arr, int n, int batch_size, size_t device_id = 0)
+warning:       |                                                                                                               ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/msm.cu: In function ‘int msm_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::affine_t*, BLS12_377::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/msm.cu:11:33: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    11 |               BLS12_377::scalar_t scalars[], size_t count, size_t device_id = 0)
+warning:       |                          ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/msm.cu: In function ‘int msm_batch_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::affine_t*, BLS12_377::scalar_t*, size_t, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/msm.cu:32:55: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    32 |                               BLS12_377::scalar_t scalars[], size_t batch_size, size_t msm_size, size_t device_id = 0)
+warning:       |                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_377/msm.cu: In function ‘int commit_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::scalar_t*, BLS12_377::affine_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/msm.cu:56:154: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    56 |  int commit_cuda_bls12_377(BLS12_377::projective_t* d_out, BLS12_377::scalar_t* d_scalars, BLS12_377::affine_t* d_points, size_t count, size_t device_id = 0)
+warning:       |                                                                                                                                                   ~~~~~~~^~~~
+warning: ./icicle/curves/bls12_377/msm.cu: In function ‘int commit_batch_cuda_bls12_377(BLS12_377::projective_t*, BLS12_377::scalar_t*, BLS12_377::affine_t*, size_t, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/msm.cu:80:179: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    80 |  int commit_batch_cuda_bls12_377(BLS12_377::projective_t* d_out, BLS12_377::scalar_t* d_scalars, BLS12_377::affine_t* d_points, size_t count, size_t batch_size, size_t device_id = 0)
+warning:       |                                                                                                                                                                            ~~~~~~~^~~~
+warning: ./icicle/curves/bls12_377/ve_mod_mult.cu: In function ‘int32_t vec_mod_mult_point_bls12_377(BLS12_377::projective_t*, BLS12_377::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/ve_mod_mult.cu:15:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    14 |                                       size_t n_elments,
+warning:       |                                       ~~~~~~~~~~~~~~~~~
+warning:    15 |                                       size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bls12_377/ve_mod_mult.cu: In function ‘int32_t vec_mod_mult_scalar_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/ve_mod_mult.cu:33:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    32 |                                        size_t n_elments,
+warning:       |                                        ~~~~~~~~~~~~~~~~~
+warning:    33 |                                        size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bls12_377/ve_mod_mult.cu: In function ‘int32_t matrix_vec_mod_mult_bls12_377(BLS12_377::scalar_t*, BLS12_377::scalar_t*, BLS12_377::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bls12_377/ve_mod_mult.cu:52:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    51 |                                        size_t n_elments,
+warning:       |                                        ~~~~~~~~~~~~~~~~~
+warning:    52 |                                        size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bn254/projective.cu: In function ‘bool eq_bn254(BN254::projective_t*, BN254::projective_t*, size_t)’:
+warning: ./icicle/curves/bn254/projective.cu:5:91: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:     5 | extern "C" bool eq_bn254(BN254::projective_t *point1, BN254::projective_t *point2, size_t device_id = 0)
+warning:       |                                                                                    ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘BN254::scalar_t* build_domain_cuda_bn254(uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:9:111: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:     9 | extern "C" BN254::scalar_t* build_domain_cuda_bn254(uint32_t domain_size, uint32_t logn, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                        ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int ntt_cuda_bn254(BN254::scalar_t*, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:26:86: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    26 | extern "C" int ntt_cuda_bn254(BN254::scalar_t *arr, uint32_t n, bool inverse, size_t device_id = 0)
+warning:       |                                                                               ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int ecntt_cuda_bn254(BN254::projective_t*, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:40:92: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    40 | extern "C" int ecntt_cuda_bn254(BN254::projective_t *arr, uint32_t n, bool inverse, size_t device_id = 0)
+warning:       |                                                                                     ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int ntt_batch_cuda_bn254(BN254::scalar_t*, uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:53:120: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    53 | extern "C" int ntt_batch_cuda_bn254(BN254::scalar_t *arr, uint32_t arr_size, uint32_t batch_size, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                 ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int ecntt_batch_cuda_bn254(BN254::projective_t*, uint32_t, uint32_t, bool, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:66:126: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    66 | extern "C" int ecntt_batch_cuda_bn254(BN254::projective_t *arr, uint32_t arr_size, uint32_t batch_size, bool inverse, size_t device_id = 0)
+warning:       |                                                                                                                       ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int interpolate_scalars_cuda_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, unsigned int, unsigned int)’:
+warning: ./icicle/curves/bn254/lde.cu:79:151: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    79 | extern "C" int interpolate_scalars_cuda_bn254(BN254::scalar_t* d_out, BN254::scalar_t *d_evaluations, BN254::scalar_t *d_domain, unsigned n, unsigned device_id = 0)
+warning:       |                                                                                                                                              ~~~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int interpolate_scalars_batch_cuda_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:93:20: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    93 |                                               unsigned batch_size, size_t device_id = 0)
+warning:       |                    ^
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int interpolate_points_cuda_bn254(BN254::projective_t*, BN254::projective_t*, BN254::scalar_t*, unsigned int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:106:156: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   106 | extern "C" int interpolate_points_cuda_bn254(BN254::projective_t* d_out, BN254::projective_t *d_evaluations, BN254::scalar_t *d_domain, unsigned n, size_t device_id = 0)
+warning:       |                                                                                                                                                     ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int interpolate_points_batch_cuda_bn254(BN254::projective_t*, BN254::projective_t*, BN254::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:120:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   120 |                                              unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_scalars_cuda_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, unsigned int, unsigned int, unsigned int)’:
+warning: ./icicle/curves/bn254/lde.cu:134:35: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   134 |                                      unsigned domain_size, unsigned n, unsigned device_id = 0)
+warning:       |                                   ^  ~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_scalars_batch_cuda_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, unsigned int, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:149:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   149 |                                            unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^           ~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_points_cuda_bn254(BN254::projective_t*, BN254::projective_t*, BN254::scalar_t*, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:164:33: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   164 |                                     unsigned domain_size, unsigned n, size_t device_id = 0)
+warning:       |                                 ^   ~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_points_batch_cuda_bn254(BN254::projective_t*, BN254::projective_t*, BN254::scalar_t*, unsigned int, unsigned int, unsigned int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:179:32: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   179 |                                           unsigned n, unsigned batch_size, size_t device_id = 0)
+warning:       |                                ^          ~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_scalars_on_coset_cuda_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, unsigned int, unsigned int, BN254::scalar_t*, unsigned int)’:
+warning: ./icicle/curves/bn254/lde.cu:194:44: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   194 |                                               unsigned n, BN254::scalar_t *coset_powers, unsigned device_id = 0)
+warning:       |                                            ^  ~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_scalars_on_coset_batch_cuda_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, unsigned int, unsigned int, unsigned int, BN254::scalar_t*, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:208:63: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   208 |                                                     unsigned n, unsigned batch_size, BN254::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                                        ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_points_on_coset_cuda_bn254(BN254::projective_t*, BN254::projective_t*, BN254::scalar_t*, unsigned int, unsigned int, BN254::scalar_t*, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:222:42: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   222 |                                              unsigned n, BN254::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                          ^   ~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int evaluate_points_on_coset_batch_cuda_bn254(BN254::projective_t*, BN254::projective_t*, BN254::scalar_t*, unsigned int, unsigned int, unsigned int, BN254::scalar_t*, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:236:63: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   236 |                                                    unsigned n, unsigned batch_size, BN254::scalar_t *coset_powers, size_t device_id = 0)
+warning:       |                                                        ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int reverse_order_scalars_cuda_bn254(BN254::scalar_t*, int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:249:85: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   249 | extern "C" int reverse_order_scalars_cuda_bn254(BN254::scalar_t* arr, int n, size_t device_id = 0)
+warning:       |                                                                              ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int reverse_order_scalars_batch_cuda_bn254(BN254::scalar_t*, int, int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:264:107: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   264 | extern "C" int reverse_order_scalars_batch_cuda_bn254(BN254::scalar_t* arr, int n, int batch_size, size_t device_id = 0)
+warning:       |                                                                                                    ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int reverse_order_points_cuda_bn254(BN254::projective_t*, int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:279:88: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   279 | extern "C" int reverse_order_points_cuda_bn254(BN254::projective_t* arr, int n, size_t device_id = 0)
+warning:       |                                                                                 ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/lde.cu: In function ‘int reverse_order_points_batch_cuda_bn254(BN254::projective_t*, int, int, size_t)’:
+warning: ./icicle/curves/bn254/lde.cu:294:110: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:   294 | extern "C" int reverse_order_points_batch_cuda_bn254(BN254::projective_t* arr, int n, int batch_size, size_t device_id = 0)
+warning:       |                                                                                                       ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/msm.cu: In function ‘int msm_cuda_bn254(BN254::projective_t*, BN254::affine_t*, BN254::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bn254/msm.cu:11:33: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    11 |               BN254::scalar_t scalars[], size_t count, size_t device_id = 0)
+warning:       |                          ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/msm.cu: In function ‘int msm_batch_cuda_bn254(BN254::projective_t*, BN254::affine_t*, BN254::scalar_t*, size_t, size_t, size_t)’:
+warning: ./icicle/curves/bn254/msm.cu:32:55: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    32 |                               BN254::scalar_t scalars[], size_t batch_size, size_t msm_size, size_t device_id = 0)
+warning:       |                                                ~~~~~~~^~~~~~~~~~~~~
+warning: ./icicle/curves/bn254/msm.cu: In function ‘int commit_cuda_bn254(BN254::projective_t*, BN254::scalar_t*, BN254::affine_t*, size_t, size_t)’:
+warning: ./icicle/curves/bn254/msm.cu:56:138: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    56 |  int commit_cuda_bn254(BN254::projective_t* d_out, BN254::scalar_t* d_scalars, BN254::affine_t* d_points, size_t count, size_t device_id = 0)
+warning:       |                                                                                                                                   ~~~~~~~^~~~
+warning: ./icicle/curves/bn254/msm.cu: In function ‘int commit_batch_cuda_bn254(BN254::projective_t*, BN254::scalar_t*, BN254::affine_t*, size_t, size_t, size_t)’:
+warning: ./icicle/curves/bn254/msm.cu:80:163: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    80 |  int commit_batch_cuda_bn254(BN254::projective_t* d_out, BN254::scalar_t* d_scalars, BN254::affine_t* d_points, size_t count, size_t batch_size, size_t device_id = 0)
+warning:       |                                                                                                                                                            ~~~~~~~^~~~
+warning: ./icicle/curves/bn254/ve_mod_mult.cu: In function ‘int32_t vec_mod_mult_point_bn254(BN254::projective_t*, BN254::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bn254/ve_mod_mult.cu:15:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    14 |                                       size_t n_elments,
+warning:       |                                       ~~~~~~~~~~~~~~~~~
+warning:    15 |                                       size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bn254/ve_mod_mult.cu: In function ‘int32_t vec_mod_mult_scalar_bn254(BN254::scalar_t*, BN254::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bn254/ve_mod_mult.cu:33:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    32 |                                        size_t n_elments,
+warning:       |                                        ~~~~~~~~~~~~~~~~~
+warning:    33 |                                        size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bn254/ve_mod_mult.cu: In function ‘int32_t matrix_vec_mod_mult_bn254(BN254::scalar_t*, BN254::scalar_t*, BN254::scalar_t*, size_t, size_t)’:
+warning: ./icicle/curves/bn254/ve_mod_mult.cu:52:1: warning: unused parameter ‘device_id’ [-Wunused-parameter]
+warning:    51 |                                        size_t n_elments,
+warning:       |                                        ~~~~~~~~~~~~~~~~~
+warning:    52 |                                        size_t device_id)
+warning:       | ^
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Field<PARAMS_BLS12_381::fp_config>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/lde.cu:30:122:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:254:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning:   254 |   for (int i = 0; i < n; i++)
+warning:       |                 ~~^~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Projective<Field<PARAMS_BLS12_381::fq_config>, Field<PARAMS_BLS12_381::fp_config>, PARAMS_BLS12_381::group_generator, 4>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/lde.cu:44:213:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:254:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu: In instantiation of ‘int evaluate_batch(E*, E*, S*, unsigned int, unsigned int, unsigned int, bool, S*) [with E = Field<PARAMS_BLS12_381::fp_config>; S = Field<PARAMS_BLS12_381::fp_config>]’:
+warning: ./icicle/curves/bls12_381/lde.cu:154:96:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu:85:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+warning:    85 |     for (int i = 0; i < batch_size; i++)
+warning:       |                 ~~^~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu: In instantiation of ‘int evaluate_batch(E*, E*, S*, unsigned int, unsigned int, unsigned int, bool, S*) [with E = Projective<Field<PARAMS_BLS12_381::fq_config>, Field<PARAMS_BLS12_381::fp_config>, PARAMS_BLS12_381::group_generator, 4>; S = Field<PARAMS_BLS12_381::fp_config>]’:
+warning: ./icicle/curves/bls12_381/lde.cu:184:96:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu:85:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu: In instantiation of ‘void short_msm(S*, A*, unsigned int, P*, bool) [with S = Field<PARAMS_BLS12_381::fp_config>; P = Projective<Field<PARAMS_BLS12_381::fq_config>, Field<PARAMS_BLS12_381::fp_config>, PARAMS_BLS12_381::group_generator, 4>; A = Affine<Field<PARAMS_BLS12_381::fq_config> >]’:
+warning: ./icicle/curves/bls12_381/msm.cu:19:262:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu:464:77: warning: unused parameter ‘on_device’ [-Wunused-parameter]
+warning:   464 | void short_msm(S *h_scalars, A *h_points, unsigned size, P* h_final_result, bool on_device){ //works up to 2^8
+warning:       |                                                                        ~~~~~^~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Field<PARAMS_BLS12_377::fp_config>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_377/lde.cu:30:122:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:254:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning:   254 |   for (int i = 0; i < n; i++)
+warning:       |                 ~~^~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Projective<Field<PARAMS_BLS12_377::fq_config>, Field<PARAMS_BLS12_377::fp_config>, PARAMS_BLS12_377::group_generator, 1>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_377/lde.cu:44:213:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:254:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu: In instantiation of ‘int evaluate_batch(E*, E*, S*, unsigned int, unsigned int, unsigned int, bool, S*) [with E = Field<PARAMS_BLS12_377::fp_config>; S = Field<PARAMS_BLS12_377::fp_config>]’:
+warning: ./icicle/curves/bls12_377/lde.cu:154:96:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu:85:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+warning:    85 |     for (int i = 0; i < batch_size; i++)
+warning:       |                 ~~^~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu: In instantiation of ‘int evaluate_batch(E*, E*, S*, unsigned int, unsigned int, unsigned int, bool, S*) [with E = Projective<Field<PARAMS_BLS12_377::fq_config>, Field<PARAMS_BLS12_377::fp_config>, PARAMS_BLS12_377::group_generator, 1>; S = Field<PARAMS_BLS12_377::fp_config>]’:
+warning: ./icicle/curves/bls12_377/lde.cu:184:96:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu:85:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu: In instantiation of ‘void short_msm(S*, A*, unsigned int, P*, bool) [with S = Field<PARAMS_BLS12_377::fp_config>; P = Projective<Field<PARAMS_BLS12_377::fq_config>, Field<PARAMS_BLS12_377::fp_config>, PARAMS_BLS12_377::group_generator, 1>; A = Affine<Field<PARAMS_BLS12_377::fq_config> >]’:
+warning: ./icicle/curves/bls12_377/msm.cu:19:262:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu:464:77: warning: unused parameter ‘on_device’ [-Wunused-parameter]
+warning:   464 | void short_msm(S *h_scalars, A *h_points, unsigned size, P* h_final_result, bool on_device){ //works up to 2^8
+warning:       |                                                                        ~~~~~^~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Field<PARAMS_BN254::fp_config>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bn254/lde.cu:30:114:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:254:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning:   254 |   for (int i = 0; i < n; i++)
+warning:       |                 ~~^~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Projective<Field<PARAMS_BN254::fq_config>, Field<PARAMS_BN254::fp_config>, PARAMS_BN254::group_generator, 3>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bn254/lde.cu:44:197:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:254:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘uint32_t’ {aka ‘unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu: In instantiation of ‘int evaluate_batch(E*, E*, S*, unsigned int, unsigned int, unsigned int, bool, S*) [with E = Field<PARAMS_BN254::fp_config>; S = Field<PARAMS_BN254::fp_config>]’:
+warning: ./icicle/curves/bn254/lde.cu:154:96:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu:85:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+warning:    85 |     for (int i = 0; i < batch_size; i++)
+warning:       |                 ~~^~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu: In instantiation of ‘int evaluate_batch(E*, E*, S*, unsigned int, unsigned int, unsigned int, bool, S*) [with E = Projective<Field<PARAMS_BN254::fq_config>, Field<PARAMS_BN254::fp_config>, PARAMS_BN254::group_generator, 3>; S = Field<PARAMS_BN254::fp_config>]’:
+warning: ./icicle/curves/bn254/lde.cu:184:96:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/lde.cu:85:19: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu: In instantiation of ‘void short_msm(S*, A*, unsigned int, P*, bool) [with S = Field<PARAMS_BN254::fp_config>; P = Projective<Field<PARAMS_BN254::fq_config>, Field<PARAMS_BN254::fp_config>, PARAMS_BN254::group_generator, 3>; A = Affine<Field<PARAMS_BN254::fq_config> >]’:
+warning: ./icicle/curves/bn254/msm.cu:19:242:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/msm/msm.cu:464:77: warning: unused parameter ‘on_device’ [-Wunused-parameter]
+warning:   464 | void short_msm(S *h_scalars, A *h_points, unsigned size, P* h_final_result, bool on_device){ //works up to 2^8
+warning:       |                                                                        ~~~~~^~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘void template_ntt_on_device_memory(E*, uint32_t, uint32_t, S*, uint32_t) [with E = Field<PARAMS_BLS12_381::fp_config>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:220:38:   required from ‘E* ntt_template(E*, uint32_t, S*, uint32_t, bool) [with E = Field<PARAMS_BLS12_381::fp_config>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:253:33:   required from ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Field<PARAMS_BLS12_381::fp_config>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/lde.cu:30:122:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:194:89: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const uint32_t’ {aka ‘const unsigned int’} [-Wsign-compare]
+warning:   194 |       int number_of_threads = MAX_NUM_THREADS ^ ((shifted_m ^ MAX_NUM_THREADS) & -(shifted_m < MAX_NUM_THREADS));
+warning:       |                                                                              ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘void template_ntt_on_device_memory(E*, uint32_t, uint32_t, S*, uint32_t) [with E = Projective<Field<PARAMS_BLS12_381::fq_config>, Field<PARAMS_BLS12_381::fp_config>, PARAMS_BLS12_381::group_generator, 4>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:220:38:   required from ‘E* ntt_template(E*, uint32_t, S*, uint32_t, bool) [with E = Projective<Field<PARAMS_BLS12_381::fq_config>, Field<PARAMS_BLS12_381::fp_config>, PARAMS_BLS12_381::group_generator, 4>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:253:33:   required from ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Projective<Field<PARAMS_BLS12_381::fq_config>, Field<PARAMS_BLS12_381::fp_config>, PARAMS_BLS12_381::group_generator, 4>; S = Field<PARAMS_BLS12_381::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/lde.cu:44:213:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:194:89: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const uint32_t’ {aka ‘const unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘void template_ntt_on_device_memory(E*, uint32_t, uint32_t, S*, uint32_t) [with E = Field<PARAMS_BLS12_377::fp_config>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:220:38:   required from ‘E* ntt_template(E*, uint32_t, S*, uint32_t, bool) [with E = Field<PARAMS_BLS12_377::fp_config>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:253:33:   required from ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Field<PARAMS_BLS12_377::fp_config>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_377/lde.cu:30:122:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:194:89: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const uint32_t’ {aka ‘const unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘void template_ntt_on_device_memory(E*, uint32_t, uint32_t, S*, uint32_t) [with E = Projective<Field<PARAMS_BLS12_377::fq_config>, Field<PARAMS_BLS12_377::fp_config>, PARAMS_BLS12_377::group_generator, 1>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:220:38:   required from ‘E* ntt_template(E*, uint32_t, S*, uint32_t, bool) [with E = Projective<Field<PARAMS_BLS12_377::fq_config>, Field<PARAMS_BLS12_377::fp_config>, PARAMS_BLS12_377::group_generator, 1>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:253:33:   required from ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Projective<Field<PARAMS_BLS12_377::fq_config>, Field<PARAMS_BLS12_377::fp_config>, PARAMS_BLS12_377::group_generator, 1>; S = Field<PARAMS_BLS12_377::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_377/lde.cu:44:213:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:194:89: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const uint32_t’ {aka ‘const unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘void template_ntt_on_device_memory(E*, uint32_t, uint32_t, S*, uint32_t) [with E = Field<PARAMS_BN254::fp_config>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:220:38:   required from ‘E* ntt_template(E*, uint32_t, S*, uint32_t, bool) [with E = Field<PARAMS_BN254::fp_config>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:253:33:   required from ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Field<PARAMS_BN254::fp_config>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bn254/lde.cu:30:114:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:194:89: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const uint32_t’ {aka ‘const unsigned int’} [-Wsign-compare]
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh: In instantiation of ‘void template_ntt_on_device_memory(E*, uint32_t, uint32_t, S*, uint32_t) [with E = Projective<Field<PARAMS_BN254::fq_config>, Field<PARAMS_BN254::fp_config>, PARAMS_BN254::group_generator, 3>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’:
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:220:38:   required from ‘E* ntt_template(E*, uint32_t, S*, uint32_t, bool) [with E = Projective<Field<PARAMS_BN254::fq_config>, Field<PARAMS_BN254::fp_config>, PARAMS_BN254::group_generator, 3>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:253:33:   required from ‘uint32_t ntt_end2end_template(E*, uint32_t, bool) [with E = Projective<Field<PARAMS_BN254::fq_config>, Field<PARAMS_BN254::fp_config>, PARAMS_BN254::group_generator, 3>; S = Field<PARAMS_BN254::fp_config>; uint32_t = unsigned int]’
+warning: ./icicle/curves/bn254/lde.cu:44:197:   required from here
+warning: ./icicle/curves/bls12_381/../../appUtils/ntt/ntt.cuh:194:89: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const uint32_t’ {aka ‘const unsigned int’} [-Wsign-compare]
+warning: unused import: `Fr as Fr_BLS12_381`
+ --> src/curves/bls12_381.rs:3:41
+  |
+3 | use ark_bls12_381::{Fq as Fq_BLS12_381, Fr as Fr_BLS12_381, G1Affine as G1Affine_BLS12_381, G1Projective as G1Projective_BLS12_381};
+  |                                         ^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: type `BaseField_BLS12_381` should have an upper camel case name
+  --> src/curves/bls12_381.rs:53:10
+   |
+53 | pub type BaseField_BLS12_381 = Field_BLS12_381<BASE_LIMBS_BLS12_381>;
+   |          ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BaseFieldBls12_381`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `ScalarField_BLS12_381` should have an upper camel case name
+  --> src/curves/bls12_381.rs:54:10
+   |
+54 | pub type ScalarField_BLS12_381 = Field_BLS12_381<SCALAR_LIMBS_BLS12_381>;
+   |          ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `ScalarFieldBls12_381`
+
+warning: the item `Field` is imported redundantly
+   --> src/curves/bls12_381.rs:144:13
+    |
+8   | use ark_ff::Field;
+    |     ------------- the item `Field` is already imported here
+...
+144 |         use ark_ff::Field;
+    |             ^^^^^^^^^^^^^
+
+warning: the item `Field` is imported redundantly
+   --> src/curves/bls12_381.rs:156:13
+    |
+8   | use ark_ff::Field;
+    |     ------------- the item `Field` is already imported here
+...
+156 |         use ark_ff::Field;
+    |             ^^^^^^^^^^^^^
+
+warning: unused import: `Fr as Fr_BLS12_377`
+ --> src/curves/bls12_377.rs:3:41
+  |
+3 | use ark_bls12_377::{Fq as Fq_BLS12_377, Fr as Fr_BLS12_377, G1Affine as G1Affine_BLS12_377, G1Projective as G1Projective_BLS12_377};
+  |                                         ^^^^^^^^^^^^^^^^^^
+
+warning: type `BaseField_BLS12_377` should have an upper camel case name
+  --> src/curves/bls12_377.rs:53:10
+   |
+53 | pub type BaseField_BLS12_377 = Field_BLS12_377<BASE_LIMBS_BLS12_377>;
+   |          ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BaseFieldBls12_377`
+
+warning: type `ScalarField_BLS12_377` should have an upper camel case name
+  --> src/curves/bls12_377.rs:54:10
+   |
+54 | pub type ScalarField_BLS12_377 = Field_BLS12_377<SCALAR_LIMBS_BLS12_377>;
+   |          ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `ScalarFieldBls12_377`
+
+warning: the item `Field` is imported redundantly
+   --> src/curves/bls12_377.rs:144:13
+    |
+8   | use ark_ff::Field;
+    |     ------------- the item `Field` is already imported here
+...
+144 |         use ark_ff::Field;
+    |             ^^^^^^^^^^^^^
+
+warning: the item `Field` is imported redundantly
+   --> src/curves/bls12_377.rs:156:13
+    |
+8   | use ark_ff::Field;
+    |     ------------- the item `Field` is already imported here
+...
+156 |         use ark_ff::Field;
+    |             ^^^^^^^^^^^^^
+
+warning: unused import: `Fr as Fr_BN254`
+ --> src/curves/bn254.rs:3:33
+  |
+3 | use ark_bn254::{Fq as Fq_BN254, Fr as Fr_BN254, G1Affine as G1Affine_BN254, G1Projective as G1Projective_BN254};
+  |                                 ^^^^^^^^^^^^^^
+
+warning: type `BaseField_BN254` should have an upper camel case name
+  --> src/curves/bn254.rs:53:10
+   |
+53 | pub type BaseField_BN254 = Field_BN254<BASE_LIMBS_BN254>;
+   |          ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `BaseFieldBn254`
+
+warning: type `ScalarField_BN254` should have an upper camel case name
+  --> src/curves/bn254.rs:54:10
+   |
+54 | pub type ScalarField_BN254 = Field_BN254<SCALAR_LIMBS_BN254>;
+   |          ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `ScalarFieldBn254`
+
+warning: the item `Field` is imported redundantly
+   --> src/curves/bn254.rs:124:13
+    |
+8   | use ark_ff::Field;
+    |     ------------- the item `Field` is already imported here
+...
+124 |         use ark_ff::Field;
+    |             ^^^^^^^^^^^^^
+
+warning: the item `Field` is imported redundantly
+   --> src/curves/bn254.rs:136:13
+    |
+8   | use ark_ff::Field;
+    |     ------------- the item `Field` is already imported here
+...
+136 |         use ark_ff::Field;
+    |             ^^^^^^^^^^^^^
+
+warning: unused import: `ark_ff::Field`
+ --> src/curves/bls12_381.rs:8:5
+  |
+8 | use ark_ff::Field;
+  |     ^^^^^^^^^^^^^
+
+warning: unused import: `ark_ff::Field`
+ --> src/curves/bls12_377.rs:8:5
+  |
+8 | use ark_ff::Field;
+  |     ^^^^^^^^^^^^^
+
+warning: unused import: `ark_ff::Field`
+ --> src/curves/bn254.rs:8:5
+  |
+8 | use ark_ff::Field;
+  |     ^^^^^^^^^^^^^
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_377.rs:336:5
+    |
+336 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_377.rs:350:85
+    |
+350 | pub fn ntt_batch_bls12_377(values: &mut [ScalarField_BLS12_377], batch_size: usize, device_id: usize) {
+    |                                                                                     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_377.rs:354:86
+    |
+354 | pub fn intt_batch_bls12_377(values: &mut [ScalarField_BLS12_377], batch_size: usize, device_id: usize) {
+    |                                                                                      ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_377.rs:382:5
+    |
+382 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_377.rs:396:81
+    |
+396 | pub fn ecntt_batch_bls12_377(values: &mut [Point_BLS12_377], batch_size: usize, device_id: usize) {
+    |                                                                                 ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_377.rs:401:82
+    |
+401 | pub fn iecntt_batch_bls12_377(values: &mut [Point_BLS12_377], batch_size: usize, device_id: usize) {
+    |                                                                                  ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `i`
+   --> src/test_bls12_377.rs:714:9
+    |
+714 |     for i in 0..b.len() {
+    |         ^ help: if this is intentional, prefix it with an underscore: `_i`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_381.rs:363:5
+    |
+363 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_381.rs:380:5
+    |
+380 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_381.rs:388:5
+    |
+388 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_381.rs:421:5
+    |
+421 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_381.rs:435:81
+    |
+435 | pub fn ecntt_batch_bls12_381(values: &mut [Point_BLS12_381], batch_size: usize, device_id: usize) {
+    |                                                                                 ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bls12_381.rs:440:82
+    |
+440 | pub fn iecntt_batch_bls12_381(values: &mut [Point_BLS12_381], batch_size: usize, device_id: usize) {
+    |                                                                                  ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `i`
+   --> src/test_bls12_381.rs:770:9
+    |
+770 |     for i in 0..b.len() {
+    |         ^ help: if this is intentional, prefix it with an underscore: `_i`
+
+warning: unused variable: `device_id`
+   --> src/test_bn254.rs:336:5
+    |
+336 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bn254.rs:350:77
+    |
+350 | pub fn ntt_batch_bn254(values: &mut [ScalarField_BN254], batch_size: usize, device_id: usize) {
+    |                                                                             ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bn254.rs:354:78
+    |
+354 | pub fn intt_batch_bn254(values: &mut [ScalarField_BN254], batch_size: usize, device_id: usize) {
+    |                                                                              ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bn254.rs:382:5
+    |
+382 |     device_id: usize,
+    |     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bn254.rs:396:73
+    |
+396 | pub fn ecntt_batch_bn254(values: &mut [Point_BN254], batch_size: usize, device_id: usize) {
+    |                                                                         ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `device_id`
+   --> src/test_bn254.rs:401:74
+    |
+401 | pub fn iecntt_batch_bn254(values: &mut [Point_BN254], batch_size: usize, device_id: usize) {
+    |                                                                          ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_device_id`
+
+warning: unused variable: `i`
+   --> src/test_bn254.rs:714:9
+    |
+714 |     for i in 0..b.len() {
+    |         ^ help: if this is intentional, prefix it with an underscore: `_i`
+
+warning: variable does not need to be mutable
+   --> src/test_bls12_377.rs:778:9
+    |
+778 |     let mut vector_mut = vector.clone();
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> src/test_bls12_377.rs:780:9
+    |
+780 |     let mut d_vector = DeviceBuffer::from_slice(&vector[..]).unwrap();
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bls12_377.rs:790:9
+    |
+790 |     let mut vector_mut = generate_random_scalars_bls12_377(test_size, get_rng_bls12_377(seed));
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bls12_377.rs:792:9
+    |
+792 |     let mut d_vector = DeviceBuffer::from_slice(&vector_mut[..]).unwrap();
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bls12_381.rs:851:9
+    |
+851 |     let mut vector_mut = vector.clone();
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bls12_381.rs:853:9
+    |
+853 |     let mut d_vector = DeviceBuffer::from_slice(&vector[..]).unwrap();
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bn254.rs:778:9
+    |
+778 |     let mut vector_mut = vector.clone();
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bn254.rs:780:9
+    |
+780 |     let mut d_vector = DeviceBuffer::from_slice(&vector[..]).unwrap();
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bn254.rs:790:9
+    |
+790 |     let mut vector_mut = generate_random_scalars_bn254(test_size, get_rng_bn254(seed));
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> src/test_bn254.rs:792:9
+    |
+792 |     let mut d_vector = DeviceBuffer::from_slice(&vector_mut[..]).unwrap();
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: unnecessary `unsafe` block
+   --> src/test_bls12_377.rs:731:5
+    |
+731 |     unsafe { buf_cpy.copy_from(buf) };
+    |     ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` on by default
+
+warning: unnecessary `unsafe` block
+   --> src/test_bls12_381.rs:787:5
+    |
+787 |     unsafe { buf_cpy.copy_from(buf) };
+    |     ^^^^^^ unnecessary `unsafe` block
+
+warning: unnecessary `unsafe` block
+   --> src/test_bn254.rs:731:5
+    |
+731 |     unsafe { buf_cpy.copy_from(buf) };
+    |     ^^^^^^ unnecessary `unsafe` block
+
+warning: unused `Result` that must be used
+   --> src/test_bls12_377.rs:731:5
+    |
+731 |     unsafe { buf_cpy.copy_from(buf) };
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this `Result` may be an `Err` variant, which should be handled
+    = note: `#[warn(unused_must_use)]` on by default
+help: use `let _ = ...` to ignore the resulting value
+    |
+731 |     let _ = unsafe { buf_cpy.copy_from(buf) };
+    |     +++++++
+
+warning: unused `Result` that must be used
+   --> src/test_bls12_381.rs:787:5
+    |
+787 |     unsafe { buf_cpy.copy_from(buf) };
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this `Result` may be an `Err` variant, which should be handled
+help: use `let _ = ...` to ignore the resulting value
+    |
+787 |     let _ = unsafe { buf_cpy.copy_from(buf) };
+    |     +++++++
+
+warning: unused `Result` that must be used
+   --> src/test_bn254.rs:731:5
+    |
+731 |     unsafe { buf_cpy.copy_from(buf) };
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this `Result` may be an `Err` variant, which should be handled
+help: use `let _ = ...` to ignore the resulting value
+    |
+731 |     let _ = unsafe { buf_cpy.copy_from(buf) };
+    |     +++++++
+
+warning: `icicle-utils` (lib) generated 55 warnings (run `cargo fix --lib -p icicle-utils` to apply 34 suggestions)
+warning: unused imports: `generate_random_scalars_bls12_381`, `get_rng_bls12_381`, `intt_batch_bls12_381`, `ntt_batch_bls12_381`
+ --> src/main.rs:7:9
+  |
+7 | ...   ntt_batch_bls12_381, set_up_points_bls12_381, set_up_scalars_bls12_381, get_rng_bls12_381, generate_random_scalars_bls12_381, intt_batch_bls12_3...
+  |       ^^^^^^^^^^^^^^^^^^^                                                     ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `icicle-utils` (bin "icicle-utils") generated 1 warning (run `cargo fix --bin "icicle-utils"` to apply 1 suggestion)
+    Finished bench [optimized] target(s) in 17m 04s
+     Running benches/ntt.rs (target/release/deps/ntt-73b5e4ddc90991bd)
+Benchmarking NTT/NTT of size 2^23 in batch 1
+Benchmarking NTT/NTT of size 2^23 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 11.6s, or reduce sample count to 40.
+Benchmarking NTT/NTT of size 2^23 in batch 1: Collecting 100 samples in estimated 11.551 s (100 iterations)
+Benchmarking NTT/NTT of size 2^23 in batch 1: Analyzing
+NTT/NTT of size 2^23 in batch 1
+                        time:   [112.06 ms 112.06 ms 112.07 ms]
+Benchmarking NTT/iNTT of size 2^23 in batch 1
+Benchmarking NTT/iNTT of size 2^23 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 15.4s, or reduce sample count to 30.
+Benchmarking NTT/iNTT of size 2^23 in batch 1: Collecting 100 samples in estimated 15.433 s (100 iterations)
+Benchmarking NTT/iNTT of size 2^23 in batch 1: Analyzing
+NTT/iNTT of size 2^23 in batch 1
+                        time:   [149.71 ms 149.72 ms 149.72 ms]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high mild
+Bench size exceeded: EC NTT of size 2^23 in batch 1
+Bench size exceeded: EC iNTT of size 2^23 in batch 1
+
+Benchmarking NTT/NTT of size 2^23 in batch 2
+Benchmarking NTT/NTT of size 2^23 in batch 2: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 23.8s, or reduce sample count to 20.
+Benchmarking NTT/NTT of size 2^23 in batch 2: Collecting 100 samples in estimated 23.834 s (100 iterations)
+Benchmarking NTT/NTT of size 2^23 in batch 2: Analyzing
+NTT/NTT of size 2^23 in batch 2
+                        time:   [224.08 ms 224.10 ms 224.12 ms]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+Benchmarking NTT/iNTT of size 2^23 in batch 2
+Benchmarking NTT/iNTT of size 2^23 in batch 2: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 31.7s, or reduce sample count to 10.
+Benchmarking NTT/iNTT of size 2^23 in batch 2: Collecting 100 samples in estimated 31.705 s (100 iterations)
+Benchmarking NTT/iNTT of size 2^23 in batch 2: Analyzing
+NTT/iNTT of size 2^23 in batch 2
+                        time:   [297.89 ms 297.90 ms 297.91 ms]
+Found 2 outliers among 100 measurements (2.00%)
+  1 (1.00%) high mild
+  1 (1.00%) high severe
+Bench size exceeded: EC NTT of size 2^23 in batch 2
+Bench size exceeded: EC iNTT of size 2^23 in batch 2
+
+Benchmarking NTT/NTT of size 2^23 in batch 4
+Benchmarking NTT/NTT of size 2^23 in batch 4: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 53.1s, or reduce sample count to 10.
+Benchmarking NTT/NTT of size 2^23 in batch 4: Collecting 100 samples in estimated 53.129 s (100 iterations)
+Benchmarking NTT/NTT of size 2^23 in batch 4: Analyzing
+NTT/NTT of size 2^23 in batch 4
+                        time:   [472.76 ms 473.20 ms 473.65 ms]
+Benchmarking NTT/iNTT of size 2^23 in batch 4
+Benchmarking NTT/iNTT of size 2^23 in batch 4: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 69.9s, or reduce sample count to 10.
+Benchmarking NTT/iNTT of size 2^23 in batch 4: Collecting 100 samples in estimated 69.861 s (100 iterations)
+Benchmarking NTT/iNTT of size 2^23 in batch 4: Analyzing
+NTT/iNTT of size 2^23 in batch 4
+                        time:   [619.97 ms 620.00 ms 620.03 ms]
+Found 2 outliers among 100 measurements (2.00%)
+  1 (1.00%) low mild
+  1 (1.00%) high mild
+Bench size exceeded: EC NTT of size 2^23 in batch 4
+Bench size exceeded: EC iNTT of size 2^23 in batch 4
+
+Bench size exceeded: NTT of size 2^23 in batch 65536
+Bench size exceeded: iNTT of size 2^23 in batch 65536
+Bench size exceeded: EC NTT of size 2^23 in batch 65536
+Bench size exceeded: EC iNTT of size 2^23 in batch 65536
+Benchmarking NTT/NTT of size 2^24 in batch 1
+Benchmarking NTT/NTT of size 2^24 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 25.4s, or reduce sample count to 10.
+Benchmarking NTT/NTT of size 2^24 in batch 1: Collecting 100 samples in estimated 25.375 s (100 iterations)
+Benchmarking NTT/NTT of size 2^24 in batch 1: Analyzing
+NTT/NTT of size 2^24 in batch 1
+                        time:   [238.53 ms 238.54 ms 238.55 ms]
+Benchmarking NTT/iNTT of size 2^24 in batch 1
+Benchmarking NTT/iNTT of size 2^24 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 33.4s, or reduce sample count to 10.
+Benchmarking NTT/iNTT of size 2^24 in batch 1: Collecting 100 samples in estimated 33.390 s (100 iterations)
+Benchmarking NTT/iNTT of size 2^24 in batch 1: Analyzing
+NTT/iNTT of size 2^24 in batch 1
+                        time:   [313.64 ms 313.65 ms 313.66 ms]
+Bench size exceeded: EC NTT of size 2^24 in batch 1
+Bench size exceeded: EC iNTT of size 2^24 in batch 1
+
+Benchmarking NTT/NTT of size 2^24 in batch 2
+Benchmarking NTT/NTT of size 2^24 in batch 2: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 56.3s, or reduce sample count to 10.
+Benchmarking NTT/NTT of size 2^24 in batch 2: Collecting 100 samples in estimated 56.260 s (100 iterations)
+Benchmarking NTT/NTT of size 2^24 in batch 2: Analyzing
+NTT/NTT of size 2^24 in batch 2
+                        time:   [499.94 ms 500.00 ms 500.06 ms]
+Benchmarking NTT/iNTT of size 2^24 in batch 2
+Benchmarking NTT/iNTT of size 2^24 in batch 2: Warming up for 3.0000 s
+
+Warning: Unable to complete 100 samples in 5.0s. You may wish to increase target time to 73.5s, or reduce sample count to 10.
+Benchmarking NTT/iNTT of size 2^24 in batch 2: Collecting 100 samples in estimated 73.521 s (100 iterations)
+Benchmarking NTT/iNTT of size 2^24 in batch 2: Analyzing
+NTT/iNTT of size 2^24 in batch 2
+                        time:   [650.97 ms 651.28 ms 651.57 ms]
+Found 18 outliers among 100 measurements (18.00%)
+  18 (18.00%) low severe
+Bench size exceeded: EC NTT of size 2^24 in batch 2
+Bench size exceeded: EC iNTT of size 2^24 in batch 2
+
+Bench size exceeded: NTT of size 2^24 in batch 4
+Bench size exceeded: iNTT of size 2^24 in batch 4
+Bench size exceeded: EC NTT of size 2^24 in batch 4
+Bench size exceeded: EC iNTT of size 2^24 in batch 4
+Bench size exceeded: NTT of size 2^24 in batch 65536
+Bench size exceeded: iNTT of size 2^24 in batch 65536
+Bench size exceeded: EC NTT of size 2^24 in batch 65536
+Bench size exceeded: EC iNTT of size 2^24 in batch 65536
+Benchmarking NTT/NTT of size 2^10 in batch 1
+Benchmarking NTT/NTT of size 2^10 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^10 in batch 1: Collecting 100 samples in estimated 5.0738 s (111k iterations)
+Benchmarking NTT/NTT of size 2^10 in batch 1: Analyzing
+NTT/NTT of size 2^10 in batch 1
+                        time:   [45.661 µs 45.671 µs 45.684 µs]
+Found 9 outliers among 100 measurements (9.00%)
+  1 (1.00%) low mild
+  4 (4.00%) high mild
+  4 (4.00%) high severe
+Benchmarking NTT/iNTT of size 2^10 in batch 1
+Benchmarking NTT/iNTT of size 2^10 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^10 in batch 1: Collecting 100 samples in estimated 5.1324 s (91k iterations)
+Benchmarking NTT/iNTT of size 2^10 in batch 1: Analyzing
+NTT/iNTT of size 2^10 in batch 1
+                        time:   [56.426 µs 56.430 µs 56.435 µs]
+Found 9 outliers among 100 measurements (9.00%)
+  4 (4.00%) low mild
+  3 (3.00%) high mild
+  2 (2.00%) high severe
+Benchmarking NTT/EC NTT of size 2^10 in batch 1
+Benchmarking NTT/EC NTT of size 2^10 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/EC NTT of size 2^10 in batch 1: Collecting 20 samples in estimated 5.0003 s (732k iterations)
+Benchmarking NTT/EC NTT of size 2^10 in batch 1: Analyzing
+NTT/EC NTT of size 2^10 in batch 1
+                        time:   [7.1376 µs 7.1495 µs 7.1649 µs]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) high severe
+Benchmarking NTT/EC iNTT of size 2^10 in batch 1
+Benchmarking NTT/EC iNTT of size 2^10 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 8.5s, enable flat sampling, or reduce sample count to 10.
+Benchmarking NTT/EC iNTT of size 2^10 in batch 1: Collecting 20 samples in estimated 8.5287 s (210 iterations)
+Benchmarking NTT/EC iNTT of size 2^10 in batch 1: Analyzing
+NTT/EC iNTT of size 2^10 in batch 1
+                        time:   [40.157 ms 40.159 ms 40.161 ms]
+
+Benchmarking NTT/NTT of size 2^10 in batch 2
+Benchmarking NTT/NTT of size 2^10 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^10 in batch 2: Collecting 100 samples in estimated 5.0547 s (111k iterations)
+Benchmarking NTT/NTT of size 2^10 in batch 2: Analyzing
+NTT/NTT of size 2^10 in batch 2
+                        time:   [45.490 µs 45.493 µs 45.496 µs]
+Found 4 outliers among 100 measurements (4.00%)
+  1 (1.00%) low mild
+  1 (1.00%) high mild
+  2 (2.00%) high severe
+Benchmarking NTT/iNTT of size 2^10 in batch 2
+Benchmarking NTT/iNTT of size 2^10 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^10 in batch 2: Collecting 100 samples in estimated 5.1715 s (91k iterations)
+Benchmarking NTT/iNTT of size 2^10 in batch 2: Analyzing
+NTT/iNTT of size 2^10 in batch 2
+                        time:   [56.854 µs 56.858 µs 56.863 µs]
+Found 6 outliers among 100 measurements (6.00%)
+  1 (1.00%) low mild
+  2 (2.00%) high mild
+  3 (3.00%) high severe
+Benchmarking NTT/EC NTT of size 2^10 in batch 2
+Benchmarking NTT/EC NTT of size 2^10 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/EC NTT of size 2^10 in batch 2: Collecting 20 samples in estimated 5.0012 s (700k iterations)
+Benchmarking NTT/EC NTT of size 2^10 in batch 2: Analyzing
+NTT/EC NTT of size 2^10 in batch 2
+                        time:   [7.6955 µs 7.7033 µs 7.7098 µs]
+Found 2 outliers among 20 measurements (10.00%)
+  2 (10.00%) low mild
+Benchmarking NTT/EC iNTT of size 2^10 in batch 2
+Benchmarking NTT/EC iNTT of size 2^10 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/EC iNTT of size 2^10 in batch 2: Collecting 20 samples in estimated 5.1668 s (100 iterations)
+Benchmarking NTT/EC iNTT of size 2^10 in batch 2: Analyzing
+NTT/EC iNTT of size 2^10 in batch 2
+                        time:   [50.670 ms 50.704 ms 50.737 ms]
+
+Benchmarking NTT/NTT of size 2^10 in batch 4
+Benchmarking NTT/NTT of size 2^10 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^10 in batch 4: Collecting 100 samples in estimated 5.1091 s (111k iterations)
+Benchmarking NTT/NTT of size 2^10 in batch 4: Analyzing
+NTT/NTT of size 2^10 in batch 4
+                        time:   [45.969 µs 45.972 µs 45.975 µs]
+Found 5 outliers among 100 measurements (5.00%)
+  1 (1.00%) low severe
+  1 (1.00%) low mild
+  3 (3.00%) high severe
+Benchmarking NTT/iNTT of size 2^10 in batch 4
+Benchmarking NTT/iNTT of size 2^10 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^10 in batch 4: Collecting 100 samples in estimated 5.2426 s (91k iterations)
+Benchmarking NTT/iNTT of size 2^10 in batch 4: Analyzing
+NTT/iNTT of size 2^10 in batch 4
+                        time:   [57.652 µs 57.667 µs 57.694 µs]
+Found 5 outliers among 100 measurements (5.00%)
+  2 (2.00%) high mild
+  3 (3.00%) high severe
+Benchmarking NTT/EC NTT of size 2^10 in batch 4
+Benchmarking NTT/EC NTT of size 2^10 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/EC NTT of size 2^10 in batch 4: Collecting 20 samples in estimated 5.0012 s (655k iterations)
+Benchmarking NTT/EC NTT of size 2^10 in batch 4: Analyzing
+NTT/EC NTT of size 2^10 in batch 4
+                        time:   [7.8057 µs 7.8166 µs 7.8274 µs]
+Benchmarking NTT/EC iNTT of size 2^10 in batch 4
+Benchmarking NTT/EC iNTT of size 2^10 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/EC iNTT of size 2^10 in batch 4: Collecting 20 samples in estimated 5.5066 s (60 iterations)
+Benchmarking NTT/EC iNTT of size 2^10 in batch 4: Analyzing
+NTT/EC iNTT of size 2^10 in batch 4
+                        time:   [90.349 ms 90.362 ms 90.375 ms]
+
+Bench size exceeded: NTT of size 2^10 in batch 65536
+Bench size exceeded: iNTT of size 2^10 in batch 65536
+Bench size exceeded: EC NTT of size 2^10 in batch 65536
+Bench size exceeded: EC iNTT of size 2^10 in batch 65536
+Benchmarking NTT/NTT of size 2^12 in batch 1
+Benchmarking NTT/NTT of size 2^12 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^12 in batch 1: Collecting 100 samples in estimated 5.1817 s (86k iterations)
+Benchmarking NTT/NTT of size 2^12 in batch 1: Analyzing
+NTT/NTT of size 2^12 in batch 1
+                        time:   [60.357 µs 60.361 µs 60.366 µs]
+Found 4 outliers among 100 measurements (4.00%)
+  1 (1.00%) high mild
+  3 (3.00%) high severe
+Benchmarking NTT/iNTT of size 2^12 in batch 1
+Benchmarking NTT/iNTT of size 2^12 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^12 in batch 1: Collecting 100 samples in estimated 5.1131 s (71k iterations)
+Benchmarking NTT/iNTT of size 2^12 in batch 1: Analyzing
+NTT/iNTT of size 2^12 in batch 1
+                        time:   [72.304 µs 72.309 µs 72.313 µs]
+Found 8 outliers among 100 measurements (8.00%)
+  1 (1.00%) low severe
+  2 (2.00%) low mild
+  4 (4.00%) high mild
+  1 (1.00%) high severe
+Benchmarking NTT/EC NTT of size 2^12 in batch 1
+Benchmarking NTT/EC NTT of size 2^12 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/EC NTT of size 2^12 in batch 1: Collecting 20 samples in estimated 6.6183 s (40 iterations)
+Benchmarking NTT/EC NTT of size 2^12 in batch 1: Analyzing
+NTT/EC NTT of size 2^12 in batch 1
+                        time:   [160.32 ms 160.37 ms 160.42 ms]
+Benchmarking NTT/EC iNTT of size 2^12 in batch 1
+Benchmarking NTT/EC iNTT of size 2^12 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 5.2s, or reduce sample count to 10.
+Benchmarking NTT/EC iNTT of size 2^12 in batch 1: Collecting 20 samples in estimated 5.2000 s (20 iterations)
+Benchmarking NTT/EC iNTT of size 2^12 in batch 1: Analyzing
+NTT/EC iNTT of size 2^12 in batch 1
+                        time:   [243.92 ms 243.98 ms 244.04 ms]
+Found 1 outliers among 20 measurements (5.00%)
+  1 (5.00%) low mild
+
+Benchmarking NTT/NTT of size 2^12 in batch 2
+Benchmarking NTT/NTT of size 2^12 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^12 in batch 2: Collecting 100 samples in estimated 5.2963 s (86k iterations)
+Benchmarking NTT/NTT of size 2^12 in batch 2: Analyzing
+NTT/NTT of size 2^12 in batch 2
+                        time:   [61.655 µs 61.659 µs 61.663 µs]
+Found 7 outliers among 100 measurements (7.00%)
+  1 (1.00%) low mild
+  1 (1.00%) high mild
+  5 (5.00%) high severe
+Benchmarking NTT/iNTT of size 2^12 in batch 2
+Benchmarking NTT/iNTT of size 2^12 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^12 in batch 2: Collecting 100 samples in estimated 5.2230 s (71k iterations)
+Benchmarking NTT/iNTT of size 2^12 in batch 2: Analyzing
+NTT/iNTT of size 2^12 in batch 2
+                        time:   [73.872 µs 73.889 µs 73.908 µs]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+Benchmarking NTT/EC NTT of size 2^12 in batch 2
+Benchmarking NTT/EC NTT of size 2^12 in batch 2: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 6.5s, or reduce sample count to 10.
+Benchmarking NTT/EC NTT of size 2^12 in batch 2: Collecting 20 samples in estimated 6.5089 s (20 iterations)
+Benchmarking NTT/EC NTT of size 2^12 in batch 2: Analyzing
+NTT/EC NTT of size 2^12 in batch 2
+                        time:   [304.46 ms 304.83 ms 305.20 ms]
+Benchmarking NTT/EC iNTT of size 2^12 in batch 2
+Benchmarking NTT/EC iNTT of size 2^12 in batch 2: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 11.5s, or reduce sample count to 10.
+Benchmarking NTT/EC iNTT of size 2^12 in batch 2: Collecting 20 samples in estimated 11.531 s (20 iterations)
+Benchmarking NTT/EC iNTT of size 2^12 in batch 2: Analyzing
+NTT/EC iNTT of size 2^12 in batch 2
+                        time:   [504.32 ms 504.87 ms 505.43 ms]
+
+Benchmarking NTT/NTT of size 2^12 in batch 4
+Benchmarking NTT/NTT of size 2^12 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^12 in batch 4: Collecting 100 samples in estimated 5.0686 s (71k iterations)
+Benchmarking NTT/NTT of size 2^12 in batch 4: Analyzing
+NTT/NTT of size 2^12 in batch 4
+                        time:   [71.773 µs 71.808 µs 71.842 µs]
+Found 10 outliers among 100 measurements (10.00%)
+  7 (7.00%) low mild
+  1 (1.00%) high mild
+  2 (2.00%) high severe
+Benchmarking NTT/iNTT of size 2^12 in batch 4
+Benchmarking NTT/iNTT of size 2^12 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^12 in batch 4: Collecting 100 samples in estimated 5.4400 s (56k iterations)
+Benchmarking NTT/iNTT of size 2^12 in batch 4: Analyzing
+NTT/iNTT of size 2^12 in batch 4
+                        time:   [97.892 µs 97.982 µs 98.074 µs]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+Benchmarking NTT/EC NTT of size 2^12 in batch 4
+Benchmarking NTT/EC NTT of size 2^12 in batch 4: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 15.4s, or reduce sample count to 10.
+Benchmarking NTT/EC NTT of size 2^12 in batch 4: Collecting 20 samples in estimated 15.379 s (20 iterations)
+Benchmarking NTT/EC NTT of size 2^12 in batch 4: Analyzing
+NTT/EC NTT of size 2^12 in batch 4
+                        time:   [672.77 ms 672.83 ms 672.89 ms]
+Benchmarking NTT/EC iNTT of size 2^12 in batch 4
+Benchmarking NTT/EC iNTT of size 2^12 in batch 4: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 31.4s, or reduce sample count to 10.
+Benchmarking NTT/EC iNTT of size 2^12 in batch 4: Collecting 20 samples in estimated 31.387 s (20 iterations)
+Benchmarking NTT/EC iNTT of size 2^12 in batch 4: Analyzing
+NTT/EC iNTT of size 2^12 in batch 4
+                        time:   [1.1769 s 1.1770 s 1.1771 s]
+
+Bench size exceeded: NTT of size 2^12 in batch 65536
+Bench size exceeded: iNTT of size 2^12 in batch 65536
+Bench size exceeded: EC NTT of size 2^12 in batch 65536
+Bench size exceeded: EC iNTT of size 2^12 in batch 65536
+Benchmarking NTT/NTT of size 2^18 in batch 1
+Benchmarking NTT/NTT of size 2^18 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^18 in batch 1: Collecting 100 samples in estimated 5.1434 s (2000 iterations)
+Benchmarking NTT/NTT of size 2^18 in batch 1: Analyzing
+NTT/NTT of size 2^18 in batch 1
+                        time:   [2.5701 ms 2.5706 ms 2.5710 ms]
+Found 2 outliers among 100 measurements (2.00%)
+  1 (1.00%) high mild
+  1 (1.00%) high severe
+Benchmarking NTT/iNTT of size 2^18 in batch 1
+Benchmarking NTT/iNTT of size 2^18 in batch 1: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^18 in batch 1: Collecting 100 samples in estimated 5.0901 s (1400 iterations)
+Benchmarking NTT/iNTT of size 2^18 in batch 1: Analyzing
+NTT/iNTT of size 2^18 in batch 1
+                        time:   [3.6328 ms 3.6336 ms 3.6344 ms]
+Found 5 outliers among 100 measurements (5.00%)
+  4 (4.00%) high mild
+  1 (1.00%) high severe
+Benchmarking NTT/EC NTT of size 2^18 in batch 1
+Benchmarking NTT/EC NTT of size 2^18 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 2398.3s, or reduce sample count to 10.
+Benchmarking NTT/EC NTT of size 2^18 in batch 1: Collecting 20 samples in estimated 2398.3 s (20 iterations)
+Benchmarking NTT/EC NTT of size 2^18 in batch 1: Analyzing
+NTT/EC NTT of size 2^18 in batch 1
+                        time:   [59.960 s 59.961 s 59.961 s]
+Benchmarking NTT/EC iNTT of size 2^18 in batch 1
+Benchmarking NTT/EC iNTT of size 2^18 in batch 1: Warming up for 3.0000 s
+
+Warning: Unable to complete 20 samples in 5.0s. You may wish to increase target time to 2740.6s, or reduce sample count to 10.
+Benchmarking NTT/EC iNTT of size 2^18 in batch 1: Collecting 20 samples in estimated 2740.6 s (20 iterations)
+Benchmarking NTT/EC iNTT of size 2^18 in batch 1: Analyzing
+NTT/EC iNTT of size 2^18 in batch 1
+                        time:   [68.516 s 68.517 s 68.518 s]
+
+Benchmarking NTT/NTT of size 2^18 in batch 2
+Benchmarking NTT/NTT of size 2^18 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^18 in batch 2: Collecting 100 samples in estimated 5.0943 s (1000 iterations)
+Benchmarking NTT/NTT of size 2^18 in batch 2: Analyzing
+NTT/NTT of size 2^18 in batch 2
+                        time:   [5.0883 ms 5.0893 ms 5.0902 ms]
+Found 2 outliers among 100 measurements (2.00%)
+  2 (2.00%) high mild
+Benchmarking NTT/iNTT of size 2^18 in batch 2
+Benchmarking NTT/iNTT of size 2^18 in batch 2: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^18 in batch 2: Collecting 100 samples in estimated 5.0876 s (700 iterations)
+Benchmarking NTT/iNTT of size 2^18 in batch 2: Analyzing
+NTT/iNTT of size 2^18 in batch 2
+                        time:   [7.2553 ms 7.2561 ms 7.2569 ms]
+Found 4 outliers among 100 measurements (4.00%)
+  2 (2.00%) low mild
+  2 (2.00%) high mild
+Bench size exceeded: EC NTT of size 2^18 in batch 2
+Bench size exceeded: EC iNTT of size 2^18 in batch 2
+
+Benchmarking NTT/NTT of size 2^18 in batch 4
+Benchmarking NTT/NTT of size 2^18 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/NTT of size 2^18 in batch 4: Collecting 100 samples in estimated 5.0695 s (500 iterations)
+Benchmarking NTT/NTT of size 2^18 in batch 4: Analyzing
+NTT/NTT of size 2^18 in batch 4
+                        time:   [10.119 ms 10.121 ms 10.122 ms]
+Found 11 outliers among 100 measurements (11.00%)
+  5 (5.00%) low mild
+  6 (6.00%) high mild
+Benchmarking NTT/iNTT of size 2^18 in batch 4
+Benchmarking NTT/iNTT of size 2^18 in batch 4: Warming up for 3.0000 s
+Benchmarking NTT/iNTT of size 2^18 in batch 4: Collecting 100 samples in estimated 5.8169 s (400 iterations)
+Benchmarking NTT/iNTT of size 2^18 in batch 4: Analyzing
+NTT/iNTT of size 2^18 in batch 4
+                        time:   [14.493 ms 14.495 ms 14.497 ms]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+Bench size exceeded: EC NTT of size 2^18 in batch 4
+Bench size exceeded: EC iNTT of size 2^18 in batch 4
+
+Bench size exceeded: NTT of size 2^18 in batch 65536
+Bench size exceeded: iNTT of size 2^18 in batch 65536
+Bench size exceeded: EC NTT of size 2^18 in batch 65536
+Bench size exceeded: EC iNTT of size 2^18 in batch 65536

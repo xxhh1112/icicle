@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _BLS12_381_VEC_MULT
 #define _BLS12_381_VEC_MULT
 #include <stdio.h>
