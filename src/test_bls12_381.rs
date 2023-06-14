@@ -13,39 +13,39 @@ use rustacuda::prelude::*;
 use rustacuda_core::DevicePointer;
 
 extern "C" {
-    fn msm_cuda_bls12_381(
-        out: *mut Point_BLS12_381,
-        points: *const PointAffineNoInfinity_BLS12_381,
-        scalars: *const ScalarField_BLS12_381,
-        count: usize,
-        device_id: usize,
-    ) -> c_uint;
+    // fn msm_cuda_bls12_381(
+    //     out: *mut Point_BLS12_381,
+    //     points: *const PointAffineNoInfinity_BLS12_381,
+    //     scalars: *const ScalarField_BLS12_381,
+    //     count: usize,
+    //     device_id: usize,
+    // ) -> c_uint;
 
-    fn msm_batch_cuda_bls12_381(
-        out: *mut Point_BLS12_381,
-        points: *const PointAffineNoInfinity_BLS12_381,
-        scalars: *const ScalarField_BLS12_381,
-        batch_size: usize,
-        msm_size: usize,
-        device_id: usize,
-    ) -> c_uint;
+    // fn msm_batch_cuda_bls12_381(
+    //     out: *mut Point_BLS12_381,
+    //     points: *const PointAffineNoInfinity_BLS12_381,
+    //     scalars: *const ScalarField_BLS12_381,
+    //     batch_size: usize,
+    //     msm_size: usize,
+    //     device_id: usize,
+    // ) -> c_uint;
 
-    fn commit_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_scalars: DevicePointer<ScalarField_BLS12_381>,
-        d_points: DevicePointer<PointAffineNoInfinity_BLS12_381>,
-        count: usize,
-        device_id: usize,
-    ) -> c_uint;
+    // fn commit_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_scalars: DevicePointer<ScalarField_BLS12_381>,
+    //     d_points: DevicePointer<PointAffineNoInfinity_BLS12_381>,
+    //     count: usize,
+    //     device_id: usize,
+    // ) -> c_uint;
 
-    fn commit_batch_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_scalars: DevicePointer<ScalarField_BLS12_381>,
-        d_points: DevicePointer<PointAffineNoInfinity_BLS12_381>,
-        count: usize,
-        batch_size: usize,
-        device_id: usize,
-    ) -> c_uint;
+    // fn commit_batch_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_scalars: DevicePointer<ScalarField_BLS12_381>,
+    //     d_points: DevicePointer<PointAffineNoInfinity_BLS12_381>,
+    //     count: usize,
+    //     batch_size: usize,
+    //     device_id: usize,
+    // ) -> c_uint;
 
     fn build_domain_cuda_bls12_381(
         domain_size: usize,
@@ -245,92 +245,92 @@ extern "C" {
     ) -> c_int;
 }
 
-pub fn msm_bls12_381(
-    points: &[PointAffineNoInfinity_BLS12_381],
-    scalars: &[ScalarField_BLS12_381],
-    device_id: usize,
-) -> Point_BLS12_381 {
-    let count = points.len();
-    if count != scalars.len() {
-        todo!("variable length")
-    }
+// pub fn msm_bls12_381(
+//     points: &[PointAffineNoInfinity_BLS12_381],
+//     scalars: &[ScalarField_BLS12_381],
+//     device_id: usize,
+// ) -> Point_BLS12_381 {
+//     let count = points.len();
+//     if count != scalars.len() {
+//         todo!("variable length")
+//     }
 
-    let mut ret = Point_BLS12_381::zero();
-    unsafe {
-        msm_cuda_bls12_381(
-            &mut ret as *mut _ as *mut Point_BLS12_381,
-            points as *const _ as *const PointAffineNoInfinity_BLS12_381,
-            scalars as *const _ as *const ScalarField_BLS12_381,
-            scalars.len(),
-            device_id,
-        )
-    };
+//     let mut ret = Point_BLS12_381::zero();
+//     unsafe {
+//         msm_cuda_bls12_381(
+//             &mut ret as *mut _ as *mut Point_BLS12_381,
+//             points as *const _ as *const PointAffineNoInfinity_BLS12_381,
+//             scalars as *const _ as *const ScalarField_BLS12_381,
+//             scalars.len(),
+//             device_id,
+//         )
+//     };
 
-    ret
-}
+//     ret
+// }
 
-pub fn msm_batch_bls12_381(
-    points: &[PointAffineNoInfinity_BLS12_381],
-    scalars: &[ScalarField_BLS12_381],
-    batch_size: usize,
-    device_id: usize,
-) -> Vec<Point_BLS12_381> {
-    let count = points.len();
-    if count != scalars.len() {
-        todo!("variable length")
-    }
+// pub fn msm_batch_bls12_381(
+//     points: &[PointAffineNoInfinity_BLS12_381],
+//     scalars: &[ScalarField_BLS12_381],
+//     batch_size: usize,
+//     device_id: usize,
+// ) -> Vec<Point_BLS12_381> {
+//     let count = points.len();
+//     if count != scalars.len() {
+//         todo!("variable length")
+//     }
 
-    let mut ret = vec![Point_BLS12_381::zero(); batch_size];
+//     let mut ret = vec![Point_BLS12_381::zero(); batch_size];
 
-    unsafe {
-        msm_batch_cuda_bls12_381(
-            &mut ret[0] as *mut _ as *mut Point_BLS12_381,
-            points as *const _ as *const PointAffineNoInfinity_BLS12_381,
-            scalars as *const _ as *const ScalarField_BLS12_381,
-            batch_size,
-            count / batch_size,
-            device_id,
-        )
-    };
+//     unsafe {
+//         msm_batch_cuda_bls12_381(
+//             &mut ret[0] as *mut _ as *mut Point_BLS12_381,
+//             points as *const _ as *const PointAffineNoInfinity_BLS12_381,
+//             scalars as *const _ as *const ScalarField_BLS12_381,
+//             batch_size,
+//             count / batch_size,
+//             device_id,
+//         )
+//     };
 
-    ret
-}
+//     ret
+// }
 
-pub fn commit_bls12_381(
-    points: &mut DeviceBuffer<PointAffineNoInfinity_BLS12_381>,
-    scalars: &mut DeviceBuffer<ScalarField_BLS12_381>,
-) -> DeviceBox<Point_BLS12_381> {
-    let mut res = DeviceBox::new(&Point_BLS12_381::zero()).unwrap();
-    unsafe {
-        commit_cuda_bls12_381(
-            res.as_device_ptr(),
-            scalars.as_device_ptr(),
-            points.as_device_ptr(),
-            scalars.len(),
-            0,
-        );
-    }
-    return res;
-}
+// pub fn commit_bls12_381(
+//     points: &mut DeviceBuffer<PointAffineNoInfinity_BLS12_381>,
+//     scalars: &mut DeviceBuffer<ScalarField_BLS12_381>,
+// ) -> DeviceBox<Point_BLS12_381> {
+//     let mut res = DeviceBox::new(&Point_BLS12_381::zero()).unwrap();
+//     unsafe {
+//         commit_cuda_bls12_381(
+//             res.as_device_ptr(),
+//             scalars.as_device_ptr(),
+//             points.as_device_ptr(),
+//             scalars.len(),
+//             0,
+//         );
+//     }
+//     return res;
+// }
 
-pub fn commit_batch_bls12_381(
-    points: &mut DeviceBuffer<PointAffineNoInfinity_BLS12_381>,
-    scalars: &mut DeviceBuffer<ScalarField_BLS12_381>,
-    batch_size: usize,
-) -> DeviceBuffer<Point_BLS12_381> {
-    let mut res = unsafe { DeviceBuffer::uninitialized(batch_size).unwrap() };
-    unsafe {
-        commit_batch_cuda_bls12_381(
-            res.as_device_ptr(),
-            scalars.as_device_ptr(),
-            points.as_device_ptr(),
-            scalars.len() / batch_size,
-            batch_size,
-            0,
-        );
-    }
-    return res;
-}
+// pub fn commit_batch_bls12_381(
+//     points: &mut DeviceBuffer<PointAffineNoInfinity_BLS12_381>,
+//     scalars: &mut DeviceBuffer<ScalarField_BLS12_381>,
+//     batch_size: usize,
+// ) -> DeviceBuffer<Point_BLS12_381> {
+//     let mut res = unsafe { DeviceBuffer::uninitialized(batch_size).unwrap() };
+//     unsafe {
+//         commit_batch_cuda_bls12_381(
+//             res.as_device_ptr(),
+//             scalars.as_device_ptr(),
+//             points.as_device_ptr(),
+//             scalars.len() / batch_size,
+//             batch_size,
+//             0,
+//         );
+//     }
+//     return res;
+// }
 
 /// Compute an in-place NTT on the input data.
 fn ntt_internal_bls12_381(
@@ -947,104 +947,104 @@ pub(crate) mod tests_bls12_381 {
         assert!(check_eq(&result2, &points));
     }
 
-    #[test]
-    fn test_msm() {
-        let test_sizes = [6, 9];
+    // #[test]
+    // fn test_msm() {
+    //     let test_sizes = [6, 9];
 
-        for pow2 in test_sizes {
-            let count = 1 << pow2;
-            let seed = None; // set Some to provide seed
-            let points = generate_random_points_bls12_381(count, get_rng_bls12_381(seed));
-            let scalars = generate_random_scalars_bls12_381(count, get_rng_bls12_381(seed));
+    //     for pow2 in test_sizes {
+    //         let count = 1 << pow2;
+    //         let seed = None; // set Some to provide seed
+    //         let points = generate_random_points_bls12_381(count, get_rng_bls12_381(seed));
+    //         let scalars = generate_random_scalars_bls12_381(count, get_rng_bls12_381(seed));
 
-            let msm_result = msm_bls12_381(&points, &scalars, 0);
+    //         let msm_result = msm_bls12_381(&points, &scalars, 0);
 
-            let point_r_ark: Vec<_> = points.iter().map(|x| x.to_ark_repr()).collect();
-            let scalars_r_ark: Vec<_> = scalars.iter().map(|x| x.to_ark()).collect();
+    //         let point_r_ark: Vec<_> = points.iter().map(|x| x.to_ark_repr()).collect();
+    //         let scalars_r_ark: Vec<_> = scalars.iter().map(|x| x.to_ark()).collect();
 
-            let msm_result_ark = VariableBaseMSM::multi_scalar_mul(&point_r_ark, &scalars_r_ark);
+    //         let msm_result_ark = VariableBaseMSM::multi_scalar_mul(&point_r_ark, &scalars_r_ark);
 
-            assert_eq!(msm_result.to_ark_affine(), msm_result_ark);
-            assert_eq!(msm_result.to_ark(), msm_result_ark);
-            assert_eq!(
-                msm_result.to_ark_affine(),
-                Point_BLS12_381::from_ark(msm_result_ark).to_ark_affine()
-            );
-        }
-    }
+    //         assert_eq!(msm_result.to_ark_affine(), msm_result_ark);
+    //         assert_eq!(msm_result.to_ark(), msm_result_ark);
+    //         assert_eq!(
+    //             msm_result.to_ark_affine(),
+    //             Point_BLS12_381::from_ark(msm_result_ark).to_ark_affine()
+    //         );
+    //     }
+    // }
 
-    #[test]
-    fn test_batch_msm() {
-        for batch_pow2 in [2, 4] {
-            for pow2 in [4, 6] {
-                let msm_size = 1 << pow2;
-                let batch_size = 1 << batch_pow2;
-                let seed = None; // set Some to provide seed
-                let points_batch = generate_random_points_bls12_381(
-                    msm_size * batch_size,
-                    get_rng_bls12_381(seed),
-                );
-                let scalars_batch = generate_random_scalars_bls12_381(
-                    msm_size * batch_size,
-                    get_rng_bls12_381(seed),
-                );
+    // #[test]
+    // fn test_batch_msm() {
+    //     for batch_pow2 in [2, 4] {
+    //         for pow2 in [4, 6] {
+    //             let msm_size = 1 << pow2;
+    //             let batch_size = 1 << batch_pow2;
+    //             let seed = None; // set Some to provide seed
+    //             let points_batch = generate_random_points_bls12_381(
+    //                 msm_size * batch_size,
+    //                 get_rng_bls12_381(seed),
+    //             );
+    //             let scalars_batch = generate_random_scalars_bls12_381(
+    //                 msm_size * batch_size,
+    //                 get_rng_bls12_381(seed),
+    //             );
 
-                let point_r_ark: Vec<_> = points_batch.iter().map(|x| x.to_ark_repr()).collect();
-                let scalars_r_ark: Vec<_> = scalars_batch.iter().map(|x| x.to_ark()).collect();
+    //             let point_r_ark: Vec<_> = points_batch.iter().map(|x| x.to_ark_repr()).collect();
+    //             let scalars_r_ark: Vec<_> = scalars_batch.iter().map(|x| x.to_ark()).collect();
 
-                let expected: Vec<_> = point_r_ark
-                    .chunks(msm_size)
-                    .zip(scalars_r_ark.chunks(msm_size))
-                    .map(|p| Point_BLS12_381::from_ark(VariableBaseMSM::multi_scalar_mul(p.0, p.1)))
-                    .collect();
+    //             let expected: Vec<_> = point_r_ark
+    //                 .chunks(msm_size)
+    //                 .zip(scalars_r_ark.chunks(msm_size))
+    //                 .map(|p| Point_BLS12_381::from_ark(VariableBaseMSM::multi_scalar_mul(p.0, p.1)))
+    //                 .collect();
 
-                let result = msm_batch_bls12_381(&points_batch, &scalars_batch, batch_size, 0);
+    //             let result = msm_batch_bls12_381(&points_batch, &scalars_batch, batch_size, 0);
 
-                assert_eq!(result, expected);
-            }
-        }
-    }
+    //             assert_eq!(result, expected);
+    //         }
+    //     }
+    // }
 
-    #[test]
-    fn test_commit() {
-        let test_size = 1 << 8;
-        let seed = Some(0);
-        let (mut scalars, mut d_scalars, _) = set_up_scalars_bls12_381(test_size, 0, false);
-        let mut points = generate_random_points_bls12_381(test_size, get_rng_bls12_381(seed));
-        let mut d_points = DeviceBuffer::from_slice(&points[..]).unwrap();
+    // #[test]
+    // fn test_commit() {
+    //     let test_size = 1 << 8;
+    //     let seed = Some(0);
+    //     let (mut scalars, mut d_scalars, _) = set_up_scalars_bls12_381(test_size, 0, false);
+    //     let mut points = generate_random_points_bls12_381(test_size, get_rng_bls12_381(seed));
+    //     let mut d_points = DeviceBuffer::from_slice(&points[..]).unwrap();
 
-        let msm_result = msm_bls12_381(&points, &scalars, 0);
-        let mut d_commit_result = commit_bls12_381(&mut d_points, &mut d_scalars);
-        let mut h_commit_result = Point_BLS12_381::zero();
-        d_commit_result.copy_to(&mut h_commit_result).unwrap();
+    //     let msm_result = msm_bls12_381(&points, &scalars, 0);
+    //     let mut d_commit_result = commit_bls12_381(&mut d_points, &mut d_scalars);
+    //     let mut h_commit_result = Point_BLS12_381::zero();
+    //     d_commit_result.copy_to(&mut h_commit_result).unwrap();
 
-        assert_eq!(msm_result, h_commit_result);
-        assert_ne!(msm_result, Point_BLS12_381::zero());
-        assert_ne!(h_commit_result, Point_BLS12_381::zero());
-    }
+    //     assert_eq!(msm_result, h_commit_result);
+    //     assert_ne!(msm_result, Point_BLS12_381::zero());
+    //     assert_ne!(h_commit_result, Point_BLS12_381::zero());
+    // }
 
-    #[test]
-    fn test_batch_commit() {
-        let batch_size = 4;
-        let test_size = 1 << 12;
-        let seed = Some(0);
-        let (scalars, mut d_scalars, _) =
-            set_up_scalars_bls12_381(test_size * batch_size, 0, false);
-        let points =
-            generate_random_points_bls12_381(test_size * batch_size, get_rng_bls12_381(seed));
-        let mut d_points = DeviceBuffer::from_slice(&points[..]).unwrap();
+    // #[test]
+    // fn test_batch_commit() {
+    //     let batch_size = 4;
+    //     let test_size = 1 << 12;
+    //     let seed = Some(0);
+    //     let (scalars, mut d_scalars, _) =
+    //         set_up_scalars_bls12_381(test_size * batch_size, 0, false);
+    //     let points =
+    //         generate_random_points_bls12_381(test_size * batch_size, get_rng_bls12_381(seed));
+    //     let mut d_points = DeviceBuffer::from_slice(&points[..]).unwrap();
 
-        let msm_result = msm_batch_bls12_381(&points, &scalars, batch_size, 0);
-        let mut d_commit_result = commit_batch_bls12_381(&mut d_points, &mut d_scalars, batch_size);
-        let mut h_commit_result: Vec<Point_BLS12_381> =
-            (0..batch_size).map(|_| Point_BLS12_381::zero()).collect();
-        d_commit_result.copy_to(&mut h_commit_result[..]).unwrap();
+    //     let msm_result = msm_batch_bls12_381(&points, &scalars, batch_size, 0);
+    //     let mut d_commit_result = commit_batch_bls12_381(&mut d_points, &mut d_scalars, batch_size);
+    //     let mut h_commit_result: Vec<Point_BLS12_381> =
+    //         (0..batch_size).map(|_| Point_BLS12_381::zero()).collect();
+    //     d_commit_result.copy_to(&mut h_commit_result[..]).unwrap();
 
-        assert_eq!(msm_result, h_commit_result);
-        for h in h_commit_result {
-            assert_ne!(h, Point_BLS12_381::zero());
-        }
-    }
+    //     assert_eq!(msm_result, h_commit_result);
+    //     for h in h_commit_result {
+    //         assert_ne!(h, Point_BLS12_381::zero());
+    //     }
+    // }
 
     #[test]
     fn test_ntt() {
