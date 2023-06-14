@@ -332,10 +332,10 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
 
     if (threadIdx.x < blockDim.x)
     {
-      uint32_t task = blockIdx.x;
-      // uint32_t loop_limit = blockDim.x;
-      // uint32_t chunks = n / (blockDim.x * 2);
-      uint32_t offset = (task / (n / (blockDim.x * 2))) * n;
+      //  uint32_t task = blockIdx.x;
+      //  uint32_t loop_limit = blockDim.x;
+      //  uint32_t chunks = n / (blockDim.x * 2);
+      uint32_t offset = blockIdx.x * (blockDim.x * 2);
       // #pragma unroll 8
       for (; ss <= logn_m_1; ss++)
       {
@@ -345,11 +345,11 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
 
         uint16_t shift_s = 1 << (logn_m_1 - ss);
 
-        uint16_t l = (task % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
+        uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
 
-        uint16_t j = l & (shift_s - 1);                     // Equivalent to: l % (1 << s)
-        uint16_t i = ((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
-        uint16_t oij = i + j;
+        uint16_t j = l & (shift_s - 1);                                   // Equivalent to: l % (1 << s)
+        //uint16_t i = ((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
+        uint16_t oij = (((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1)) + j;
         uint16_t k = oij + shift_s;
 
         E u;
