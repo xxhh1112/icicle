@@ -334,34 +334,34 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
       //  uint32_t task = blockIdx.x;
       //  uint32_t loop_limit = blockDim.x;
       //  uint32_t chunks = n / (blockDim.x * 2);
+      uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
+      uint32_t offset = blockIdx.x * (blockDim.x * 2);
+
       // #pragma unroll 8
-      for (; ss <= logn_m_1; ss++)
+      for (int s = 0; ss <= logn_m_1; ss++)
       {
-        // int s = logn_m_1 - ss;
+        s = logn_m_1 - ss;
         // bool is_beginning = ss == 0;
         // bool is_end = ss == logn_m_1;
 
-        uint16_t shift_s = 1 << (logn_m_1 - ss);
+        uint16_t shift_s = 1 << s;
+        uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
+        // uint16_t i = ((l >> s) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
+        uint16_t oij = (((l >> s) * (shift_s << 1)) & (n - 1)) + j;
+        auto tw = r_twiddles[j * (n_twiddles >> (s + 1))];
+        s = oij + shift_s; //reuse for k
 
-        uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
-
-        // uint16_t j = l & (shift_s - 1);                                   // Equivalent to: l % (1 << s)
-        // uint16_t i = ((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
-        uint16_t oij = (((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1)) + (l & (shift_s - 1));
-        uint16_t k = oij + shift_s;
-
-        E u;
-        E v;
         E *uu;
         E *vv;
         E *uuu;
         E *vvv;
         if (ss == 0)
         {
-          uu = arr_g + blockIdx.x * (blockDim.x * 2) + oij;
-          vv = arr_g + blockIdx.x * (blockDim.x * 2) + k;
+          uu = arr_g + offset;
+          vv = uu + s;
+          uu += oij;
           uuu = arr + oij;
-          vvv = arr + k;
+          vvv = arr + s;
           // u = arr_g[offset + oij];
           // v = arr_g[offset + k];
         }
@@ -370,11 +370,11 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
           // u = arr[oij];
           // v = arr[k];
           uu = arr + oij;
-          vv = arr + k;
+          vv = arr + s;
           if (ss == logn_m_1)
           {
-            uuu = arr_g + blockIdx.x * (blockDim.x * 2) + oij;
-            vvv = arr_g + blockIdx.x * (blockDim.x * 2) + k;
+            uuu = arr_g + offset + oij;
+            vvv = arr_g + offset + s;
           }
           else
           {
@@ -383,12 +383,12 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
           }
         }
 
-        u = *uu;
-        v = *vv;
+        E u = *uu;
+        E v = *vv;
         *uuu = u + v;
-        *vvv = r_twiddles[(l & (shift_s - 1)) * (n_twiddles >> ((logn_m_1 - ss) + 1))] * (u - v);
+        *vvv = tw * (u - v);
 
-        // uint32_t j_tw = (l & (shift_s - 1)) * (n_twiddles >> ((logn_m_1 - ss) + 1));
+        // uint32_t j_tw = j * (n_twiddles >> (s + 1));
         // if (ss == logn_m_1)
         // {
         //   uint32_t offset = blockIdx.x * (blockDim.x * 2);
