@@ -319,9 +319,6 @@ template <typename E, typename S>
 //__launch_bounds__(MAX_THREADS_BATCH, 3)
 __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t ss, uint32_t logn_m_1)
 {
-  SharedMemory<E> smem;
-  E *arr = smem.getPointer();
-
   // uint32_t task = blockIdx.x;
   // uint32_t loop_limit = blockDim.x;
   // uint32_t chunks = n / (loop_limit * 2);
@@ -332,10 +329,11 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
 
     if (threadIdx.x < blockDim.x)
     {
+      SharedMemory<E> smem;
+      E *arr = smem.getPointer();
       //  uint32_t task = blockIdx.x;
       //  uint32_t loop_limit = blockDim.x;
       //  uint32_t chunks = n / (blockDim.x * 2);
-      uint32_t offset = blockIdx.x * (blockDim.x * 2);
       // #pragma unroll 8
       for (; ss <= logn_m_1; ss++)
       {
@@ -347,34 +345,61 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
 
         uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
 
-        uint16_t j = l & (shift_s - 1);                                   // Equivalent to: l % (1 << s)
-        //uint16_t i = ((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
-        uint16_t oij = (((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1)) + j;
+        // uint16_t j = l & (shift_s - 1);                                   // Equivalent to: l % (1 << s)
+        // uint16_t i = ((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1); // (..) % n (assuming n is power of 2)
+        uint16_t oij = (((l >> (logn_m_1 - ss)) * (shift_s << 1)) & (n - 1)) + (l & (shift_s - 1));
         uint16_t k = oij + shift_s;
 
         E u;
         E v;
+        E *uu;
+        E *vv;
+        E *uuu;
+        E *vvv;
         if (ss == 0)
         {
-          u = arr_g[offset + oij];
-          v = arr_g[offset + k];
+          uu = arr_g + blockIdx.x * (blockDim.x * 2) + oij;
+          vv = arr_g + blockIdx.x * (blockDim.x * 2) + k;
+          uuu = arr + oij;
+          vvv = arr + k;
+          // u = arr_g[offset + oij];
+          // v = arr_g[offset + k];
         }
         else
         {
-          u = arr[oij];
-          v = arr[k];
+          // u = arr[oij];
+          // v = arr[k];
+          uu = arr + oij;
+          vv = arr + k;
+          if (ss == logn_m_1)
+          {
+            uuu = arr_g + blockIdx.x * (blockDim.x * 2) + oij;
+            vvv = arr_g + blockIdx.x * (blockDim.x * 2) + k;
+          }
+          else
+          {
+            uuu = uu;
+            vvv = vv;
+          }
         }
 
-        if (ss == logn_m_1)
-        {
-          arr_g[offset + oij] = u + v;
-          arr_g[offset + k] = r_twiddles[j * (n_twiddles >> ((logn_m_1 - ss) + 1))] * (u - v);
-        }
-        else
-        {
-          arr[oij] = u + v;
-          arr[k] = r_twiddles[j * (n_twiddles >> ((logn_m_1 - ss) + 1))] * (u - v);
-        }
+        u = *uu;
+        v = *vv;
+        *uuu = u + v;
+        *vvv = r_twiddles[(l & (shift_s - 1)) * (n_twiddles >> ((logn_m_1 - ss) + 1))] * (u - v);
+
+        // uint32_t j_tw = (l & (shift_s - 1)) * (n_twiddles >> ((logn_m_1 - ss) + 1));
+        // if (ss == logn_m_1)
+        // {
+        //   uint32_t offset = blockIdx.x * (blockDim.x * 2);
+        //   arr_g[offset + oij] = u + v;
+        //   arr_g[offset + k] = r_twiddles[j_tw] * (u - v);
+        // }
+        // else
+        // {
+        //   arr[oij] = u + v;
+        //   arr[k] = r_twiddles[j_tw] * (u - v);
+        // }
 
         __syncthreads();
       }
@@ -411,7 +436,7 @@ __global__ void ntt_template_kernel_shared(E *__restrict__ arr_g, uint32_t n, co
 
     if (l < loop_limit)
     {
-#pragma unroll 8
+      // #pragma unroll 8
       for (; s < logn; s++) // TODO: this loop also can be unrolled
       {
         // if (s == 0) //this actually can be faster even by introducing extra read and (see below)...

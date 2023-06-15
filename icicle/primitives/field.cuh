@@ -84,7 +84,7 @@ private:
     {
       Field out{};
 #ifdef __CUDA_ARCH__
-#pragma unroll
+// #pragma unroll 1
 #endif
       for (unsigned i = 0; i < TLC; i++)
         out.limbs_storage.limbs[i] = limbs_storage.limbs[i];
@@ -95,7 +95,7 @@ private:
     {
       Field out{};
 #ifdef __CUDA_ARCH__
-#pragma unroll
+// #pragma unroll 1
 #endif
       for (unsigned i = 0; i < TLC; i++)
       {
@@ -178,7 +178,7 @@ private:
     const uint32_t *y = ys.limbs;
     uint32_t *r = rs.limbs;
     r[0] = SUBTRACT ? ptx::sub_cc(x[0], y[0]) : ptx::add_cc(x[0], y[0]);
-#pragma unroll
+// #pragma unroll 1
     for (unsigned i = 1; i < (CARRY_OUT ? TLC : TLC - 1); i++)
       r[i] = SUBTRACT ? ptx::subc_cc(x[i], y[i]) : ptx::addc_cc(x[i], y[i]);
     if (!CARRY_OUT)
@@ -196,7 +196,7 @@ private:
     const uint32_t *y = ys.limbs;
     uint32_t *r = rs.limbs;
     r[0] = SUBTRACT ? ptx::sub_cc(x[0], y[0]) : ptx::add_cc(x[0], y[0]);
-#pragma unroll
+// #pragma unroll 1
     for (unsigned i = 1; i < (CARRY_OUT ? 2 * TLC : 2 * TLC - 1); i++)
       r[i] = SUBTRACT ? ptx::subc_cc(x[i], y[i]) : ptx::addc_cc(x[i], y[i]);
     if (!CARRY_OUT)
@@ -294,7 +294,7 @@ private:
     mul_n(odd, a + 1, b[0]);
     mad_row(&even[2], &odd[0], a, b[1]);
     size_t i;
-#pragma unroll
+// #pragma unroll 1
     for (i = 2; i < TLC - 1; i += 2)
     {
       mad_row(&odd[i], &even[i], a, b[i]);
