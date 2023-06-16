@@ -107,7 +107,7 @@ int evaluate_batch(E *d_out, E *d_coefficients, S *d_domain, unsigned domain_siz
   int total_tasks = batch_size * chunks;
   int NUM_BLOCKS = total_tasks;
   int max_sharedmem = 512 * sizeof(E);
-  int shared_mem = 2 * NUM_THREADS * sizeof(E); // TODO: calculator, as shared mem size may be more efficient less then max to allow more concurrent blocks on SM
+  int shared_mem = (2 * NUM_THREADS) * sizeof(E); // TODO: calculator, as shared mem size may be more efficient less then max to allow more concurrent blocks on SM
   uint32_t logn_shmem = uint32_t(log(2 * NUM_THREADS) / log(2));
   for (uint32_t s = logn - 1; s >= logn_shmem; s--) // TODO: this loop also can be unrolled
   {
@@ -118,6 +118,43 @@ int evaluate_batch(E *d_out, E *d_coefficients, S *d_domain, unsigned domain_siz
 
   return 0;
 }
+
+///
+/**
+ * Evaluate a batch of polynomials on the same coset.
+ * @param d_inout Input array of type E (elements)
+ * @param d_twf Twiddle factors of type S (scalars) array allocated on the device memory (must be a power of 2).
+ * @param n The size of single input.
+ * @param batch_size The size of the batch; the length of `d_inout` is `n` * `batch_size`.
+ */
+template <typename E, typename S>
+int ntt_batch_template(E *d_inout, S *d_twf, unsigned n, unsigned batch_size)
+{
+  uint32_t logn = uint32_t(log(n) / log(2));
+
+  int NUM_THREADS = min(n / 2, MAX_THREADS_BATCH);
+  int chunks = max(int((n / 2) / NUM_THREADS), 1);
+  int total_tasks = batch_size * chunks;
+  int NUM_BLOCKS = total_tasks;
+  int max_sharedmem = 512 * sizeof(E);
+  int shared_mem = (2 * NUM_THREADS) * sizeof(E); // TODO: calculator, as shared mem size may be more efficient less then max to allow more concurrent blocks on SM
+  uint32_t logn_shmem = uint32_t(log(2 * NUM_THREADS) / log(2));
+  for (uint32_t s = logn - 1; s >= logn_shmem; s--) // TODO: this loop also can be unrolled
+  {
+    ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_inout, n, d_twf, n, total_tasks, s, true);
+  }
+
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n, total_tasks, 0, logn_shmem - 1);
+
+  return 0;
+}
+
+template <typename S>
+int ntt_batch(S *d_inout, S *d_twf, unsigned n, unsigned batch_size)
+{
+  return ntt_batch_template(d_inout, d_twf, n, batch_size);
+}
+///
 
 /**
  * Evaluate a polynomial on a coset.

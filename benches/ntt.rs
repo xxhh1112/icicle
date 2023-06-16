@@ -4,16 +4,19 @@ use criterion::{
     criterion_group, criterion_main, measurement::WallTime, BenchmarkGroup, Criterion,
 };
 
-use icicle_utils::test_bls12_381::{
-    evaluate_points_batch_bls12_381, evaluate_scalars_batch_bls12_381,
-    interpolate_points_batch_bls12_381, interpolate_scalars_batch_bls12_381,
-    set_up_points_bls12_381, set_up_scalars_bls12_381,
+use icicle_utils::{
+    curves::bls12_381::ScalarField_BLS12_381,
+    test_bls12_381::{
+        evaluate_points_batch_bls12_381, evaluate_scalars_batch_bls12_381,
+        fast_ntt_batch_bls12_381, interpolate_points_batch_bls12_381,
+        interpolate_scalars_batch_bls12_381, set_up_points_bls12_381, set_up_scalars_bls12_381,
+    },
 };
 use rustacuda::prelude::DeviceBuffer;
 
 const LOG_NTT_SIZES: [usize; 1] = [10]; //, 23, 9, 10, 11, 12, 18];
-// const BATCH_SIZES: [usize; 2] = [1<<17, 256];
-const BATCH_SIZES: [usize; 1] = [1<<10];
+                                        // const BATCH_SIZES: [usize; 2] = [1<<17, 256];
+const BATCH_SIZES: [usize; 1] = [1 << 10];
 
 const MAX_POINTS_LOG2: usize = 18;
 const MAX_SCALARS_LOG2: usize = 25;
@@ -24,13 +27,23 @@ fn bench_ntt(c: &mut Criterion) {
             let ntt_size = 1 << log_ntt_size;
             let group = &mut c.benchmark_group("NTT");
 
+            fn fast_ntt(
+                d_evaluations: &mut DeviceBuffer<ScalarField_BLS12_381>,
+                d_domain: &mut DeviceBuffer<ScalarField_BLS12_381>,
+                batch_size: usize,
+            ) -> DeviceBuffer<ScalarField_BLS12_381> {
+                fast_ntt_batch_bls12_381(d_evaluations, d_domain, batch_size);
+
+                unsafe { DeviceBuffer::uninitialized(d_domain.len()).unwrap() }
+            }
+
             bench_template(
                 MAX_SCALARS_LOG2,
                 ntt_size,
                 batch_size,
                 log_ntt_size,
                 set_up_scalars_bls12_381,
-                evaluate_scalars_batch_bls12_381,
+                fast_ntt,
                 group,
                 "NTT",
                 false,

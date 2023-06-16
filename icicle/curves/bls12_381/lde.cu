@@ -161,6 +161,19 @@ extern "C" int evaluate_scalars_batch_cuda_bls12_381(BLS12_381::scalar_t* d_out,
     }
 }
 
+extern "C" int fast_ntt_batch_cuda_bls12_381(BLS12_381::scalar_t *d_inout, BLS12_381::scalar_t *d_twf, uint32_t n, uint32_t batch_size, size_t device_id = 0)
+{
+    try
+    {
+        return ntt_batch<BLS12_381::scalar_t>(d_inout, d_twf, n, batch_size); // TODO: pass device_id
+    }
+    catch (const std::runtime_error &ex)
+    {
+        printf("error %s", ex.what());
+        return -1;
+    }
+}
+
 extern "C" int evaluate_points_cuda_bls12_381(BLS12_381::projective_t* d_out, BLS12_381::projective_t *d_coefficients, BLS12_381::scalar_t *d_domain, 
                                     unsigned domain_size, unsigned n, size_t device_id = 0)
 {

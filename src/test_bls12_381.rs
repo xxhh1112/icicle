@@ -75,6 +75,14 @@ extern "C" {
         inverse: bool,
     ) -> c_int;
 
+    fn fast_ntt_batch_cuda_bls12_381(
+        d_inout: DevicePointer<ScalarField_BLS12_381>,
+        d_twf: DevicePointer<ScalarField_BLS12_381>,
+        n: usize,
+        batch_size: usize,
+        device_id: usize,
+    ) -> c_int;
+
     fn ecntt_batch_cuda_bls12_381(
         inout: *mut Point_BLS12_381,
         arr_size: usize,
@@ -371,6 +379,22 @@ fn ntt_internal_batch_bls12_381(
             batch_size,
             inverse,
         )
+    }
+}
+
+pub fn fast_ntt_batch_bls12_381(
+    d_inout: &mut DeviceBuffer<ScalarField_BLS12_381>,
+    d_twf: &mut DeviceBuffer<ScalarField_BLS12_381>,
+    batch_size: usize,
+) {
+    unsafe {
+        fast_ntt_batch_cuda_bls12_381(
+            d_inout.as_device_ptr(),
+            d_twf.as_device_ptr(),
+            d_twf.len(),
+            batch_size,
+            0,
+        );
     }
 }
 
@@ -1319,25 +1343,28 @@ pub(crate) mod tests_bls12_381 {
 
         let domain = GeneralEvaluationDomain::<Fr>::new(test_size).unwrap();
 
-        init_evals.chunks(test_size).zip(h_coeffs.chunks(test_size)).for_each(|(chunk, comp)| {
-            // Ark
-            let values_ark = chunk
-                .clone()
-                .iter()
-                .map(|v| Fr::new(v.to_ark()))
-                .collect::<Vec<Fr>>();
-            let mut ark_ntt_result = values_ark.clone();
+        init_evals
+            .chunks(test_size)
+            .zip(h_coeffs.chunks(test_size))
+            .for_each(|(chunk, comp)| {
+                // Ark
+                let values_ark = chunk
+                    .clone()
+                    .iter()
+                    .map(|v| Fr::new(v.to_ark()))
+                    .collect::<Vec<Fr>>();
+                let mut ark_ntt_result = values_ark.clone();
 
-            domain.ifft_in_place(&mut ark_ntt_result);
+                domain.ifft_in_place(&mut ark_ntt_result);
 
-            assert_ne!(ark_ntt_result, values_ark);
+                assert_ne!(ark_ntt_result, values_ark);
 
-            let ntt_result_as_ark = comp
-                .iter()
-                .map(|p| Fr::new(p.to_ark()))
-                .collect::<Vec<Fr>>();
-            assert_eq!(ark_ntt_result, ntt_result_as_ark);
-        });
+                let ntt_result_as_ark = comp
+                    .iter()
+                    .map(|p| Fr::new(p.to_ark()))
+                    .collect::<Vec<Fr>>();
+                assert_eq!(ark_ntt_result, ntt_result_as_ark);
+            });
     }
 
     #[test]
@@ -1451,6 +1478,41 @@ pub(crate) mod tests_bls12_381 {
 
         let mut d_evals =
             evaluate_scalars_batch_bls12_381(&mut d_coeffs, &mut d_domain, batch_size);
+        let d_coeffs_domain =
+            interpolate_scalars_batch_bls12_381(&mut d_evals, &mut d_domain_inv, batch_size);
+        let mut h_coeffs_domain: Vec<ScalarField_BLS12_381> = (0..domain_size * batch_size)
+            .map(|_| ScalarField_BLS12_381::zero())
+            .collect();
+        d_coeffs_domain.copy_to(&mut h_coeffs_domain[..]).unwrap();
+
+        for j in 0..batch_size {
+            assert_eq!(
+                h_coeffs[j * coeff_size..(j + 1) * coeff_size],
+                h_coeffs_domain[j * domain_size..j * domain_size + coeff_size]
+            );
+            for i in coeff_size..domain_size {
+                assert_eq!(
+                    ScalarField_BLS12_381::zero(),
+                    h_coeffs_domain[j * domain_size + i]
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_scalar_batch_fast_ntt() {
+        let batch_size = 2;
+        let log_test_domain_size = 23;
+        let domain_size = 1 << log_test_domain_size;
+        let coeff_size = domain_size;
+        let (h_coeffs, mut d_coeffs, mut d_domain) =
+            set_up_scalars_bls12_381(domain_size * batch_size, log_test_domain_size, false);
+        let (_, _, mut d_domain_inv) = set_up_scalars_bls12_381(0, log_test_domain_size, true);
+
+        fast_ntt_batch_bls12_381(&mut d_coeffs, &mut d_domain, batch_size);
+
+        let mut d_evals = d_coeffs;
+
         let d_coeffs_domain =
             interpolate_scalars_batch_bls12_381(&mut d_evals, &mut d_domain_inv, batch_size);
         let mut h_coeffs_domain: Vec<ScalarField_BLS12_381> = (0..domain_size * batch_size)

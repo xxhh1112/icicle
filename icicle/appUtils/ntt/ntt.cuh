@@ -1,6 +1,6 @@
-#ifndef NTT
-#define NTT
 #pragma once
+#ifndef NTT_H
+#define NTT_H
 
 #include "../../utils/sharedmem.cuh"
 
@@ -383,8 +383,8 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
           }
         }
 
-        E u = *uu;
-        E v = *vv;
+        auto u = *uu;
+        auto v = *vv;
         *uuu = u + v;
         *vvv = tw * (u - v);
 
