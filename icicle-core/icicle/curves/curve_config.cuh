@@ -10,7 +10,7 @@
 #include "bls12_381.cuh"
 // #include "bn254.cuh"
 
-
+namespace bls12 {
 typedef Field<fp_config> scalar_field_t;
 typedef scalar_field_t scalar_t;
 typedef Field<fq_config> point_field_t;
@@ -23,3 +23,4 @@ static constexpr g2_point_field_t b_g2 = g2_point_field_t{ point_field_t{ weiers
 typedef Projective<g2_point_field_t, scalar_field_t, b_g2> g2_projective_t;
 typedef Affine<g2_point_field_t> g2_affine_t;
 #endif
+};

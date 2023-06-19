@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 
-# icicle-bn254 = { path = "../icicle-bn254" }
+icicle-bn254 = { path = "../icicle-bn254" }
 icicle-bls12-381 = { path = "../icicle-bls12-381" }

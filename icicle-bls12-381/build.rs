@@ -19,7 +19,7 @@ fn main() {
     nvcc.flag(&arch);
     nvcc.files([
         "../icicle-core/icicle/primitives/projective.cu",
-        "../icicle-core/icicle/appUtils/smth1.cu",
+        "../icicle-core/icicle/appUtils/smth.cu",
     ]);
     nvcc.compile("ingo_bls12_381"); //TODO: extension??
 }

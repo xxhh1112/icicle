@@ -1,5 +1,7 @@
 #pragma once
 #include "../utils/storage.cuh"
+
+namespace bn254{
 struct fp_config{
     static constexpr unsigned limbs_count = 8;
 
@@ -151,3 +153,4 @@ static constexpr storage<fq_config::limbs_count> weierstrass_b = {0x00000003, 0x
 // TODO: correct parameters for G2 here
 static constexpr storage<fq_config::limbs_count> weierstrass_b_g2_re = {0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
 static constexpr storage<fq_config::limbs_count> weierstrass_b_g2_im = {0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
+};
