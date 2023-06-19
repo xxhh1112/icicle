@@ -1,0 +1,11 @@
+[package]
+name = "appl"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+# icicle-bn254 = { path = "../icicle-bn254" }
+icicle-bls12-381 = { path = "../icicle-bls12-381" }
