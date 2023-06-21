@@ -83,6 +83,18 @@ extern "C" {
         device_id: usize,
     ) -> c_int;
 
+    fn bailey_ntt_cuda_bls12_381(
+        d_inout: DevicePointer<ScalarField_BLS12_381>,
+        d_twf: DevicePointer<ScalarField_BLS12_381>,
+        n: usize,
+        batch_size: usize,
+        device_id: usize,
+    ) -> c_int;
+
+    fn bench_fr_add_cuda(device_id: usize, samples: usize, blocks: usize, threads: usize) -> i32;
+    fn bench_fr_sub_cuda(device_id: usize, samples: usize, blocks: usize, threads: usize) -> i32;
+    fn bench_fr_mul_cuda(device_id: usize, samples: usize, blocks: usize, threads: usize) -> i32;
+
     fn ecntt_batch_cuda_bls12_381(
         inout: *mut Point_BLS12_381,
         arr_size: usize,
@@ -389,6 +401,52 @@ pub fn fast_ntt_batch_bls12_381(
 ) {
     unsafe {
         fast_ntt_batch_cuda_bls12_381(
+            d_inout.as_device_ptr(),
+            d_twf.as_device_ptr(),
+            d_twf.len(),
+            batch_size,
+            0,
+        );
+    }
+}
+
+pub fn bench_add_fr(
+    samples: usize,
+    blocks: usize,
+    threads: usize,
+) {
+    unsafe {
+        bench_fr_add_cuda(0, samples, blocks, threads);
+    }
+}
+
+pub fn bench_sub_fr(
+    samples: usize,
+    blocks: usize,
+    threads: usize,
+) {
+    unsafe {
+        bench_fr_sub_cuda(0, samples, blocks, threads);
+    }
+}
+
+pub fn bench_mul_fr(
+    samples: usize,
+    blocks: usize,
+    threads: usize,
+) {
+    unsafe {
+        bench_fr_mul_cuda(0, samples, blocks, threads);
+    }
+}
+
+pub fn bailey_ntt_bls12_381(
+    d_inout: &mut DeviceBuffer<ScalarField_BLS12_381>,
+    d_twf: &mut DeviceBuffer<ScalarField_BLS12_381>,
+    batch_size: usize,
+) {
+    unsafe {
+        bailey_ntt_cuda_bls12_381(
             d_inout.as_device_ptr(),
             d_twf.as_device_ptr(),
             d_twf.len(),
@@ -891,7 +949,7 @@ pub fn set_up_scalars_bls12_381(
 
     let d_domain = build_domain_bls12_381(1 << log_domain_size, log_domain_size, inverse);
 
-    let seed = Some(0); // fix the rng to get two equal scalars
+    let seed = None; //Some(0); // fix the rng to get two equal scalars
     let vector_mut = generate_random_scalars_bls12_381(test_size, get_rng_bls12_381(seed));
 
     let d_vector = DeviceBuffer::from_slice(&vector_mut[..]).unwrap();
@@ -1524,6 +1582,48 @@ pub(crate) mod tests_bls12_381 {
             assert_eq!(
                 h_coeffs[j * coeff_size..(j + 1) * coeff_size],
                 h_coeffs_domain[j * domain_size..j * domain_size + coeff_size]
+            );
+            for i in coeff_size..domain_size {
+                assert_eq!(
+                    ScalarField_BLS12_381::zero(),
+                    h_coeffs_domain[j * domain_size + i]
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_scalar_bailey_ntt() {
+        let batch_size = 1;
+        let log_test_domain_size = 20;
+        let log_bailey_domain_size = log_test_domain_size / 2;
+        let domain_size = 1 << log_test_domain_size;
+        let coeff_size = domain_size * batch_size;
+        let (h_coeffs, mut d_coeffs, mut d_domain) =
+            set_up_scalars_bls12_381(coeff_size, log_test_domain_size, false);
+
+        let (_, _, mut bailey_domain) =
+            set_up_scalars_bls12_381(0, log_bailey_domain_size, false);
+   
+        bailey_ntt_bls12_381(&mut d_coeffs, &mut bailey_domain, 1 << log_bailey_domain_size);
+
+        let mut d_evals = d_coeffs;
+        let (_, _, mut d_domain_inv) = set_up_scalars_bls12_381(0, log_test_domain_size, true);
+        let d_coeffs_domain =
+            interpolate_scalars_batch_bls12_381(&mut d_evals, &mut d_domain_inv, batch_size);
+        let mut h_coeffs_domain: Vec<ScalarField_BLS12_381> = (0..coeff_size)
+            .map(|_| ScalarField_BLS12_381::zero())
+            .collect();
+        d_coeffs_domain.copy_to(&mut h_coeffs_domain[..]).unwrap();
+
+        for j in 0..batch_size {
+            assert_eq!(
+                h_coeffs[j * coeff_size..(j + 1) * coeff_size][0],
+                h_coeffs_domain[j * domain_size..j * domain_size + coeff_size][17]
+            );
+            assert_eq!(
+                h_coeffs[j * coeff_size..(j + 1) * coeff_size][0],
+                h_coeffs_domain[j * domain_size..j * domain_size + coeff_size][17]
             );
             for i in coeff_size..domain_size {
                 assert_eq!(

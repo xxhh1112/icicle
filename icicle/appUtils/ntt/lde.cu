@@ -5,6 +5,8 @@
 #include "ntt.cuh"
 #include "lde.cuh"
 #include "../vector_manipulation/ve_mod_mult.cuh"
+#include "../../utils/tr.cuh"
+#include <assert.h>
 
 /**
  * Interpolate a batch of polynomials from their evaluations on the same subgroup.
@@ -36,7 +38,7 @@ int interpolate_batch(E *d_out, E *d_evaluations, S *d_domain, unsigned n, unsig
   }
 
   NUM_BLOCKS = (n * batch_size + NUM_THREADS - 1) / NUM_THREADS;
-  template_normalize_kernel<E, S><<<NUM_BLOCKS, NUM_THREADS>>>(d_out, n * batch_size, S::inv_log_size(logn));
+  template_normalize_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_out, n * batch_size, S::inv_log_size(logn));
   return 0;
 }
 
@@ -62,6 +64,64 @@ __global__ void fill_array(E *arr, E val, uint32_t n)
   {
     arr[tid] = val;
   }
+}
+
+template <typename E, typename S>
+    __global__ void bench_mul_kernel(E a, S b, E *r, size_t n, size_t samples)
+{
+    // S f1 = group_gen;
+    // S f2 = f1 * group_gen_inverse;
+
+    int tid = blockDim.x * blockIdx.x + threadIdx.x;
+    if (tid < n)
+    {
+        // int scalar_id = tid % n_scalars;
+        // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
+
+        S t;
+
+        for (int s2 = 0; s2 < samples; s2++)
+        {
+            t = t * b;
+        }
+
+        t = a * t;
+
+        if (tid == 0)
+        {
+            *r = t;
+        }
+    }
+}
+
+template <typename E, typename S>
+    __global__ void bench_add_kernel(E a, S b, E *r, size_t n, size_t samples)
+{
+    // S f1 = group_gen;
+    // S f2 = f1 * group_gen_inverse;
+
+    int tid = blockDim.x * blockIdx.x + threadIdx.x;
+    if (tid < n)
+    {
+        // int scalar_id = tid % n_scalars;
+        // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
+
+        S t;
+        // for (int s1 = 0; s1 < samples; s1++)
+        // {
+        for (int s2 = 0; s2 < samples; s2++)
+        {
+            t = t + b;
+        }
+        // }
+
+        t = a + t;
+
+        if (tid == 0)
+        {
+            *r = t;
+        }
+    }
 }
 
 /**
@@ -153,6 +213,54 @@ template <typename S>
 int ntt_batch(S *d_inout, S *d_twf, unsigned n, unsigned batch_size)
 {
   return ntt_batch_template(d_inout, d_twf, n, batch_size);
+}
+
+template <typename S>
+int bailey_ntt(S *d_inout, S *d_twf, unsigned n, unsigned batch_size)
+{
+  dim3 threads(TILE_DIM, BLOCK_ROWS);
+  dim3 blocks(batch_size / TILE_DIM, n / TILE_DIM);
+  // printf("before transpose: %d %d \n", batch_size, n);
+
+  // S *trs = (S *)malloc(sizeof(S) * n * batch_size);
+  // cudaMemcpy(trs, d_inout, sizeof(S) * n * batch_size, cudaMemcpyDeviceToHost);
+
+  // 0,4,8,12,
+  // 1,5,9,13,
+  // 2,6,10,14,
+  // 3,7,11,15,
+  // S n0 = d_inout[0];
+  // S n3 = d_inout[n - 1];
+  // S n12 = d_inout[n * (n - 1)];
+  // S n15 = d_inout[n * n - 1];
+
+  transpose<<<blocks, threads>>>(d_inout);
+
+  // S *trs2 = (S *)malloc(sizeof(S) * n * batch_size);
+  // cudaMemcpy(trs2, d_inout, sizeof(S) * n * batch_size, cudaMemcpyDeviceToHost);
+
+  // assert(trs[0] == trs2[0]);
+  // printf("after n0 \n");
+  // assert(trs[n - 1] == trs2[n * (n - 1)]);
+  // printf("after n12 \n");
+  // assert(trs[n * (n - 1)] == trs2[n - 1]);
+  // printf("after n3 \n");
+  // assert(trs[n * n - 1] == trs2[n * n - 1]);
+
+  // printf("after transpose: %d %d \n", batch_size, n);
+  ntt_batch(d_inout, d_twf, n, batch_size);
+
+  batch_vector_mult(d_twf, d_inout, n, batch_size);
+  // printf("vector mult \n");
+
+
+  ntt_batch(d_inout, d_twf, n, batch_size);
+
+    // printf("before transpose 2\n");
+  transpose<<<blocks, threads>>>(d_inout);
+  // printf("after transpose 2\n");
+
+  return 0;
 }
 ///
 
