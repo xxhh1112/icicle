@@ -19,7 +19,7 @@ fn main() {
     nvcc.cuda(true);
     nvcc.debug(false);
     nvcc.flag(&arch);
-    nvcc.flag("-maxrregcount=55");
+    nvcc.flag("-maxrregcount=50");
     nvcc.flag("--threads=1280");
     nvcc.flag("--compiler-options=-pipe");
     nvcc.files([    
