@@ -372,7 +372,7 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
         auto u = *uu;
         auto v = *vv;
         *uuu = u + v;
-        *vvv = tw * (u - v);
+        *vvv = (u - v);
         __syncthreads();
       }
     }
