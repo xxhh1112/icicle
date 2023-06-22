@@ -319,63 +319,63 @@ template <typename E, typename S>
 //__launch_bounds__(MAX_THREADS_BATCH, 3)
 __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t ss, uint32_t logn_m_1)
 {
-  if (blockIdx.x < max_task)
+  // if (blockIdx.x < max_task)
+  // {
+  //   // flattened loop allows parallel processing
+
+  //   if (threadIdx.x < blockDim.x)
+  //   {
+  SharedMemory<E> smem;
+  E *arr = smem.getPointer();
+
+  uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
+  uint32_t offset = blockIdx.x * (blockDim.x * 2);
+
+  // #pragma unroll 8
+  for (int s = 0; ss <= logn_m_1; ss++)
   {
-    // flattened loop allows parallel processing
+    s = logn_m_1 - ss;
+    uint16_t shift_s = 1 << s;
+    uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
+    uint16_t oij = (((l >> s) * (shift_s << 1)) & (n - 1)) + j;
+    auto tw = r_twiddles[j * (n_twiddles >> (s + 1))];
+    s = oij + shift_s; // reuse for k
 
-    if (threadIdx.x < blockDim.x)
+    E *uu;
+    E *vv;
+    E *uuu;
+    E *vvv;
+    if (ss == 0)
     {
-      SharedMemory<E> smem;
-      E *arr = smem.getPointer();
-
-      uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
-      uint32_t offset = blockIdx.x * (blockDim.x * 2);
-
-      // #pragma unroll 8
-      for (int s = 0; ss <= logn_m_1; ss++)
+      uu = arr_g + offset;
+      vv = uu + s;
+      uu += oij;
+      uuu = arr + oij;
+      vvv = arr + s;
+    }
+    else
+    {
+      uu = arr + oij;
+      vv = arr + s;
+      if (ss == logn_m_1)
       {
-        s = logn_m_1 - ss;
-        uint16_t shift_s = 1 << s;
-        uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-        uint16_t oij = (((l >> s) * (shift_s << 1)) & (n - 1)) + j;
-        auto tw = r_twiddles[j * (n_twiddles >> (s + 1))];
-        s = oij + shift_s; // reuse for k
-
-        E *uu;
-        E *vv;
-        E *uuu;
-        E *vvv;
-        if (ss == 0)
-        {
-          uu = arr_g + offset;
-          vv = uu + s;
-          uu += oij;
-          uuu = arr + oij;
-          vvv = arr + s;
-        }
-        else
-        {
-          uu = arr + oij;
-          vv = arr + s;
-          if (ss == logn_m_1)
-          {
-            uuu = arr_g + offset + oij;
-            vvv = arr_g + offset + s;
-          }
-          else
-          {
-            uuu = uu;
-            vvv = vv;
-          }
-        }
-
-        auto u = *uu;
-        auto v = *vv;
-        *uuu = u + v;
-        *vvv = tw * (u - v);
-        __syncthreads();
+        uuu = arr_g + offset + oij;
+        vvv = arr_g + offset + s;
+      }
+      else
+      {
+        uuu = uu;
+        vvv = vv;
       }
     }
+
+    auto u = *uu;
+    auto v = *vv;
+    *uuu = u + v;
+    *vvv = tw * (u - v);
+    __syncthreads();
+    //   }
+    // }
   }
 }
 //************************************************************************************************
