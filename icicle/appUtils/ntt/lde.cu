@@ -174,7 +174,7 @@ int evaluate_batch(E *d_out, E *d_coefficients, S *d_domain, unsigned domain_siz
     ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_out, domain_size, d_domain, domain_size, total_tasks, s, true);
   }
 
-  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n, total_tasks, 0, logn_shmem - 1);
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n / 2, total_tasks, 0, logn_shmem - 1);
 
   return 0;
 }
@@ -204,7 +204,7 @@ int ntt_batch_template(E *d_inout, S *d_twf, unsigned n, unsigned batch_size)
     ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_inout, n, d_twf, n, total_tasks, s, true);
   }
 
-  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n, total_tasks, 0, logn_shmem - 1);
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n / 2, total_tasks, 0, logn_shmem - 1);
 
   return 0;
 }

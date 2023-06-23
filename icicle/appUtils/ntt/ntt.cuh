@@ -338,7 +338,7 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
     uint16_t shift_s = 1 << s;
     uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
     uint16_t oij = (((l >> s) * (shift_s << 1)) & (n - 1)) + j;
-    auto tw = r_twiddles[j * (n_twiddles >> (s + 1))];
+    auto tw = r_twiddles[j * (n_twiddles >> s)];
     s = oij + shift_s; // reuse for k
 
     E *uu;
