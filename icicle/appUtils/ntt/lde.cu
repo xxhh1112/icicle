@@ -67,61 +67,61 @@ __global__ void fill_array(E *arr, E val, uint32_t n)
 }
 
 template <typename E, typename S>
-    __global__ void bench_mul_kernel(E a, S b, E *r, size_t n, size_t samples)
+__global__ void bench_mul_kernel(E a, S b, E *r, size_t n, size_t samples)
 {
-    // S f1 = group_gen;
-    // S f2 = f1 * group_gen_inverse;
+  // S f1 = group_gen;
+  // S f2 = f1 * group_gen_inverse;
 
-    int tid = blockDim.x * blockIdx.x + threadIdx.x;
-    if (tid < n)
+  int tid = blockDim.x * blockIdx.x + threadIdx.x;
+  if (tid < n)
+  {
+    // int scalar_id = tid % n_scalars;
+    // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
+
+    S t;
+
+    for (int s2 = 0; s2 < samples; s2++)
     {
-        // int scalar_id = tid % n_scalars;
-        // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
-
-        S t;
-
-        for (int s2 = 0; s2 < samples; s2++)
-        {
-            t = t * b;
-        }
-
-        t = a * t;
-
-        if (tid == 0)
-        {
-            *r = t;
-        }
+      t = t * b;
     }
+
+    t = a * t;
+
+    if (tid == 0)
+    {
+      *r = t;
+    }
+  }
 }
 
 template <typename E, typename S>
-    __global__ void bench_add_kernel(E a, S b, E *r, size_t n, size_t samples)
+__global__ void bench_add_kernel(E a, S b, E *r, size_t n, size_t samples)
 {
-    // S f1 = group_gen;
-    // S f2 = f1 * group_gen_inverse;
+  // S f1 = group_gen;
+  // S f2 = f1 * group_gen_inverse;
 
-    int tid = blockDim.x * blockIdx.x + threadIdx.x;
-    if (tid < n)
+  int tid = blockDim.x * blockIdx.x + threadIdx.x;
+  if (tid < n)
+  {
+    // int scalar_id = tid % n_scalars;
+    // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
+
+    S t;
+    // for (int s1 = 0; s1 < samples; s1++)
+    // {
+    for (int s2 = 0; s2 < samples; s2++)
     {
-        // int scalar_id = tid % n_scalars;
-        // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
-
-        S t;
-        // for (int s1 = 0; s1 < samples; s1++)
-        // {
-        for (int s2 = 0; s2 < samples; s2++)
-        {
-            t = t + b;
-        }
-        // }
-
-        t = a + t;
-
-        if (tid == 0)
-        {
-            *r = t;
-        }
+      t = t + b;
     }
+    // }
+
+    t = a + t;
+
+    if (tid == 0)
+    {
+      *r = t;
+    }
+  }
 }
 
 /**
@@ -174,7 +174,11 @@ int evaluate_batch(E *d_out, E *d_coefficients, S *d_domain, unsigned domain_siz
     ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_out, domain_size, d_domain, domain_size, total_tasks, s, true);
   }
 
-  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n / 2, total_tasks, 0, logn_shmem - 1);
+  uint32_t log2_num_blocks = (log(NUM_BLOCKS) / log(2));
+  uint32_t n_div_log2_blocks = (((1 << logn_shmem) >> (log2_num_blocks + 1)) - 1);
+  uint32_t num_blocks2x = NUM_BLOCKS * 2; // TODO: ? uint32_t
+
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n / 2, total_tasks, 0, logn_shmem - 1, n_div_log2_blocks, num_blocks2x, (1 << logn_shmem) - 1);
 
   return 0;
 }
@@ -204,7 +208,11 @@ int ntt_batch_template(E *d_inout, S *d_twf, unsigned n, unsigned batch_size)
     ntt_template_kernel<<<NUM_BLOCKS, NUM_THREADS>>>(d_inout, n, d_twf, n, total_tasks, s, true);
   }
 
-  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n / 2, total_tasks, 0, logn_shmem - 1);
+  uint32_t log2_num_blocks = (log(NUM_BLOCKS) / log(2));
+  uint32_t n_div_log2_blocks = (((1 << logn_shmem) >> (log2_num_blocks + 1)) - 1);
+  uint32_t num_blocks2x = NUM_BLOCKS * 2; // TODO: ? uint32_t
+
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n / 2, total_tasks, 0, logn_shmem - 1, n_div_log2_blocks, num_blocks2x, (1 << logn_shmem) - 1);
 
   return 0;
 }
@@ -253,10 +261,9 @@ int bailey_ntt(S *d_inout, S *d_twf, unsigned n, unsigned batch_size)
   batch_vector_mult(d_twf, d_inout, n, batch_size);
   // printf("vector mult \n");
 
-
   ntt_batch(d_inout, d_twf, n, batch_size);
 
-    // printf("before transpose 2\n");
+  // printf("before transpose 2\n");
   transpose<<<blocks, threads>>>(d_inout);
   // printf("after transpose 2\n");
 

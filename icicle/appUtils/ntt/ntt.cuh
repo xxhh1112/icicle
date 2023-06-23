@@ -317,7 +317,7 @@ __device__ __host__ void butterfly(E *arrReversed, S *omegas, uint32_t n, uint32
  */
 template <typename E, typename S>
 //__launch_bounds__(MAX_THREADS_BATCH, 3)
-__global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t ss, uint32_t logn_m_1)
+__global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t ss, uint32_t logn_m_1, uint32_t n_div_log2_blocks, uint32_t num_blocks2x, uint32_t n_m1)
 {
   // if (blockIdx.x < max_task)
   // {
@@ -328,7 +328,8 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
   SharedMemory<E> smem;
   E *arr = smem.getPointer();
 
-  uint16_t l = (blockIdx.x % (n / (blockDim.x * 2))) * blockDim.x + threadIdx.x; // to l from chunks to full
+  uint16_t l = (blockIdx.x % (n / num_blocks2x)) * blockDim.x + threadIdx.x; // to l from chunks to full
+  //uint32_t offset = blockIdx.x * num_blocks2x;
   uint32_t offset = blockIdx.x * (blockDim.x * 2);
 
   // #pragma unroll 8
@@ -337,7 +338,7 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
     s = logn_m_1 - ss;
     uint16_t shift_s = 1 << s;
     uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-    uint16_t oij = (((l >> s) * (shift_s << 1)) & (n - 1)) + j;
+    uint16_t oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
     auto tw = r_twiddles[j * (n_twiddles >> s)];
     s = oij + shift_s; // reuse for k
 
