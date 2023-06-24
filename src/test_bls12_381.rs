@@ -95,12 +95,12 @@ extern "C" {
     fn bench_fr_sub_cuda(device_id: usize, samples: usize, blocks: usize, threads: usize) -> i32;
     fn bench_fr_mul_cuda(device_id: usize, samples: usize, blocks: usize, threads: usize) -> i32;
 
-    fn ecntt_batch_cuda_bls12_381(
-        inout: *mut Point_BLS12_381,
-        arr_size: usize,
-        n: usize,
-        inverse: bool,
-    ) -> c_int;
+    // fn ecntt_batch_cuda_bls12_381(
+    //     inout: *mut Point_BLS12_381,
+    //     arr_size: usize,
+    //     n: usize,
+    //     inverse: bool,
+    // ) -> c_int;
 
     fn interpolate_scalars_cuda_bls12_381(
         d_out: DevicePointer<ScalarField_BLS12_381>,
@@ -119,22 +119,22 @@ extern "C" {
         device_id: usize,
     ) -> c_int;
 
-    fn interpolate_points_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_evaluations: DevicePointer<Point_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        n: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn interpolate_points_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_evaluations: DevicePointer<Point_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     n: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn interpolate_points_batch_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_evaluations: DevicePointer<Point_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        n: usize,
-        batch_size: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn interpolate_points_batch_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_evaluations: DevicePointer<Point_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     n: usize,
+    //     batch_size: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
     fn evaluate_scalars_cuda_bls12_381(
         d_out: DevicePointer<ScalarField_BLS12_381>,
@@ -155,66 +155,66 @@ extern "C" {
         device_id: usize,
     ) -> c_int;
 
-    fn evaluate_points_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_coefficients: DevicePointer<Point_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        domain_size: usize,
-        n: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn evaluate_points_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_coefficients: DevicePointer<Point_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     domain_size: usize,
+    //     n: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn evaluate_points_batch_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_coefficients: DevicePointer<Point_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        domain_size: usize,
-        n: usize,
-        batch_size: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn evaluate_points_batch_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_coefficients: DevicePointer<Point_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     domain_size: usize,
+    //     n: usize,
+    //     batch_size: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn evaluate_scalars_on_coset_cuda_bls12_381(
-        d_out: DevicePointer<ScalarField_BLS12_381>,
-        d_coefficients: DevicePointer<ScalarField_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        domain_size: usize,
-        n: usize,
-        coset_powers: DevicePointer<ScalarField_BLS12_381>,
-        device_id: usize,
-    ) -> c_int;
+    // fn evaluate_scalars_on_coset_cuda_bls12_381(
+    //     d_out: DevicePointer<ScalarField_BLS12_381>,
+    //     d_coefficients: DevicePointer<ScalarField_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     domain_size: usize,
+    //     n: usize,
+    //     coset_powers: DevicePointer<ScalarField_BLS12_381>,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn evaluate_scalars_on_coset_batch_cuda_bls12_381(
-        d_out: DevicePointer<ScalarField_BLS12_381>,
-        d_coefficients: DevicePointer<ScalarField_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        domain_size: usize,
-        n: usize,
-        batch_size: usize,
-        coset_powers: DevicePointer<ScalarField_BLS12_381>,
-        device_id: usize,
-    ) -> c_int;
+    // fn evaluate_scalars_on_coset_batch_cuda_bls12_381(
+    //     d_out: DevicePointer<ScalarField_BLS12_381>,
+    //     d_coefficients: DevicePointer<ScalarField_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     domain_size: usize,
+    //     n: usize,
+    //     batch_size: usize,
+    //     coset_powers: DevicePointer<ScalarField_BLS12_381>,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn evaluate_points_on_coset_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_coefficients: DevicePointer<Point_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        domain_size: usize,
-        n: usize,
-        coset_powers: DevicePointer<ScalarField_BLS12_381>,
-        device_id: usize,
-    ) -> c_int;
+    // fn evaluate_points_on_coset_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_coefficients: DevicePointer<Point_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     domain_size: usize,
+    //     n: usize,
+    //     coset_powers: DevicePointer<ScalarField_BLS12_381>,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn evaluate_points_on_coset_batch_cuda_bls12_381(
-        d_out: DevicePointer<Point_BLS12_381>,
-        d_coefficients: DevicePointer<Point_BLS12_381>,
-        d_domain: DevicePointer<ScalarField_BLS12_381>,
-        domain_size: usize,
-        n: usize,
-        batch_size: usize,
-        coset_powers: DevicePointer<ScalarField_BLS12_381>,
-        device_id: usize,
-    ) -> c_int;
+    // fn evaluate_points_on_coset_batch_cuda_bls12_381(
+    //     d_out: DevicePointer<Point_BLS12_381>,
+    //     d_coefficients: DevicePointer<Point_BLS12_381>,
+    //     d_domain: DevicePointer<ScalarField_BLS12_381>,
+    //     domain_size: usize,
+    //     n: usize,
+    //     batch_size: usize,
+    //     coset_powers: DevicePointer<ScalarField_BLS12_381>,
+    //     device_id: usize,
+    // ) -> c_int;
 
     fn reverse_order_scalars_cuda_bls12_381(
         d_arr: DevicePointer<ScalarField_BLS12_381>,
@@ -229,25 +229,25 @@ extern "C" {
         device_id: usize,
     ) -> c_int;
 
-    fn reverse_order_points_cuda_bls12_381(
-        d_arr: DevicePointer<Point_BLS12_381>,
-        n: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn reverse_order_points_cuda_bls12_381(
+    //     d_arr: DevicePointer<Point_BLS12_381>,
+    //     n: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn reverse_order_points_batch_cuda_bls12_381(
-        d_arr: DevicePointer<Point_BLS12_381>,
-        n: usize,
-        batch_size: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn reverse_order_points_batch_cuda_bls12_381(
+    //     d_arr: DevicePointer<Point_BLS12_381>,
+    //     n: usize,
+    //     batch_size: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn vec_mod_mult_point_bls12_381(
-        inout: *mut Point_BLS12_381,
-        scalars: *const ScalarField_BLS12_381,
-        n_elements: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn vec_mod_mult_point_bls12_381(
+    //     inout: *mut Point_BLS12_381,
+    //     scalars: *const ScalarField_BLS12_381,
+    //     n_elements: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
     fn vec_mod_mult_scalar_bls12_381(
         inout: *mut ScalarField_BLS12_381,
@@ -504,14 +504,16 @@ fn ecntt_internal_batch_bls12_381(
     batch_size: usize,
     inverse: bool,
 ) -> i32 {
-    unsafe {
-        ecntt_batch_cuda_bls12_381(
-            values as *mut _ as *mut Point_BLS12_381,
-            values.len(),
-            batch_size,
-            inverse,
-        )
-    }
+    // unsafe {
+    //     ecntt_batch_cuda_bls12_381(
+    //         values as *mut _ as *mut Point_BLS12_381,
+    //         values.len(),
+    //         batch_size,
+    //         inverse,
+    //     )
+    // }
+
+    0
 }
 
 pub fn ecntt_batch_bls12_381(values: &mut [Point_BLS12_381], batch_size: usize, device_id: usize) {
@@ -558,7 +560,7 @@ pub fn reverse_order_scalars_batch_bls12_381(
 
 pub fn reverse_order_points_bls12_381(d_points: &mut DeviceBuffer<Point_BLS12_381>) {
     unsafe {
-        reverse_order_points_cuda_bls12_381(d_points.as_device_ptr(), d_points.len(), 0);
+        //reverse_order_points_cuda_bls12_381(d_points.as_device_ptr(), d_points.len(), 0);
     }
 }
 
@@ -567,12 +569,12 @@ pub fn reverse_order_points_batch_bls12_381(
     batch_size: usize,
 ) {
     unsafe {
-        reverse_order_points_batch_cuda_bls12_381(
-            d_points.as_device_ptr(),
-            d_points.len() / batch_size,
-            batch_size,
-            0,
-        );
+        // reverse_order_points_batch_cuda_bls12_381(
+        //     d_points.as_device_ptr(),
+        //     d_points.len() / batch_size,
+        //     batch_size,
+        //     0,
+        // );
     }
 }
 
@@ -618,13 +620,13 @@ pub fn interpolate_points_bls12_381(
 ) -> DeviceBuffer<Point_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len()).unwrap() };
     unsafe {
-        interpolate_points_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_evaluations.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            0,
-        )
+        // interpolate_points_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_evaluations.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     0,
+        // )
     };
     return res;
 }
@@ -636,14 +638,14 @@ pub fn interpolate_points_batch_bls12_381(
 ) -> DeviceBuffer<Point_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len() * batch_size).unwrap() };
     unsafe {
-        interpolate_points_batch_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_evaluations.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            batch_size,
-            0,
-        )
+        // interpolate_points_batch_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_evaluations.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     batch_size,
+        //     0,
+        // )
     };
     return res;
 }
@@ -692,14 +694,14 @@ pub fn evaluate_points_bls12_381(
 ) -> DeviceBuffer<Point_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len()).unwrap() };
     unsafe {
-        evaluate_points_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_coefficients.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            d_coefficients.len(),
-            0,
-        );
+        // evaluate_points_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_coefficients.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     d_coefficients.len(),
+        //     0,
+        // );
     }
     return res;
 }
@@ -711,15 +713,15 @@ pub fn evaluate_points_batch_bls12_381(
 ) -> DeviceBuffer<Point_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len() * batch_size).unwrap() };
     unsafe {
-        evaluate_points_batch_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_coefficients.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            d_coefficients.len() / batch_size,
-            batch_size,
-            0,
-        );
+        // evaluate_points_batch_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_coefficients.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     d_coefficients.len() / batch_size,
+        //     batch_size,
+        //     0,
+        // );
     }
     return res;
 }
@@ -731,15 +733,15 @@ pub fn evaluate_scalars_on_coset_bls12_381(
 ) -> DeviceBuffer<ScalarField_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len()).unwrap() };
     unsafe {
-        evaluate_scalars_on_coset_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_coefficients.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            d_coefficients.len(),
-            coset_powers.as_device_ptr(),
-            0,
-        );
+        // evaluate_scalars_on_coset_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_coefficients.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     d_coefficients.len(),
+        //     coset_powers.as_device_ptr(),
+        //     0,
+        // );
     }
     return res;
 }
@@ -752,16 +754,16 @@ pub fn evaluate_scalars_on_coset_batch_bls12_381(
 ) -> DeviceBuffer<ScalarField_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len() * batch_size).unwrap() };
     unsafe {
-        evaluate_scalars_on_coset_batch_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_coefficients.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            d_coefficients.len() / batch_size,
-            batch_size,
-            coset_powers.as_device_ptr(),
-            0,
-        );
+        // evaluate_scalars_on_coset_batch_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_coefficients.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     d_coefficients.len() / batch_size,
+        //     batch_size,
+        //     coset_powers.as_device_ptr(),
+        //     0,
+        // );
     }
     return res;
 }
@@ -773,15 +775,15 @@ pub fn evaluate_points_on_coset_bls12_381(
 ) -> DeviceBuffer<Point_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len()).unwrap() };
     unsafe {
-        evaluate_points_on_coset_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_coefficients.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            d_coefficients.len(),
-            coset_powers.as_device_ptr(),
-            0,
-        );
+        // evaluate_points_on_coset_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_coefficients.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     d_coefficients.len(),
+        //     coset_powers.as_device_ptr(),
+        //     0,
+        // );
     }
     return res;
 }
@@ -794,16 +796,16 @@ pub fn evaluate_points_on_coset_batch_bls12_381(
 ) -> DeviceBuffer<Point_BLS12_381> {
     let mut res = unsafe { DeviceBuffer::uninitialized(d_domain.len() * batch_size).unwrap() };
     unsafe {
-        evaluate_points_on_coset_batch_cuda_bls12_381(
-            res.as_device_ptr(),
-            d_coefficients.as_device_ptr(),
-            d_domain.as_device_ptr(),
-            d_domain.len(),
-            d_coefficients.len() / batch_size,
-            batch_size,
-            coset_powers.as_device_ptr(),
-            0,
-        );
+        // evaluate_points_on_coset_batch_cuda_bls12_381(
+        //     res.as_device_ptr(),
+        //     d_coefficients.as_device_ptr(),
+        //     d_domain.as_device_ptr(),
+        //     d_domain.len(),
+        //     d_coefficients.len() / batch_size,
+        //     batch_size,
+        //     coset_powers.as_device_ptr(),
+        //     0,
+        // );
     }
     return res;
 }
@@ -815,12 +817,12 @@ pub fn multp_vec_bls12_381(
 ) {
     assert_eq!(a.len(), b.len());
     unsafe {
-        vec_mod_mult_point_bls12_381(
-            a as *mut _ as *mut Point_BLS12_381,
-            b as *const _ as *const ScalarField_BLS12_381,
-            a.len(),
-            device_id,
-        );
+        // vec_mod_mult_point_bls12_381(
+        //     a as *mut _ as *mut Point_BLS12_381,
+        //     b as *const _ as *const ScalarField_BLS12_381,
+        //     a.len(),
+        //     device_id,
+        // );
     }
 }
 

@@ -171,7 +171,7 @@ fn bench_lde_template<E, S>(
 fn arith_run() {
     use std::str::FromStr;
 
-    let bench_npow = std::env::var("ARITH_BENCH_NPOW").unwrap_or("4".to_string());
+    let bench_npow = std::env::var("ARITH_BENCH_NPOW").unwrap_or("3".to_string());
     let lg_domain_size = i32::from_str(&bench_npow).unwrap() as u32;
 
     let blocks = 2048;
