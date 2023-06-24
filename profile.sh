@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rep_name=${1:-"run-$2-$3"}
-# cargo +nightly  test --release --package  icicle-utils --lib -- test_bls12_381::tests_bls12_381::test_scalar_batch_fast_ntt --exact --nocapture; 
+# cargo +nightly test --release --package icicle-utils --lib -- test_bls12_381::tests_bls12_381::test_scalar_batch_fast_ntt --exact --nocapture; 
 # RUSTFLAGS=-Awarnings cargo +nightly run --release; /tmp/var/target/linux-desktop-glibc_2_11_3-x64/ncu --config-file off --export /tmp/var/$rep_name --force-overwrite --kernel-id ::regex:'^(?!twiddle)': --section-folder /tmp/var/sections --set full --sampling-max-passes 1 /home/vlad/Projects/icicle_clean/icicle/target/release/icicle-utils
 
 # capture the output

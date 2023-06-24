@@ -316,8 +316,8 @@ __device__ __host__ void butterfly(E *arrReversed, S *omegas, uint32_t n, uint32
  * @param s log2(n) loop index.
  */
 template <typename E, typename S>
-//__launch_bounds__(MAX_THREADS_BATCH, 3)
-__global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint32_t ss, uint32_t logn_m_1, uint32_t n_div_log2_blocks, uint32_t num_blocks2x, uint32_t n_m1)
+__launch_bounds__(MAX_THREADS_BATCH)
+    __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_twiddles, uint32_t max_task, uint8_t ss, uint8_t logn_m_1, uint32_t n_div_log2_blocks, uint32_t num_blocks2x, uint32_t n_m1)
 {
   // if (blockIdx.x < max_task)
   // {
@@ -328,56 +328,72 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
   SharedMemory<E> smem;
   E *arr = smem.getPointer();
 
-  uint16_t l = (blockIdx.x % (n / num_blocks2x)) * blockDim.x + threadIdx.x; // to l from chunks to full
-  //uint32_t offset = blockIdx.x * num_blocks2x;
-  uint32_t offset = blockIdx.x * (blockDim.x * 2);
+  uint16_t l = (blockIdx.x & n_div_log2_blocks) * blockDim.x + threadIdx.x; // to l from chunks to full
+  // uint32_t offset = blockIdx.x * num_blocks2x;
+  arr_g += blockIdx.x * (blockDim.x * 2);
 
-  // #pragma unroll 8
-  for (int s = 0; ss <= logn_m_1; ss++)
+  uint8_t s = logn_m_1 - ss;
+  uint16_t shift_s = 1 << s;
+  uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
+  auto tw = r_twiddles[j * (n_twiddles >> s)];
+  uint16_t oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
+  j = oij + shift_s; // reuse for k
+
+  E *uu = arr_g + oij;
+  E *vv = arr_g + j;
+  E *uuu = arr + oij;
+  E *vvv = arr + j;
+
+  auto u = *uu;
+  auto v = *vv;
+  *uuu = u + v;
+  *vvv = tw * (u - v);
+
+  __syncthreads();
+  ss++;
+
+  for (; ss <= logn_m_1 - 1; ss++)
   {
     s = logn_m_1 - ss;
-    uint16_t shift_s = 1 << s;
-    uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-    uint16_t oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
-    auto tw = r_twiddles[j * (n_twiddles >> s)];
-    s = oij + shift_s; // reuse for k
+    shift_s = 1 << s;
+    j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
+    tw = r_twiddles[j * (n_twiddles >> s)];
+    oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
+    j = oij + shift_s; // reuse for k
 
-    E *uu;
-    E *vv;
-    E *uuu;
-    E *vvv;
-    if (ss == 0)
-    {
-      uu = arr_g + offset;
-      vv = uu + s;
-      uu += oij;
-      uuu = arr + oij;
-      vvv = arr + s;
-    }
-    else
-    {
-      uu = arr + oij;
-      vv = arr + s;
-      if (ss == logn_m_1)
-      {
-        uuu = arr_g + offset + oij;
-        vvv = arr_g + offset + s;
-      }
-      else
-      {
-        uuu = uu;
-        vvv = vv;
-      }
-    }
+    uu = arr + oij;
+    vv = arr + j;
 
-    auto u = *uu;
-    auto v = *vv;
+    uuu = uu;
+    vvv = vv;
+
+    u = *uu;
+    v = *vv;
     *uuu = u + v;
     *vvv = tw * (u - v);
+
     __syncthreads();
-    //   }
-    // }
   }
+
+  s = logn_m_1 - ss;
+  shift_s = 1 << s;
+  j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
+  tw = r_twiddles[j * (n_twiddles >> s)];
+  oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
+  j = oij + shift_s; // reuse for k
+
+  uu = arr + oij;
+  vv = arr + j;
+
+  uuu = arr_g + oij;
+  vvv = arr_g + j;
+
+  u = *uu;
+  v = *vv;
+  *uuu = u + v;
+  *vvv = tw * (u - v);
+
+  __syncthreads();
 }
 //************************************************************************************************
 
