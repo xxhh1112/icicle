@@ -1,3 +1,8 @@
+// #![allow(warnings, unused)]
+
+use std::time::{Duration, Instant};
+
+use ark_std::{end_timer, start_timer};
 use nvtx::*;
 
 use icicle_utils::{
@@ -12,8 +17,8 @@ use icicle_utils::{
 };
 use rustacuda::prelude::DeviceBuffer;
 
-const LOG_NTT_SIZES: [usize; 2] = [10, 20]; //, 23, 9, 10, 11, 12, 18];
-const BATCH_SIZES: [usize; 2] = [1 << 10, 1]; //, 4, 8, 16, 256, 512, 1024, 1 << 14];
+const LOG_NTT_SIZES: [usize; 1] = [10]; //, 23, 9, 10, 11, 12, 18];
+const BATCH_SIZES: [usize; 1] = [1 << 10]; //, 4, 8, 16, 256, 512, 1024, 1 << 14];
                                               // const LOG_NTT_SIZES: [usize; 4] = [10, 12, 23, 24]; //, 23, 9, 10, 11, 12, 18];
                                               // const BATCH_SIZES: [usize; 6] = [1, 2, 4, 16, 256, 1<<16]; //, 4, 8, 16, 256, 512, 1024, 1 << 14];
 
@@ -58,7 +63,7 @@ fn bench_lde() {
                 set_up_scalars_bls12_381(test_size, log_domain_size / 2, inverse)
             }
 
-            bench_lde_template(
+            bench_ntt_template(
                 MAX_SCALARS_LOG2,
                 ntt_size,
                 batch_size,
@@ -70,68 +75,68 @@ fn bench_lde() {
                 100,
             );
 
-            bench_lde_template(
-                MAX_SCALARS_LOG2,
-                ntt_size,
-                batch_size,
-                log_ntt_size,
-                set_up_scalars_bls12_381,
-                bailey_ntt,
-                "Bailey NTT",
-                false,
-                100,
-            );
+            // bench_ntt_template(
+            //     MAX_SCALARS_LOG2,
+            //     ntt_size,
+            //     batch_size,
+            //     log_ntt_size,
+            //     set_up_scalars_bls12_381,
+            //     bailey_ntt,
+            //     "Bailey NTT",
+            //     false,
+            //     100,
+            // );
 
-            bench_lde_template(
-                MAX_SCALARS_LOG2,
-                ntt_size,
-                batch_size,
-                log_ntt_size,
-                set_up_scalars_bls12_381,
-                evaluate_scalars_batch_bls12_381,
-                "NTT",
-                false,
-                10,
-            );
+            // bench_ntt_template(
+            //     MAX_SCALARS_LOG2,
+            //     ntt_size,
+            //     batch_size,
+            //     log_ntt_size,
+            //     set_up_scalars_bls12_381,
+            //     evaluate_scalars_batch_bls12_381,
+            //     "NTT",
+            //     false,
+            //     10,
+            // );
 
-            bench_lde_template(
-                MAX_SCALARS_LOG2,
-                ntt_size,
-                batch_size,
-                log_ntt_size,
-                set_up_scalars_bls12_381,
-                interpolate_scalars_batch_bls12_381,
-                "iNTT",
-                true,
-                10,
-            );
-            bench_lde_template(
-                MAX_POINTS_LOG2,
-                ntt_size,
-                batch_size,
-                log_ntt_size,
-                set_up_points_bls12_381,
-                evaluate_points_batch_bls12_381,
-                "EC NTT",
-                false,
-                20,
-            );
-            bench_lde_template(
-                MAX_POINTS_LOG2,
-                ntt_size,
-                batch_size,
-                log_ntt_size,
-                set_up_points_bls12_381,
-                interpolate_points_batch_bls12_381,
-                "EC iNTT",
-                true,
-                20,
-            );
+            // bench_ntt_template(
+            //     MAX_SCALARS_LOG2,
+            //     ntt_size,
+            //     batch_size,
+            //     log_ntt_size,
+            //     set_up_scalars_bls12_381,
+            //     interpolate_scalars_batch_bls12_381,
+            //     "iNTT",
+            //     true,
+            //     10,
+            // );
+            // bench_ntt_template(
+            //     MAX_POINTS_LOG2,
+            //     ntt_size,
+            //     batch_size,
+            //     log_ntt_size,
+            //     set_up_points_bls12_381,
+            //     evaluate_points_batch_bls12_381,
+            //     "EC NTT",
+            //     false,
+            //     20,
+            // );
+            // bench_ntt_template(
+            //     MAX_POINTS_LOG2,
+            //     ntt_size,
+            //     batch_size,
+            //     log_ntt_size,
+            //     set_up_points_bls12_381,
+            //     interpolate_points_batch_bls12_381,
+            //     "EC iNTT",
+            //     true,
+            //     20,
+            // );
         }
     }
 }
 
-fn bench_lde_template<E, S>(
+fn bench_ntt_template<E, S>(
     log_max_size: usize,
     ntt_size: usize,
     batch_size: usize,
@@ -148,7 +153,7 @@ fn bench_lde_template<E, S>(
     ) -> DeviceBuffer<E>,
     id: &str,
     inverse: bool,
-    _samples: usize,
+    samples: usize,
 ) -> Option<(Vec<E>, DeviceBuffer<E>)> {
     let count = ntt_size * batch_size;
 
@@ -162,9 +167,24 @@ fn bench_lde_template<E, S>(
     println!("{}", bench_id);
 
     let (input, mut d_evals, mut d_domain) = set_data(ntt_size * batch_size, log_ntt_size, inverse);
-    range_push!("one entry");
+    range_push!("{}", bench_id);
     let first = bench_fn(&mut d_evals, &mut d_domain, batch_size);
+    //start_timer!(bench_id);
+    let start = Instant::now();
+    for i in 0..samples {
+        bench_fn(&mut d_evals, &mut d_domain, batch_size);
+    }
+    //end_timer!(bench_id);
+    let elapsed = start.elapsed();
+    println!(
+        "{} {:0?} us x {} = {:?}",
+        bench_id,
+        elapsed.as_micros() as f32 / (samples as f32),
+        samples,
+        elapsed
+    );
     range_pop!();
+
     Some((input, first))
 }
 
@@ -188,6 +208,6 @@ fn arith_run() {
 }
 
 fn main() {
-    arith_run();
+    //arith_run();
     bench_lde();
 }

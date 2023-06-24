@@ -1,4 +1,4 @@
-use std::ffi::{c_int, c_uint};
+use std::ffi::{c_int};
 
 use rand::{rngs::StdRng, RngCore, SeedableRng};
 
@@ -8,7 +8,7 @@ use ark_bls12_381::{Fr as Fr_BLS12_381, G1Projective as G1Projective_BLS12_381};
 use ark_ff::PrimeField;
 use ark_std::UniformRand;
 
-use rustacuda::memory::{CopyDestination, DeviceBox, DeviceCopy};
+use rustacuda::memory::{CopyDestination, DeviceCopy};
 use rustacuda::prelude::*;
 use rustacuda_core::DevicePointer;
 

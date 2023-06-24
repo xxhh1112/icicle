@@ -20,6 +20,7 @@ fn main() {
     nvcc.debug(false);
     nvcc.flag(&arch);
     // nvcc.flag("-maxrregcount=42");
+    nvcc.flag("-w");
     nvcc.flag("--threads=1280");
     nvcc.flag("--compiler-options=-pipe");
     nvcc.files([    
