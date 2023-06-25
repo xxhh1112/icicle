@@ -379,7 +379,7 @@ __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n
   s = logn_m_1 - ss;
   shift_s = 1 << s;
   j = l & (shift_s - 1);                          // Equivalent to: l % (1 << s)
-  tw = r_twiddles[j * (n_twiddles >> s)];         // TODO: it all can be constant here except oij
+  //tw = r_twiddles[j * (n_twiddles >> s)];         // TODO: it all can be constant here except oij
   oij = (((l >> s) * (shift_s << 1)) & n_m1) + j; // but the simplification oij = (l >> 1) & n_m1
                                                   // actually breaks correctness and decreases performance?!!
   j = oij + shift_s;                              // reuse for k
