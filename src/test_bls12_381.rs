@@ -249,20 +249,20 @@ extern "C" {
     //     device_id: usize,
     // ) -> c_int;
 
-    fn vec_mod_mult_scalar_bls12_381(
-        inout: *mut ScalarField_BLS12_381,
-        scalars: *const ScalarField_BLS12_381,
-        n_elements: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn vec_mod_mult_scalar_bls12_381(
+    //     inout: *mut ScalarField_BLS12_381,
+    //     scalars: *const ScalarField_BLS12_381,
+    //     n_elements: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 
-    fn matrix_vec_mod_mult_bls12_381(
-        matrix_flattened: *const ScalarField_BLS12_381,
-        input: *const ScalarField_BLS12_381,
-        output: *mut ScalarField_BLS12_381,
-        n_elements: usize,
-        device_id: usize,
-    ) -> c_int;
+    // fn matrix_vec_mod_mult_bls12_381(
+    //     matrix_flattened: *const ScalarField_BLS12_381,
+    //     input: *const ScalarField_BLS12_381,
+    //     output: *mut ScalarField_BLS12_381,
+    //     n_elements: usize,
+    //     device_id: usize,
+    // ) -> c_int;
 }
 
 // pub fn msm_bls12_381(
@@ -833,12 +833,12 @@ pub fn mult_sc_vec_bls12_381(
 ) {
     assert_eq!(a.len(), b.len());
     unsafe {
-        vec_mod_mult_scalar_bls12_381(
-            a as *mut _ as *mut ScalarField_BLS12_381,
-            b as *const _ as *const ScalarField_BLS12_381,
-            a.len(),
-            device_id,
-        );
+        // vec_mod_mult_scalar_bls12_381(
+        //     a as *mut _ as *mut ScalarField_BLS12_381,
+        //     b as *const _ as *const ScalarField_BLS12_381,
+        //     a.len(),
+        //     device_id,
+        // );
     }
 }
 
@@ -854,15 +854,15 @@ pub fn mult_matrix_by_vec_bls12_381(
     for i in 0..b.len() {
         c.push(ScalarField_BLS12_381::zero());
     }
-    unsafe {
-        matrix_vec_mod_mult_bls12_381(
-            a as *const _ as *const ScalarField_BLS12_381,
-            b as *const _ as *const ScalarField_BLS12_381,
-            c.as_mut_slice() as *mut _ as *mut ScalarField_BLS12_381,
-            b.len(),
-            device_id,
-        );
-    }
+    // unsafe {
+    //     matrix_vec_mod_mult_bls12_381(
+    //         a as *const _ as *const ScalarField_BLS12_381,
+    //         b as *const _ as *const ScalarField_BLS12_381,
+    //         c.as_mut_slice() as *mut _ as *mut ScalarField_BLS12_381,
+    //         b.len(),
+    //         device_id,
+    //     );
+    // }
     c
 }
 
