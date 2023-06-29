@@ -1,39 +1,49 @@
-use std::ffi::c_uint;
-
-use ark_bn254::{Fq as Fq_BN254, Fr as Fr_BN254, G1Affine as G1Affine_BN254, G1Projective as G1Projective_BN254};
-
-use ark_ec::AffineCurve;
-use ark_ff::{BigInteger256, PrimeField};
-use std::mem::transmute;
-use ark_ff::Field;
-use crate::utils::{u32_vec_to_u64_vec, u64_vec_to_u32_vec};
-
+use std::marker::PhantomData;
+use ark_ff::{PrimeField as ArkPrimeField};
+use ark_ec::{AffineCurve as ArkAffineCurve, ProjectiveCurve as ArkProjectiveCurve};
+use super::scalar::{self, FieldOps};
 use rustacuda_core::DeviceCopy;
 use rustacuda_derive::DeviceCopy;
-
-use super::scalar::{get_fixed_limbs, self};
 
 
 #[derive(Debug, Clone, Copy, DeviceCopy)]
 #[repr(C)]
-pub struct PointT<BF: scalar::ScalarTrait> {
-    pub x: BF,
-    pub y: BF,
-    pub z: BF,
+pub struct Point<BaseField: scalar::FieldOps, Field: ArkPrimeField, Affine: ArkAffineCurve, Projective: ArkProjectiveCurve> {
+    pub x: BaseField,
+    pub y: BaseField,
+    pub z: BaseField,
+    pub ark_field: PhantomData<Field>,
+    pub ark_affine: PhantomData<Affine>,
+    pub ark_proj: PhantomData<Projective>
 }
 
-impl<BF: DeviceCopy + scalar::ScalarTrait> Default for PointT<BF> {
+impl<BaseField, Field, Affine, Projective> Default for Point<BaseField, Field, Affine, Projective> 
+where
+    BaseField: DeviceCopy + scalar::FieldOps, 
+    Field: ArkPrimeField,
+    Affine: ArkAffineCurve,
+    Projective: ArkProjectiveCurve
+{
     fn default() -> Self {
-        PointT::zero()
+        Point::zero()
     }
 }
 
-impl<BF: DeviceCopy + scalar::ScalarTrait> PointT<BF> {
+impl<BaseField, Field, Affine, Projective> Point<BaseField, Field, Affine, Projective> 
+where
+    BaseField: DeviceCopy + scalar::FieldOps, 
+    Field: ArkPrimeField,
+    Affine: ArkAffineCurve,
+    Projective: ArkProjectiveCurve
+{
     pub fn zero() -> Self {
-        PointT {
-            x: BF::zero(),
-            y: BF::one(),
-            z: BF::zero(),
+        Point {
+            x: BaseField::zero(),
+            y: BaseField::one(),
+            z: BaseField::zero(),
+            ark_field: PhantomData,
+            ark_affine: PhantomData,
+            ark_proj: PhantomData
         }
     }
 
@@ -42,28 +52,134 @@ impl<BF: DeviceCopy + scalar::ScalarTrait> PointT<BF> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Copy, DeviceCopy)]
-#[repr(C)]
-pub struct PointAffineNoInfinityT<BF> {
-    pub x: BF,
-    pub y: BF,
-}
+impl<BaseField, Field, Affine, Projective> Point<BaseField, Field, Affine, Projective>
+where
+    BaseField: DeviceCopy + scalar::FieldOps, 
+    Field: ArkPrimeField,
+    Affine: ArkAffineCurve,
+    Projective: ArkProjectiveCurve
+{
+    pub fn from_limbs(x: &[u32], y: &[u32], z: &[u32]) -> Self {
+        Point {
+            x: BaseField::from_limbs(x),
+            y: BaseField::from_limbs(y),
+            z: BaseField::from_limbs(z),
+            ark_field: PhantomData,
+            ark_affine: PhantomData,
+            ark_proj: PhantomData
+        }
+    }
 
-impl<BF: scalar::ScalarTrait> Default for PointAffineNoInfinityT<BF> {
-    fn default() -> Self {
-        PointAffineNoInfinityT {
-            x: BF::zero(),
-            y: BF::zero(),
+    pub fn from_xy_limbs(value: &[u32]) -> Point<BaseField, Field, Affine, Projective> {
+        let l = value.len();
+        assert_eq!(l, 3 * BaseField::base_limbs(), "length must be 3 * {}", BaseField::base_limbs());
+        Point {
+            x: BaseField::from_limbs(value[..BaseField::base_limbs()].try_into().unwrap()),
+            y: BaseField::from_limbs(value[BaseField::base_limbs()..BaseField::base_limbs() * 2].try_into().unwrap()),
+            z: BaseField::from_limbs(value[BaseField::base_limbs() * 2..].try_into().unwrap()),
+            ark_field: PhantomData,
+            ark_affine: PhantomData,
+            ark_proj: PhantomData
+        }
+    }
+
+    pub fn to_xy_strip_z(&self) -> PointAffineNoInfinity<BaseField, Field, Affine, Projective> {
+        PointAffineNoInfinity {
+            x: self.x,
+            y: self.y,
+            f: PhantomData,
+            ac: PhantomData,
+            pc: PhantomData
+        }
+    }
+
+    pub fn to_ark(&self) -> Projective {
+        self.to_ark_affine().into_projective()
+    }
+
+    pub fn to_ark_affine(&self) -> Affine {
+        //TODO: generic conversion
+        use std::ops::Mul;
+        let proj_x_field = Field::from_le_bytes_mod_order(&self.x.to_bytes_le());
+        let proj_y_field = Field::from_le_bytes_mod_order(&self.y.to_bytes_le());
+        let proj_z_field = Field::from_le_bytes_mod_order(&self.z.to_bytes_le());
+        let inverse_z = proj_z_field.inverse().unwrap();
+        let aff_x = proj_x_field.mul(inverse_z);
+        let aff_y = proj_y_field.mul(inverse_z);
+        Affine::new(aff_x, aff_y, false)
+    }
+
+    pub fn from_ark(ark: Projective) -> Point<BaseField, Field, Affine, Projective> {
+        let z_inv = ark.z.inverse().unwrap();
+        let z_invsq = z_inv * z_inv;
+        let z_invq3 = z_invsq * z_inv;
+        Point {
+            x: BaseField::from_ark((ark.x * z_invsq).into_repr()),
+            y: BaseField::from_ark((ark.y * z_invq3).into_repr()),
+            z: BaseField::one(),
+            ark_field: PhantomData,
+            ark_affine: PhantomData,
+            ark_proj: PhantomData
+        }
+    }
+
+    pub fn to_affine(&self) -> PointAffineNoInfinity<BaseField, Field, Affine, Projective> {
+        let ark_affine = self.to_ark_affine();
+        PointAffineNoInfinity {
+            x: BaseField::from_ark(ark_affine.x.into_repr()),
+            y: BaseField::from_ark(ark_affine.y.into_repr()),
+            f: PhantomData,
+            ac: PhantomData,
+            pc: PhantomData
         }
     }
 }
 
-impl<BF: Copy + scalar::ScalarTrait> PointAffineNoInfinityT<BF> {
+
+// Start POINT AFFINE
+#[derive(Debug, PartialEq, Clone, Copy, DeviceCopy)]
+#[repr(C)]
+pub struct PointAffineNoInfinity<BaseField, Field, Projective, Affine> {
+    pub x: BaseField,
+    pub y: BaseField,
+    pub f: PhantomData<Field>,
+    pub ac: PhantomData<Affine>,
+    pub pc: PhantomData<Projective>
+}
+
+impl<BaseField, Field, Affine, Projective> Default for PointAffineNoInfinity<BaseField, Field, Affine, Projective> 
+where
+    BaseField: DeviceCopy + scalar::FieldOps, 
+    Field: ArkPrimeField,
+    Affine: ArkAffineCurve,
+    Projective: ArkProjectiveCurve
+{
+    fn default() -> Self {
+        PointAffineNoInfinity {
+            x: BaseField::zero(),
+            y: BaseField::zero(),
+            f: PhantomData,
+            ac: PhantomData,
+            pc: PhantomData
+        }
+    }
+}
+
+impl<BaseField, Field, Affine, Projective> PointAffineNoInfinity<BaseField, Field, Affine, Projective> 
+where
+    BaseField: Copy + scalar::FieldOps, 
+    Field: ArkPrimeField,
+    Affine: ArkAffineCurve,
+    Projective: ArkProjectiveCurve
+{
     ///From u32 limbs x,y
     pub fn from_limbs(x: &[u32], y: &[u32]) -> Self {
-        PointAffineNoInfinityT {
-            x: BF::from_limbs(x),
-            y: BF::from_limbs(y)
+        PointAffineNoInfinity {
+            x: BaseField::from_limbs(x),
+            y: BaseField::from_limbs(y),
+            f: PhantomData,
+            ac: PhantomData,
+            pc: PhantomData
         }
     }
 
@@ -71,38 +187,36 @@ impl<BF: Copy + scalar::ScalarTrait> PointAffineNoInfinityT<BF> {
         [self.x.limbs(), self.y.limbs()].concat()
     }
 
-    pub fn to_projective(&self) -> PointT<BF> {
-        PointT {
+    pub fn to_projective(&self) -> Point<BaseField, Field, Affine, Projective> {
+        Point {
             x: self.x,
             y: self.y,
-            z: BF::one(),
-        }
-    }
-}
-
-impl<BF: Copy + scalar::ScalarTrait> PointT<BF>  {
-    pub fn from_limbs(x: &[u32], y: &[u32], z: &[u32]) -> Self {
-        PointT {
-            x: BF::from_limbs(x),
-            y: BF::from_limbs(y),
-            z: BF::from_limbs(z)
+            z: BaseField::one(),
+            ark_field: PhantomData,
+            ark_affine: PhantomData,
+            ark_proj: PhantomData
         }
     }
 
-    pub fn from_xy_limbs(value: &[u32]) -> PointT<BF> {
-        let l = value.len();
-        assert_eq!(l, 3 * BF::base_limbs(), "length must be 3 * {}", BF::base_limbs());
-        PointT {
-            x: BF::from_limbs(value[..BF::base_limbs()].try_into().unwrap()),
-            y: BF::from_limbs(value[BF::base_limbs()..BF::base_limbs() * 2].try_into().unwrap()),
-            z: BF::from_limbs(value[BF::base_limbs() * 2..].try_into().unwrap())
-        }
+    pub fn to_ark(&self) -> Affine {
+        Affine::new(Field::new(self.x.to_ark()), Field::new(self.y.to_ark()), false)
     }
 
-    pub fn to_xy_strip_z(&self) -> PointAffineNoInfinityT<BF> {
-        PointAffineNoInfinityT {
-            x: self.x,
-            y: self.y,
+    pub fn to_ark_repr(&self) -> Affine {
+        Affine::new(
+            Field::from_repr(self.x.to_ark()).unwrap(),
+            Field::from_repr(self.y.to_ark()).unwrap(),
+            false,
+        )
+    }
+
+    pub fn from_ark(p: &Affine) -> Self {
+        PointAffineNoInfinity {
+            x: BaseField::from_ark(p.x.into_repr()),
+            y: BaseField::from_ark(p.y.into_repr()),
+            f: PhantomData,
+            ac: PhantomData,
+            pc: PhantomData
         }
     }
 }

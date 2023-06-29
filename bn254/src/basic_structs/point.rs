@@ -1,4 +1,4 @@
-use std::ffi::c_uint;
+use std::{ffi::c_uint, marker::PhantomData};
 
 use ark_bn254::{Fq as Fq_BN254, Fr as Fr_BN254, G1Affine as G1Affine_BN254, G1Projective as G1Projective_BN254};
 
@@ -16,10 +16,11 @@ use super::scalar::{get_fixed_limbs, self};
 
 #[derive(Debug, Clone, Copy, DeviceCopy)]
 #[repr(C)]
-pub struct PointT<BF: scalar::ScalarTrait> {
+pub struct PointT<BF: scalar::ScalarTrait, Field> {
     pub x: BF,
     pub y: BF,
     pub z: BF,
+    pub f: PhantomData<Field>
 }
 
 impl<BF: DeviceCopy + scalar::ScalarTrait> Default for PointT<BF> {
@@ -28,12 +29,13 @@ impl<BF: DeviceCopy + scalar::ScalarTrait> Default for PointT<BF> {
     }
 }
 
-impl<BF: DeviceCopy + scalar::ScalarTrait> PointT<BF> {
+impl<BF: DeviceCopy + scalar::ScalarTrait, Field> PointT<BF, Field> {
     pub fn zero() -> Self {
         PointT {
             x: BF::zero(),
             y: BF::one(),
             z: BF::zero(),
+            f: PhantomData
         }
     }
 
