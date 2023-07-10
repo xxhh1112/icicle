@@ -5,6 +5,8 @@
 #include "../../appUtils/ntt/ntt.cuh"
 #include "../../appUtils/vector_manipulation/ve_mod_mult.cuh"
 #include "curve_config.cuh"
+#include "../../utils/mont.cuh"
+
 
 
 extern "C" BN254::scalar_t* build_domain_cuda_bn254(uint32_t domain_size, uint32_t logn, bool inverse, size_t device_id = 0, cudaStream_t stream = 0)
@@ -361,7 +363,7 @@ extern "C" int to_montgomery_scalars_cuda_bn254(BN254::scalar_t* d_inout, unsign
     try
     {
         cudaStreamCreate(&stream);
-        return to_montgomery(d_inout, n, stream);
+        return convert_montgomery<BN254::scalar_field_t>(d_inout, n, false, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -375,7 +377,7 @@ extern "C" int from_montgomery_scalars_cuda_bn254(BN254::scalar_t* d_inout, unsi
     try
     {
         cudaStreamCreate(&stream);
-        return from_montgomery(d_inout, n, stream);
+        return convert_montgomery<BN254::scalar_field_t>(d_inout, n, true, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -389,7 +391,7 @@ extern "C" int to_montgomery_proj_points_cuda_bn254(BN254::projective_t* d_inout
     try
     {
         cudaStreamCreate(&stream);
-        return to_montgomery((BN254::point_field_t*)d_inout, 3 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 3 * n, false, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -403,7 +405,7 @@ extern "C" int from_montgomery_proj_points_cuda_bn254(BN254::projective_t* d_ino
     try
     {
         cudaStreamCreate(&stream);
-        return from_montgomery((BN254::point_field_t*)d_inout, 3 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 3 * n, true, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -417,7 +419,7 @@ extern "C" int to_montgomery_aff_points_cuda_bn254(BN254::affine_t* d_inout, uns
     try
     {
         cudaStreamCreate(&stream);
-        return to_montgomery((BN254::point_field_t*)d_inout, 2 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 2 * n, false, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -431,7 +433,7 @@ extern "C" int from_montgomery_aff_points_cuda_bn254(BN254::affine_t* d_inout, u
     try
     {
         cudaStreamCreate(&stream);
-        return from_montgomery((BN254::point_field_t*)d_inout, 2 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 2 * n, true, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -446,7 +448,7 @@ extern "C" int to_montgomery_proj_points_g2_cuda_bn254(BN254::g2_projective_t* d
     try
     {
         cudaStreamCreate(&stream);
-        return to_montgomery((BN254::point_field_t*)d_inout, 6 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 6 * n, false, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -460,7 +462,7 @@ extern "C" int from_montgomery_proj_points_g2_cuda_bn254(BN254::g2_projective_t*
     try
     {
         cudaStreamCreate(&stream);
-        return from_montgomery((BN254::point_field_t*)d_inout, 6 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 6 * n, true, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -474,7 +476,7 @@ extern "C" int to_montgomery_aff_points_g2_cuda_bn254(BN254::g2_affine_t* d_inou
     try
     {
         cudaStreamCreate(&stream);
-        return to_montgomery((BN254::point_field_t*)d_inout, 4 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 4 * n, false, stream);
     }
     catch (const std::runtime_error &ex)
     {
@@ -483,12 +485,12 @@ extern "C" int to_montgomery_aff_points_g2_cuda_bn254(BN254::g2_affine_t* d_inou
     }
 }
 
-extern "C" int from_montgomery_proj_points_g2_cuda_bn254(BN254::g2_affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
+extern "C" int from_montgomery_aff_points_g2_cuda_bn254(BN254::g2_affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
 {
     try
     {
         cudaStreamCreate(&stream);
-        return from_montgomery((BN254::point_field_t*)d_inout, 4 * n, stream);
+        return convert_montgomery<BN254::point_field_t>((BN254::point_field_t*)d_inout, 4 * n, true, stream);
     }
     catch (const std::runtime_error &ex)
     {
