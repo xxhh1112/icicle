@@ -43,4 +43,10 @@ template <typename E, typename S>
 int evaluate_points_on_coset_batch(E* d_out, E* d_coefficients, S* d_domain, unsigned domain_size,
                                    unsigned n, unsigned batch_size, S* coset_powers, cudaStream_t stream);
 
+template <typename E>
+int to_montgomery(E* d_inout, unsigned n, cudaStream_t stream);
+
+template <typename E>
+int from_montgomery(E* d_inout, unsigned n, cudaStream_t stream);
+
 #endif
