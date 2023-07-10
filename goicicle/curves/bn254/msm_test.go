@@ -2,13 +2,16 @@ package bn254
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/bn254"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	"github.com/stretchr/testify/assert"
+	"github.com/ingonyama-zk/icicle/goicicle"
 )
 
 func randG1Jac() (bn254.G1Jac, error) {
@@ -36,7 +39,7 @@ func GeneratePoints(count int) ([]PointAffineNoInfinityBN254, []bn254.G1Affine) 
 	var pointsAffine []bn254.G1Affine
 
 	// populate the slice
-	for i := 0; i < count; i++ {
+	for i := 0; i < 10; i++ {
 		gnarkP, _ := randG1Jac()
 		var pointAffine bn254.G1Affine
 		pointAffine.FromJacobian(&gnarkP)
@@ -46,8 +49,17 @@ func GeneratePoints(count int) ([]PointAffineNoInfinityBN254, []bn254.G1Affine) 
 		pointsAffine = append(pointsAffine, pointAffine)
 		points = append(points, *p)
 	}
+	
+	log2_10 := math.Log2(10)
+	log2Count := math.Log2(float64(count))
+	log2Size := int(math.Ceil(log2Count-log2_10))
 
-	return points, pointsAffine
+	for i := 0; i < log2Size; i++ {
+		pointsAffine = append(pointsAffine, pointsAffine...)
+		points = append(points, points...)
+	}
+
+	return points[:count], pointsAffine[:count]
 }
 
 func GeneratePointsProj(count int) ([]PointBN254, []bn254.G1Jac) {
@@ -81,26 +93,101 @@ func GenerateScalars(count int) ([]ScalarField, []fr.Element) {
 		scalars = append(scalars, *s)
 	}
 
-	return scalars, scalars_fr
+	return scalars[:count], scalars_fr[:count]
 }
 
 func TestMSM(t *testing.T) {
-	for _, v := range []int{6, 9} {
+	for _, v := range []int{24} {
 		count := 1 << v
 
 		points, gnarkPoints := GeneratePoints(count)
+		fmt.Print("Finished generating points\n")
 		scalars, gnarkScalars := GenerateScalars(count)
+		fmt.Print("Finished generating scalars\n")
 
 		out := new(PointBN254)
+		startTime := time.Now()
 		_, e := MsmBN254(out, points, scalars, 0) // non mont
+		fmt.Printf("icicle MSM took: %d ms\n", time.Since(startTime).Milliseconds())
 
 		assert.Equal(t, e, nil, "error should be nil")
+		fmt.Print("Finished icicle MSM\n")
 
 		var bn254AffineLib bn254.G1Affine
 
 		gResult, _ := bn254AffineLib.MultiExp(gnarkPoints, gnarkScalars, ecc.MultiExpConfig{})
+		fmt.Print("Finished Gnark MSM\n")
 
 		assert.Equal(t, out.toGnarkAffine(), gResult)
+	}
+}
+
+func TestCommitMSM(t *testing.T) {
+	for _, _ = range []int{24} {
+		count := 12_180_757
+		// count := 1 << v - 1
+
+		points, gnarkPoints := GeneratePoints(count)
+		fmt.Print("Finished generating points\n")
+		scalars, gnarkScalars := GenerateScalars(count)
+		fmt.Print("Finished generating scalars\n")
+
+		out_d, _ := goicicle.CudaMalloc(96)
+
+		pointsBytes := count*64
+		points_d, _ := goicicle.CudaMalloc(pointsBytes)
+		goicicle.CudaMemCpyHtoD[PointAffineNoInfinityBN254](points_d, points, pointsBytes)
+
+		scalarBytes := count*32
+		scalars_d, _ := goicicle.CudaMalloc(scalarBytes)
+		goicicle.CudaMemCpyHtoD[ScalarField](scalars_d, scalars, scalarBytes)
+
+		startTime := time.Now()
+		e := Commit(out_d, scalars_d, points_d, count)
+		fmt.Printf("icicle MSM took: %d ms\n", time.Since(startTime).Milliseconds())
+
+		outHost := make([]PointBN254, 1)
+		goicicle.CudaMemCpyDtoH[PointBN254](outHost, out_d, 96)
+
+		assert.Equal(t, e, 0, "error should be 0")
+		fmt.Print("Finished icicle MSM\n")
+
+		var bn254AffineLib bn254.G1Affine
+
+		gResult, _ := bn254AffineLib.MultiExp(gnarkPoints, gnarkScalars, ecc.MultiExpConfig{})
+		fmt.Print("Finished Gnark MSM\n")
+
+		assert.Equal(t, outHost[0].toGnarkAffine(), gResult)
+	}
+}
+
+func BenchmarkCommit(b *testing.B) {
+	LOG_MSM_SIZES := []int{20, 21, 22, 23, 24, 25, 26}
+
+	for _, logMsmSize := range LOG_MSM_SIZES {
+		msmSize := 1 << logMsmSize
+		points, _ := GeneratePoints(msmSize)
+		scalars, _ := GenerateScalars(msmSize)
+
+		out_d, _ := goicicle.CudaMalloc(96)
+
+		pointsBytes := msmSize*64
+		points_d, _ := goicicle.CudaMalloc(pointsBytes)
+		goicicle.CudaMemCpyHtoD[PointAffineNoInfinityBN254](points_d, points, pointsBytes)
+
+		scalarBytes := msmSize*32
+		scalars_d, _ := goicicle.CudaMalloc(scalarBytes)
+		goicicle.CudaMemCpyHtoD[ScalarField](scalars_d, scalars, scalarBytes)
+
+		b.Run(fmt.Sprintf("MSM %d", logMsmSize), func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				e := Commit(out_d, scalars_d, points_d, msmSize)
+
+				if e != 0 {
+					panic("Error occured")
+				}
+			}
+		})
 	}
 }
 
@@ -132,9 +219,9 @@ func BenchmarkMSM(b *testing.B) {
 
 	for _, logMsmSize := range LOG_MSM_SIZES {
 		msmSize := 1 << logMsmSize
+		points, _ := GeneratePoints(msmSize)
+		scalars, _ := GenerateScalars(msmSize)
 		b.Run(fmt.Sprintf("MSM %d", logMsmSize), func(b *testing.B) {
-			points, _ := GeneratePoints(msmSize)
-			scalars, _ := GenerateScalars(msmSize)
 			for n := 0; n < b.N; n++ {
 				out := new(PointBN254)
 				_, e := MsmBN254(out, points, scalars, 0)
