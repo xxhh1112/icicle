@@ -5,37 +5,6 @@
 #include "lde.cuh"
 #include "../vector_manipulation/ve_mod_mult.cuh"
 
-
-template < typename E, bool SUB > __global__ void add_sub_array(E* res, E* in1, E* in2, uint32_t n) {
-  int tid = (blockIdx.x * blockDim.x) + threadIdx.x;
-  if (tid < n) {
-    res[tid] = SUB ? in1[tid] - in2[tid] : in1[tid] + in2[tid];
-  }
-}
-
-template <typename E>
-int sub_polys(E* d_out, E* d_in1, E* d_in2, unsigned n, cudaStream_t stream) {
-  uint32_t NUM_THREADS = MAX_THREADS_BATCH;
-  uint32_t NUM_BLOCKS = (n + NUM_THREADS - 1) / NUM_THREADS;
-
-  add_sub_array <E, true> <<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(d_out, d_in1, d_in2, n);
-
-  return 0;
-}
-
-template <typename E>
-int add_polys(E* d_out, E* d_in1, E* d_in2, unsigned n, cudaStream_t stream) {
-  uint32_t NUM_THREADS = MAX_THREADS_BATCH;
-  uint32_t NUM_BLOCKS = (n + NUM_THREADS - 1) / NUM_THREADS;
-
-  add_sub_array <E, false> <<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(d_out, d_in1, d_in2, n);
-
-  return 0;
-}
-
-/**
- * Interpolate a batch of polynomials from their evaluations on the same subgroup.
- * Note: this function does not preform any bit-reverse permutations on its inputs or outputs.
  * @param d_out The variable to write coefficients of the resulting polynomials into (the coefficients are in bit-reversed order if the evaluations weren't bit-reversed and vice-versa).
  * @param d_evaluations Input array of evaluations of all polynomials of type E (elements).
  * @param d_domain Domain on which the polynomials are evaluated. Must be a subgroup.
@@ -63,7 +32,6 @@ template <typename E, typename S> int interpolate(E * d_out, E * d_evaluations, 
 
 template < typename E > __global__ void fill_array(E * arr, E val, uint32_t n) {
   int tid = (blockIdx.x * blockDim.x) + threadIdx.x;
-  if (tid < n) {
     arr[tid] = val;
   }
 }
