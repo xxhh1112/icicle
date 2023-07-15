@@ -1561,8 +1561,8 @@ pub(crate) mod tests_bls12_381 {
 
     #[test]
     fn test_scalar_batch_fast_ntt() {
-        let batch_size = 2;
-        let log_test_domain_size = 23;
+        let batch_size = 3;
+        let log_test_domain_size = 12;
         let domain_size = 1 << log_test_domain_size;
         let coeff_size = domain_size;
         let (h_coeffs, mut d_coeffs, mut d_domain) =

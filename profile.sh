@@ -28,7 +28,7 @@ if [[ $output =~ $regex ]]; then
         # ./another-command.sh
     else
         echo "profiling..."
-        /tmp/var/target/linux-desktop-glibc_2_11_3-x64/ncu --config-file off --export $rep_name --force-overwrite --kernel-id ::regex:'^(?!twiddle)': --launch-count 3 --section-folder /tmp/var/sections --set full --sampling-max-passes 1 /home/vlad/Projects/icicle_clean/icicle/target/release/icicle-utils
+        ncu --config-file off --export $rep_name --force-overwrite --kernel-id ::regex:'^(?!twiddle)': --launch-count 3 --set full --sampling-max-passes 1 /home/vlad/Projects/icicle_clean/icicle/target/release/icicle-utils
     fi
 else
     echo "No time value found in output."

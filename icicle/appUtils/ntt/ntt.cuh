@@ -363,52 +363,38 @@ __launch_bounds__(MAX_THREADS_BATCH, 3)
     oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
     j = oij + shift_s; // reuse for k
 
-    uu = arr + oij;
-    vv = arr + j;
+    uuu = arr + oij;
+    vvv = arr + j;
 
-    uuu = uu;
-    vvv = vv;
-
-    u = *uu;
-    v = *vv;
+    u = *uuu;
+    v = *vvv;
     *uuu = u + v;
     *vvv = tw * (u - v);
 
     //__syncthreads();
   }
 
-  s = 1;
-  shift_s = 1 << s;
-  j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-  tw = r_twiddles[j * (n_div_2_twiddles >> s)];
-  oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
-  j = oij + shift_s; // reuse for k
+  j = l & 1; // Equivalent to: l % (1 << s)
+  tw = r_twiddles[j * (n_div_2_twiddles >> 1)];
+  oij = (((l >> 1) * 4) & n_m1) + j;
+  // j = oij + 2; // reuse for k
 
-  uu = arr + oij;
-  vv = arr + j;
+  uuu = arr + oij;
+  vvv = uuu + 2;
 
-  uuu = uu;
-  vvv = vv;
-
-  u = *uu;
-  v = *vv;
+  u = *uuu;
+  v = *vvv;
   *uuu = u + v;
   *vvv = tw * (u - v);
 
   ////////
-  s = 0;
-  shift_s = 1 << s;
-  j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-  // tw = r_twiddles[j * (n_twiddles >> s)];         // TODO: it all can be constant here except oij
-  oij = (((l >> s) * (shift_s << 1)) & n_m1) + j; // but the simplification oij = (l >> 1) & n_m1
-                                                  // actually breaks correctness and decreases performance?!!
-  j = oij + shift_s;                              // reuse for k
+  oij = ((l * 2) & n_m1);
 
   uu = arr + oij;
-  vv = arr + j;
+  vv = uu + 1;
 
   uuu = arr_g + oij;
-  vvv = arr_g + j;
+  vvv = uuu + 1;
 
   u = *uu;
   v = *vv;
