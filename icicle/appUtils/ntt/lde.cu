@@ -178,7 +178,11 @@ int evaluate_batch(E *d_out, E *d_coefficients, S *d_domain, unsigned domain_siz
   uint32_t n_div_log2_blocks = (((1 << logn_shmem) >> (log2_num_blocks + 1)) - 1);
   uint32_t num_blocks2x = NUM_BLOCKS * 2; // TODO: ? uint32_t
 
-  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n / 2, total_tasks, 0, logn_shmem - 1, n_div_log2_blocks, num_blocks2x, (1 << logn_shmem) - 1);
+  S tw4;
+  
+  cudaMemcpy(&tw4, &d_domain[n / 4], sizeof(S), cudaMemcpyDeviceToHost);
+
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_out, 1 << logn_shmem, d_domain, n / 2, total_tasks, 0, logn_shmem - 1, n_div_log2_blocks, num_blocks2x, (1 << logn_shmem) - 1, tw4);
 
   return 0;
 }
@@ -212,7 +216,11 @@ int ntt_batch_template(E *d_inout, S *d_twf, unsigned n, unsigned batch_size)
   uint32_t n_div_log2_blocks = (((1 << logn_shmem) >> (log2_num_blocks + 1)) - 1);
   uint32_t num_blocks2x = NUM_BLOCKS * 2; // TODO: ? uint32_t
 
-  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n / 2, total_tasks, 0, logn_shmem - 1, n_div_log2_blocks, num_blocks2x, (1 << logn_shmem) - 1);
+  S tw4;
+  
+  cudaMemcpy(&tw4, &d_twf[n / 4], sizeof(S), cudaMemcpyDeviceToHost);
+
+  ntt_template_kernel_shared_rev<<<NUM_BLOCKS, NUM_THREADS, shared_mem, 0>>>(d_inout, 1 << logn_shmem, d_twf, n / 2, total_tasks, 0, logn_shmem - 1, n_div_log2_blocks, num_blocks2x, (1 << logn_shmem) - 1, tw4);
 
   return 0;
 }
