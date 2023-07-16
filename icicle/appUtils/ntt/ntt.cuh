@@ -317,7 +317,10 @@ __device__ __host__ void butterfly(E *arrReversed, S *omegas, uint32_t n, uint32
  */
 template <typename E, typename S>
 __launch_bounds__(MAX_THREADS_BATCH, 3)
-    __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n, const S *__restrict__ r_twiddles, uint32_t n_div_2_twiddles, uint32_t max_task, uint8_t ss, uint8_t logn_m_1, uint32_t n_div_log2_blocks, uint32_t num_blocks2x, uint32_t n_m1, S tw4)
+    __global__ void ntt_template_kernel_shared_rev(E *__restrict__ arr_g, uint32_t n,
+                                                   const S *__restrict__ r_twiddles, uint32_t n_div_2_twiddles, uint32_t max_task,
+                                                   uint8_t ss, uint8_t logn_m_1, uint32_t n_div_log2_blocks, uint32_t num_blocks2x,
+                                                   uint32_t n_m1, S tw4, S tw8, S tw12)
 {
   // if (blockIdx.x < max_task)
   // {
@@ -327,6 +330,9 @@ __launch_bounds__(MAX_THREADS_BATCH, 3)
   //   {
   SharedMemory<E> smem;
   E *arr = smem.getPointer();
+  S tw_arr[3] = {tw4, tw8, tw12};
+  // S tw8_r = tw8;
+  // S tw12_r = tw12;
 
   uint16_t l = (blockIdx.x & n_div_log2_blocks) * blockDim.x + threadIdx.x; // to l from chunks to full
   // uint32_t offset = blockIdx.x * num_blocks2x;
@@ -344,8 +350,8 @@ __launch_bounds__(MAX_THREADS_BATCH, 3)
   arr[oij + shift_s] = tw * (u - v);
 
   ss++;
-#pragma unroll 1
-  for (; ss < logn_m_1 - 1; ss++)
+#pragma unroll 6
+  for (; ss < logn_m_1 - 2; ss++)
   {
     // s = logn_m_1 - ss;
     if ((logn_m_1 - ss) > 4)
@@ -362,6 +368,16 @@ __launch_bounds__(MAX_THREADS_BATCH, 3)
     arr[oij] = u + v;
     arr[j] = tw * (u - v);
   }
+  // s = 2
+  j = l & 3; // Equivalent to: l % (1 << s)
+  // tw = j == 1 ? tw4 : j == 2 ? tw8 : j == 3 ? tw12 : tw;
+
+  oij = (((l >> 2) * 8) & n_m1) + j;
+
+  u = arr[oij];
+  v = arr[oij + 4];
+  arr[oij] = u + v;
+  arr[oij + 4] = (j > 0) ? tw_arr[j - 1] * (u - v) : (u - v);
 
   // s = 1
   j = l & 1; // Equivalent to: l % (1 << s)
@@ -370,7 +386,7 @@ __launch_bounds__(MAX_THREADS_BATCH, 3)
   u = arr[oij];
   v = arr[oij + 2];
   arr[oij] = u + v;
-  arr[oij + 2] = j > 0 ? tw4 * (u - v) : (u - v); // s is 0 here - so twiddle factor is 1 - so no need to multiply
+  arr[oij + 2] = j > 0 ? tw8 * (u - v) : (u - v); // s is 0 here - so twiddle factor is 1 - so no need to multiply
 
   ////////
   // s = 0
