@@ -332,78 +332,54 @@ __launch_bounds__(MAX_THREADS_BATCH, 3)
   // uint32_t offset = blockIdx.x * num_blocks2x;
   arr_g += blockIdx.x * (blockDim.x * 2);
 
-  uint8_t s = logn_m_1 - ss;
-  uint16_t shift_s = 1 << s;
+  // uint8_t s = logn_m_1 - ss;
+  uint16_t shift_s = 1 << (logn_m_1 - ss);
   uint16_t j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-  auto tw = r_twiddles[j * (n_div_2_twiddles >> s)];
-  uint16_t oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
-  j = oij + shift_s; // reuse for k
+  auto tw = r_twiddles[j * (n_div_2_twiddles >> (logn_m_1 - ss))];
+  uint16_t oij = (((l >> (logn_m_1 - ss)) * (shift_s << 1)) & n_m1) + j;
 
-  E *uu = arr_g + oij;
-  E *vv = arr_g + j;
-  E *uuu = arr + oij;
-  E *vvv = arr + j;
-
-  auto u = *uu;
-  auto v = *vv;
-  *uuu = u + v;
-  *vvv = tw * (u - v);
+  auto u = arr_g[oij];
+  auto v = arr_g[oij + shift_s];
+  arr[oij] = u + v;
+  arr[oij + shift_s] = tw * (u - v);
 
   ss++;
-#pragma unroll 7
+#pragma unroll 1
   for (; ss < logn_m_1 - 1; ss++)
   {
-    s = logn_m_1 - ss;
-    if (s > 4)
+    // s = logn_m_1 - ss;
+    if ((logn_m_1 - ss) > 4)
       __syncthreads();
 
-    shift_s = 1 << s;
+    shift_s = 1 << (logn_m_1 - ss);
     j = l & (shift_s - 1); // Equivalent to: l % (1 << s)
-    tw = r_twiddles[j * (n_div_2_twiddles >> s)];
-    oij = (((l >> s) * (shift_s << 1)) & n_m1) + j;
+    tw = r_twiddles[j * (n_div_2_twiddles >> (logn_m_1 - ss))];
+    oij = (((l >> (logn_m_1 - ss)) * (shift_s << 1)) & n_m1) + j;
     j = oij + shift_s; // reuse for k
 
-    uuu = arr + oij;
-    vvv = arr + j;
-
-    u = *uuu;
-    v = *vvv;
-    *uuu = u + v;
-    *vvv = tw * (u - v);
-
-    //__syncthreads();
+    u = arr[oij];
+    v = arr[j];
+    arr[oij] = u + v;
+    arr[j] = tw * (u - v);
   }
 
   // s = 1
   j = l & 1; // Equivalent to: l % (1 << s)
-  // tw = r_twiddles[j * (n_div_2_twiddles >> 1)];
   oij = (((l >> 1) * 4) & n_m1) + j;
-  // j = oij + 2; // reuse for k
 
-  uuu = arr + oij;
-  vvv = uuu + 2;
-
-  u = *uuu;
-  v = *vvv;
-  *uuu = u + v;
-  *vvv = j > 0 ? tw4 * (u - v) : (u - v);
+  u = arr[oij];
+  v = arr[oij + 2];
+  arr[oij] = u + v;
+  arr[oij + 2] = j > 0 ? tw4 * (u - v) : (u - v); // s is 0 here - so twiddle factor is 1 - so no need to multiply
 
   ////////
   // s = 0
   oij = ((l * 2) & n_m1);
 
-  uu = arr + oij;
-  vv = uu + 1;
-
-  uuu = arr_g + oij;
-  vvv = uuu + 1;
-
-  u = *uu;
-  v = *vv;
-  *uuu = u + v;
-  *vvv = (u - v); // s is 0 here - so twiddle factor is 1 - so no need to multiply
-
-  // __syncthreads();
+  u = arr[oij];
+  v = arr[oij + 1];
+  arr_g[oij] = u + v;
+  arr_g[oij + 1] = (u - v); // s is 0 here - so twiddle factor is 1 - so no need to multiply
 }
 //************************************************************************************************
 
