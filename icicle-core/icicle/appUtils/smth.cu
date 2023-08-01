@@ -8,7 +8,7 @@ using namespace bls12;
 using namespace bn254;
 // namespace bn_254
 #endif
-//{
+
 typedef Field<fq_config> point_field_t;
 
 extern "C" int do_smth(point_field_t *arr)
@@ -16,9 +16,9 @@ extern "C" int do_smth(point_field_t *arr)
     try
     {
 #if CURVE == 12381
-        std::cout << "from bls12_381 "
+        std::cout << "from bls12_381: "
 #elif CURVE == 254
-        std::cout << "from bn254 "
+        std::cout << "from bn254: "
 #endif
         << arr[0] << std::endl;
         return point_field_t::TLC;
@@ -29,4 +29,3 @@ extern "C" int do_smth(point_field_t *arr)
         return -1;
     }
 }
-//}

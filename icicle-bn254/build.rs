@@ -16,16 +16,10 @@ fn main() {
 
     let mut object_files = vec![];
 
-    //env::set_var("CURVE", "254");
-
     let out_dir = var("OUT_DIR").unwrap();
-    let target_dir = var("CARGO_MANIFEST_DIR").unwrap();
     let profile = var("PROFILE").unwrap();
 
-    let target_output_dir = format!("{}/target/{}", target_dir, profile);
-
-    // let manifest_dir = var("CARGO_MANIFEST_DIR").unwrap();
-    // println!("cargo:rustc-link-search={}", manifest_dir);
+    let target_output_dir = format!("../target/{}", profile);
 
     for file in files {
         let path = Path::new(file);
@@ -91,7 +85,6 @@ fn main() {
         fs::remove_file(file).expect("Failed to remove object file");
     }
 
-    println!("cargo:rustc-link-search={}", target_output_dir);
     println!("cargo:rustc-link-lib=ingo_bn254");
     println!("cargo:rustc-link-lib=stdc++");
     println!("cargo:rustc-link-lib=cudart");

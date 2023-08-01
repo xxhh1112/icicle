@@ -1,33 +1,49 @@
-// #[cfg(any(feature = "bls12_381", feature = "bls12_377"))]
-// const BASE_LIMBS_: usize = 12;
-// #[cfg(feature = "bn254")]
-// const BASE_LIMBS_: usize = 8;
+pub use paste::paste;
+
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 #[repr(C)]
-pub struct FF<const NUM_LIMBS: usize> {
-    pub s: [u32; NUM_LIMBS],
+pub struct Limbs<const NUM_LIMBS: usize> {
+    pub limbs: [u32; NUM_LIMBS],
 }
 
-impl<const NUM_LIMBS: usize> FF<NUM_LIMBS> {
+impl<const NUM_LIMBS: usize> Limbs<NUM_LIMBS> {
     pub fn zero() -> Self {
-        FF {
-            s: [0u32; NUM_LIMBS],
+        Limbs {
+            limbs: [0u32; NUM_LIMBS],
         }
     }
 }
 
-// pub type BaseField_ = FF<BASE_LIMBS_>;
+pub trait Field<const NUM_LIMBS: usize> where Self: Sized {
+    fn to_repr(&self) -> Limbs<NUM_LIMBS>;
+    fn from_repr(repr: Limbs<NUM_LIMBS>) -> Self;
 
-// extern "C" {
-//     fn do_smth(scalar: *mut std::ffi::c_void) -> i32;
-// }
+    fn zero() -> Self {
+        Self::from_repr(Limbs::<NUM_LIMBS>::zero())
+    }
+}
 
-// pub fn do_smth_rust<T>(values: &mut [T]) -> i32 {
-//     let ret_code = unsafe {
-//         do_smth(
-//             values as *mut _ as *mut std::ffi::c_void,
-//         )
-//     };
-//     ret_code
-// }
+#[macro_export]
+macro_rules! impl_do_smth {
+    ($curve:ident, $scalar_type:ident) => {
+        paste! {
+            extern "C" {
+                fn [<$curve _do_smth>](scalar: *mut std::ffi::c_void) -> i32;
+            }
+
+            pub fn do_smth(values: &mut [$scalar_type]) -> i32 {
+                let ret_code = unsafe {
+                    [<$curve _do_smth>](
+                        values as *mut _ as *mut std::ffi::c_void,
+                    )
+                };
+                ret_code
+            }
+        }
+    }
+}
+
+pub fn build_children() {
+    
+}
