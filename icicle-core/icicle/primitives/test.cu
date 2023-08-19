@@ -1,6 +1,9 @@
 #include <cuda_runtime.h>
 #include <gtest/gtest.h>
 
+#ifndef G2_DEFINED
+#define G2_DEFINED
+
 #include "test_kernels.cuh"
 
 
@@ -382,3 +385,5 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
+
+#endif

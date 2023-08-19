@@ -10,5 +10,6 @@ icicle-core = { path = "../icicle-core" }
 
 [build-dependencies]
 cc = { version = "1.0", features = ["parallel"] }
+cmake = "0.1"
 
 # [workspace]

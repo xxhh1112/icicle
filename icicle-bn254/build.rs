@@ -1,6 +1,7 @@
 use std::env::var;
 use std::fs;
 use std::{env, path::Path, process::Command};
+use cmake::Config;
 
 fn main() {
     //TODO: check cargo features selected
@@ -8,10 +9,10 @@ fn main() {
     println!("cargo:rerun-if-env-changed=CXXFLAGS");
     println!("cargo:rerun-if-changed=./icicle");
 
-    let arch_type = env::var("ARCH_TYPE").unwrap_or(String::from("native"));
+    // let arch_type = env::var("ARCH_TYPE").unwrap_or(String::from("native"));
     let files = vec![
         "../icicle-core/icicle/primitives/projective.cu",
-        "../icicle-core/icicle/appUtils/smth.cu",
+        "../icicle-core/icicle/appUtils/vec_subtract.cu",
     ];
 
     let mut object_files = vec![];
@@ -21,27 +22,35 @@ fn main() {
 
     let target_output_dir = format!("../target/{}", profile);
 
+    let dst = Config::new("../icicle-core/icicle")
+                // .define("BUILD_TESTS", "OFF")
+                .define("CURVE", "254")
+                .build_target("subtract")
+                .build();
+    println!("cargo:rustc-link-search=native={}", dst.display());
+
     for file in files {
         let path = Path::new(file);
         let obj_file = format!("{}/{:?}", out_dir, path.file_name().unwrap());
 
-        println!("Compiling {} to {}", file, obj_file);
-        let status = Command::new("nvcc")
-            .arg("-DCURVE=254")
-            .arg("-c") // Compile but don't link
-            .arg(format!("-arch={}", &arch_type))
-            .arg(file)
-            .arg("-o")
-            .arg(&obj_file)
-            .status()
-            .expect("Failed to execute nvcc command");
+        // println!("Compiling {} to {}", file, obj_file);
+        // let status = Command::new("nvcc")
+        //     .arg("-DCURVE=254")
+        //     .arg("-c") // Compile but don't link
+        //     .arg(format!("-arch={}", &arch_type))
+        //     .arg(file)
+        //     .arg("-o")
+        //     .arg(&obj_file)
+        //     .status()
+        //     .expect("Failed to execute nvcc command");
 
-        if obj_file.as_str().contains("smth.cu") {
+        if obj_file.as_str().contains("vec_subtract.cu") {
+            // println!("here?");
             // Prefix symbols
             let output = Command::new("objcopy")
                 // .arg("--prefix-symbol=bn254_")
                 .arg("--redefine-sym")
-                .arg("do_smth=bn254_do_smth")
+                .arg("subtract=bn254_subtract")
                 .arg(&obj_file)
                 .output()
                 .expect("Failed to execute objcopy command");
@@ -55,13 +64,8 @@ fn main() {
             }
         }
 
-        if status.success() {
-            println!("nvcc command executed successfully");
-            object_files.push(obj_file.to_owned());
-        } else {
-            eprintln!("nvcc command failed");
-            std::process::exit(1);
-        }
+        println!("nvcc command executed successfully");
+        object_files.push(obj_file.to_owned());
     }
 
     // Link object files into one static library

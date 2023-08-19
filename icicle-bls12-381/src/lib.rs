@@ -1,9 +1,10 @@
-use icicle_core::tst::*;
-use icicle_core::impl_do_smth;
+use icicle_core::test_field::*;
+use icicle_core::impl_sub;
 
 
 const NUM_LIMBS: usize = 12;
 
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct ScalarField {
     pub repr: Limbs<NUM_LIMBS>,
 }
@@ -14,8 +15,8 @@ impl Field<NUM_LIMBS> for ScalarField {
     }
 
     fn from_repr(repr: Limbs<NUM_LIMBS>) -> Self {
-        ScalarField { repr: repr }
+        ScalarField { repr }
     }
 }
 
-impl_do_smth!(bls12_381, ScalarField);
+impl_sub!(bls12_381, ScalarField);

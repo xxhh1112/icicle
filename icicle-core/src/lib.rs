@@ -15,7 +15,7 @@ use rustacuda::memory::DeviceBox;
 
 pub mod field;
 pub mod utils;
-pub mod tst;
+pub mod test_field;
 
 type Point = PointGeneric<BaseField>;
 type PointAffineNoInfinity = PointAffineGeneric<BaseField>;
