@@ -12,9 +12,9 @@ if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
 endif ()
 project(icicle LANGUAGES CUDA CXX)
 
-# set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
-# set(CMAKE_CUDA_FLAGS_RELEASE "")
-# set(CMAKE_CUDA_FLAGS_DEBUG "${CMAKE_CUDA_FLAGS_DEBUG} -g -G -O0")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+set(CMAKE_CUDA_FLAGS_RELEASE "")
+set(CMAKE_CUDA_FLAGS_DEBUG "${CMAKE_CUDA_FLAGS_DEBUG} -g -G -O0")
 
 # when adding a new curve, add the respective item here
 # curves need to be addressed by numbers cos string comparison of preprocessor insturctions is unavailable
@@ -33,15 +33,31 @@ endif ()
 
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -DCURVE=${CURVE}")
 
-add_executable(
-  subtract
-  primitives/projective.cu
-  appUtils/vec_subtract.cu
-)
-target_compile_options(subtract PRIVATE -c -o="../target")
-
 option(BUILD_TESTS "Build tests" OFF)
-if (BUILD_TESTS)
+
+if (NOT BUILD_TESTS)
+
+  add_library(
+    subtract
+    primitives/projective.cu
+    appUtils/vec_subtract.cu
+  )
+  target_compile_options(subtract PRIVATE -c)
+
+  add_custom_command(
+    TARGET subtract
+    POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} ARGS --redefine-sym subtract=${CURVE_NAME}_subtract ${PROJECT_BINARY_DIR}/CMakeFiles/subtract.dir/appUtils/vec_subtract.cu.o
+  )
+  add_custom_command(
+    TARGET subtract
+    POST_BUILD
+    COMMAND ${CMAKE_AR} ARGS -rcs ${LIBRARY_OUTPUT_DIRECTORY}/libingo_${CURVE_NAME}.a ${PROJECT_BINARY_DIR}/CMakeFiles/subtract.dir/primitives/projective.cu.o ${PROJECT_BINARY_DIR}/CMakeFiles/subtract.dir/appUtils/vec_subtract.cu.o
+  )
+  file(REMOVE ${PROJECT_BINARY_DIR}/CMakeFiles/subtract.dir/primitives/projective.cu.o)
+  file(REMOVE ${PROJECT_BINARY_DIR}/CMakeFiles/subtract.dir/appUtils/vec_subtract.cu.o)
+
+else()
 
   include(FetchContent)
   FetchContent_Declare(
