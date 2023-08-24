@@ -232,6 +232,36 @@ extern "C" {
         n_elements: usize,
         device_id: usize,
     ) -> c_int;
+
+    fn to_montgomery_scalars_cuda_bn254(
+        d_inout: DevicePointer<ScalarField_BN254>, 
+        n: usize, 
+    ) -> c_int;
+
+    fn from_montgomery_scalars_cuda_bn254(
+        d_inout: DevicePointer<ScalarField_BN254>,
+        n: usize
+    ) -> c_int;
+
+    fn to_montgomery_proj_points_cuda_bn254(
+        d_inout: DevicePointer<Point_BN254>,
+        n: usize
+    ) -> c_int;
+
+    fn from_montgomery_proj_points_cuda_bn254(
+        d_inout: DevicePointer<Point_BN254>,
+        n: usize
+    ) -> c_int;
+
+    fn to_montgomery_aff_points_cuda_bn254(
+        d_inout: DevicePointer<Point_BN254>,
+        n: usize
+    ) -> c_int;
+
+    fn from_montgomery_aff_points_cuda_bn254(
+        d_inout: DevicePointer<Point_BN254>,
+        n: usize
+    ) -> c_int;
 }
 
 pub fn msm_bn254(
@@ -745,6 +775,60 @@ pub fn mult_matrix_by_vec_bn254(
     c
 }
 
+pub fn scalars_to_montgomery(
+    d_inout: &mut DeviceBuffer<ScalarField_BN254>, 
+    n: usize, 
+) -> c_int {
+    return unsafe {
+        to_montgomery_scalars_cuda_bn254(d_inout.as_device_ptr(), n)
+    };
+}
+
+pub fn scalars_from_montgomery(
+    d_inout: &mut DeviceBuffer<ScalarField_BN254>,
+    n: usize
+) -> c_int {
+    return unsafe {
+        from_montgomery_scalars_cuda_bn254(d_inout.as_device_ptr(), n)
+    }
+}
+
+pub fn points_to_montgomery(
+    d_inout: &mut DeviceBuffer<Point_BN254>,
+    n: usize
+) -> c_int {
+    return unsafe {
+        to_montgomery_proj_points_cuda_bn254(d_inout.as_device_ptr(), n)
+    }
+}
+
+pub fn points_from_montgomery(
+    d_inout: &mut DeviceBuffer<Point_BN254>,
+    n: usize
+) -> c_int {
+    return unsafe {
+        from_montgomery_proj_points_cuda_bn254(d_inout.as_device_ptr(), n)
+    }
+}
+
+pub fn affine_points_to_montgomery(
+    d_inout: &mut DeviceBuffer<Point_BN254>,
+    n: usize
+) -> c_int {
+    return unsafe {
+        to_montgomery_aff_points_cuda_bn254(d_inout.as_device_ptr(), n)
+    }
+}
+
+pub fn affine_points_from_montgomery(
+    d_inout: &mut DeviceBuffer<Point_BN254>,
+    n: usize
+) -> c_int {
+    return unsafe {
+        from_montgomery_aff_points_cuda_bn254(d_inout.as_device_ptr(), n)
+    }
+}
+
 pub fn clone_buffer_bn254<T: DeviceCopy>(buf: &mut DeviceBuffer<T>) -> DeviceBuffer<T> {
     let mut buf_cpy = unsafe { DeviceBuffer::uninitialized(buf.len()).unwrap() };
     let _ = buf_cpy.copy_from(buf);
@@ -845,7 +929,8 @@ pub(crate) mod tests_bn254 {
     use ark_ec::{msm::VariableBaseMSM, AffineCurve, ProjectiveCurve};
     use ark_ff::{FftField, Field, Zero};
     use ark_std::UniformRand;
-    use std::ops::Add;
+    use rustacuda::memory::DeviceSlice;
+    use std::{ops::Add, mem::transmute};
 
     fn random_points_ark_proj(nof_elements: usize) -> Vec<G1Projective> {
         let mut rng = ark_std::rand::thread_rng();
@@ -1747,5 +1832,80 @@ pub(crate) mod tests_bn254 {
         let expected = [dummy_one, Point_BN254::zero(), Point_BN254::zero()];
         multp_vec_bn254(&mut inout, &scalars, 0);
         assert_eq!(inout, expected);
+    }
+
+    #[test]
+    fn test_scalar_mont_conversion() {
+        let test_size = 1 << 4;
+        let (scalars, mut d_scalars, _) = set_up_scalars_bn254(test_size, 0, false);
+        let size = scalars.len();
+
+        let _ = scalars_to_montgomery(&mut d_scalars, size);
+        let _ = scalars_from_montgomery(&mut d_scalars, size);
+
+        let mut scalars_operated: Vec<ScalarField_BN254> = (0..size)
+            .map(|_| ScalarField_BN254::zero())
+            .collect();
+        d_scalars.copy_to(&mut scalars_operated).unwrap();
+
+        assert_eq!(scalars, scalars_operated);
+    }
+
+    #[test]
+    fn test_point_mont_conversion() {
+        use halo2curves::bn256::G1;
+        use halo2curves::group::Group;
+
+        let test_size = 1 << 4;
+        set_up_device_bn254();
+        let mont_points: Vec<G1> = (0..test_size)
+            .map(|_| {
+                let rng = get_rng_bn254(Some(0));
+                G1::random(rng)
+            })
+            .collect();
+
+        let points: Vec<Point_BN254> = mont_points
+            .iter().map(|point| {
+                let x = point.x.to_bytes();
+                let x_base_field = BaseField_BN254::from_bytes_le(&x);
+                let y = point.y.to_bytes();
+                let y_base_field = BaseField_BN254::from_bytes_le(&y);
+                let z = point.z.to_bytes();
+                let z_base_field = BaseField_BN254::from_bytes_le(&z);
+                
+                Point_BN254 {
+                    x: x_base_field,
+                    y: y_base_field,
+                    z: z_base_field
+                }
+            })
+            .collect();
+    
+        let mut d_points = DeviceBuffer::from_slice(&points[..]).unwrap();
+
+        let _ = points_to_montgomery(&mut d_points, test_size);
+        let mut points_converted_mont: Vec<Point_BN254> = Vec::with_capacity(test_size);
+        d_points.copy_to(&mut points_converted_mont);
+
+        let points_mont_transmuted: Vec<G1> = points_converted_mont.iter()
+            .map(|&point| unsafe {
+                transmute(point)   
+            }).collect();
+
+        assert_eq!(mont_points, points_mont_transmuted);
+
+
+        // let d_pointer_mont = d_points.as_device_ptr().as_raw_mut().cast::<G1>();
+
+        // let mut d_buffer_mont = unsafe {
+        //     DeviceBuffer::from_raw_parts(DevicePointer::wrap(d_pointer_mont), test_size)
+        // };
+
+        // let mut points_converted_as_bytes: Vec<G1> = Vec::with_capacity(test_size);
+
+        // d_buffer_mont.copy_to(&mut points_converted_as_bytes);
+
+
     }
 }

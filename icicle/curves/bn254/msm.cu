@@ -1,6 +1,7 @@
 #ifndef _BN254_MSM
 #define _BN254_MSM
 #include "../../appUtils/msm/msm.cu"
+#include "../../utils/mont.cuh"
 #include "curve_config.cuh"
 #include <cuda.h>
 #include <stdexcept>
@@ -100,6 +101,72 @@ extern "C" int commit_batch_cuda_bn254(
     batched_large_msm(d_scalars, d_points, batch_size, count, d_out, true, stream);
     cudaStreamSynchronize(stream);
     return CUDA_SUCCESS;
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int to_montgomery_scalars_cuda_bn254(BN254::scalar_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return to_montgomery(d_inout, n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int from_montgomery_scalars_cuda_bn254(BN254::scalar_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return from_montgomery(d_inout, n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int to_montgomery_proj_points_cuda_bn254(BN254::projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return to_montgomery((BN254::point_field_t*)d_inout, 3 * n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int from_montgomery_proj_points_cuda_bn254(BN254::projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return from_montgomery((BN254::point_field_t*)d_inout, 3 * n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int to_montgomery_aff_points_cuda_bn254(BN254::affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return to_montgomery((BN254::point_field_t*)d_inout, 2 * n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int from_montgomery_aff_points_cuda_bn254(BN254::affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return from_montgomery((BN254::point_field_t*)d_inout, 2 * n, stream);
   } catch (const std::runtime_error& ex) {
     printf("error %s", ex.what());
     return -1;
@@ -207,6 +274,53 @@ extern "C" int commit_batch_g2_cuda_bn254(
     batched_large_msm(d_scalars, d_points, batch_size, count, d_out, true, stream);
     cudaStreamSynchronize(stream);
     return CUDA_SUCCESS;
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int
+to_montgomery_proj_points_g2_cuda_bn254(BN254::g2_projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return to_montgomery((BN254::point_field_t*)d_inout, 6 * n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int
+from_montgomery_proj_points_g2_cuda_bn254(BN254::g2_projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return from_montgomery((BN254::point_field_t*)d_inout, 6 * n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int to_montgomery_aff_points_g2_cuda_bn254(BN254::g2_affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return to_montgomery((BN254::point_field_t*)d_inout, 4 * n, stream);
+  } catch (const std::runtime_error& ex) {
+    printf("error %s", ex.what());
+    return -1;
+  }
+}
+
+extern "C" int
+from_montgomery_aff_points_g2_cuda_bn254(BN254::g2_affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
+{
+  try {
+    cudaStreamCreate(&stream);
+    return from_montgomery((BN254::point_field_t*)d_inout, 4 * n, stream);
   } catch (const std::runtime_error& ex) {
     printf("error %s", ex.what());
     return -1;

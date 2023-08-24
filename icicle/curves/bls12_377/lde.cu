@@ -3,7 +3,6 @@
 #include "../../appUtils/ntt/lde.cu"
 #include "../../appUtils/ntt/ntt.cuh"
 #include "../../appUtils/vector_manipulation/ve_mod_mult.cuh"
-#include "../../utils/mont.cuh"
 #include "curve_config.cuh"
 #include <cuda.h>
 
@@ -432,126 +431,6 @@ extern "C" int add_scalars_cuda_bls12_377(
     return -1;
   }
 }
-
-extern "C" int to_montgomery_scalars_cuda_bls12_377(BLS12_377::scalar_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return to_montgomery(d_inout, n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int from_montgomery_scalars_cuda_bls12_377(BLS12_377::scalar_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return from_montgomery(d_inout, n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-to_montgomery_proj_points_cuda_bls12_377(BLS12_377::projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return to_montgomery((BLS12_377::point_field_t*)d_inout, 3 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-from_montgomery_proj_points_cuda_bls12_377(BLS12_377::projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return from_montgomery((BLS12_377::point_field_t*)d_inout, 3 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-to_montgomery_aff_points_cuda_bls12_377(BLS12_377::affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return to_montgomery((BLS12_377::point_field_t*)d_inout, 2 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-from_montgomery_aff_points_cuda_bls12_377(BLS12_377::affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return from_montgomery((BLS12_377::point_field_t*)d_inout, 2 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-#if defined(G2_DEFINED)
-extern "C" int
-to_montgomery_proj_points_g2_cuda_bls12_377(BLS12_377::g2_projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return to_montgomery((BLS12_377::point_field_t*)d_inout, 6 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-from_montgomery_proj_points_g2_cuda_bls12_377(BLS12_377::g2_projective_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return from_montgomery((BLS12_377::point_field_t*)d_inout, 6 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-to_montgomery_aff_points_g2_cuda_bls12_377(BLS12_377::g2_affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return to_montgomery((BLS12_377::point_field_t*)d_inout, 4 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-
-extern "C" int
-from_montgomery_aff_points_g2_cuda_bls12_377(BLS12_377::g2_affine_t* d_inout, unsigned n, cudaStream_t stream = 0)
-{
-  try {
-    cudaStreamCreate(&stream);
-    return from_montgomery((BLS12_377::point_field_t*)d_inout, 4 * n, stream);
-  } catch (const std::runtime_error& ex) {
-    printf("error %s", ex.what());
-    return -1;
-  }
-}
-#endif
 
 extern "C" int
 reverse_order_scalars_cuda_bls12_377(BLS12_377::scalar_t* arr, int n, size_t device_id = 0, cudaStream_t stream = 0)

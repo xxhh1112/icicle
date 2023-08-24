@@ -32,9 +32,10 @@ namespace PARAMS_BN254 {
                                                  0x00000000, 0x00000000, 0x00000000, 0x00000000};
     static constexpr storage<limbs_count> zero = {0x00000000, 0x00000000, 0x00000000, 0x00000000,
                                                   0x00000000, 0x00000000, 0x00000000, 0x00000000};
+
     static constexpr storage<limbs_count> montgomery_r = {0x4ffffffb, 0xac96341c, 0x9f60cd29, 0x36fc7695,
-                                                          0x7879462e, 0x666ea36f, 0x9a07df2f, 0xe0a77c1};
-    static constexpr storage<limbs_count> montgomery_r_inv = {0x6db1194e, 0xdc5ba005, 0xe111ec87, 0x90ef5a9,
+                                                          0x7879462e, 0x666ea36f, 0x9a07df2f, 0x0e0a77c1};
+    static constexpr storage<limbs_count> montgomery_r_inv = {0x6db1194e, 0xdc5ba005, 0xe111ec87, 0x090ef5a9,
                                                               0xaeb85d5d, 0xc8260de4, 0x82c5551c, 0x15ebf951};
 
     static constexpr storage_array<omegas_count, limbs_count> omega = {
@@ -131,6 +132,7 @@ namespace PARAMS_BN254 {
   struct fq_config {
     static constexpr unsigned limbs_count = 8;
     static constexpr unsigned modulus_bit_count = 254;
+
     static constexpr storage<limbs_count> modulus = {0xd87cfd47, 0x3c208c16, 0x6871ca8d, 0x97816a91,
                                                      0x8181585d, 0xb85045b6, 0xe131a029, 0x30644e72};
     static constexpr storage<limbs_count> modulus_2 = {0xb0f9fa8e, 0x7841182d, 0xd0e3951a, 0x2f02d522,
@@ -149,15 +151,17 @@ namespace PARAMS_BN254 {
     static constexpr storage<2 * limbs_count> modulus_squared_4 = {
       0x9d75a6c4, 0xed516288, 0x27ab0404, 0x98081cb4, 0xb65b2b72, 0x29406271, 0xe8490b21, 0x11a27a55,
       0xd31ace34, 0x9bb7e970, 0x58dd5818, 0xc02e1544, 0x0d234872, 0x6669bdf0, 0xd8f2fe71, 0x249712e1};
+
     static constexpr storage<limbs_count> m = {0x19bf90e5, 0x6f3aed8a, 0x67cd4c08, 0xae965e17,
                                                0x68073013, 0xab074a58, 0x623a04a7, 0x54a47462};
     static constexpr storage<limbs_count> one = {0x00000001, 0x00000000, 0x00000000, 0x00000000,
                                                  0x00000000, 0x00000000, 0x00000000, 0x00000000};
     static constexpr storage<limbs_count> zero = {0x00000000, 0x00000000, 0x00000000, 0x00000000,
                                                   0x00000000, 0x00000000, 0x00000000, 0x00000000};
-    static constexpr storage<limbs_count> montgomery_r = {0xc58f0d9d, 0xd35d438d, 0xf5c70b3d, 0xa78eb28,
-                                                          0x7879462c, 0x666ea36f, 0x9a07df2f, 0xe0a77c1};
-    static constexpr storage<limbs_count> montgomery_r_inv = {0x14afa37,  0xed84884a, 0x278edf8,  0xeb202285,
+
+    static constexpr storage<limbs_count> montgomery_r = {0xc58f0d9d, 0xd35d438d, 0xf5c70b3d, 0x0a78eb28,
+                                                          0x7879462c, 0x666ea36f, 0x9a07df2f, 0x0e0a77c1};
+    static constexpr storage<limbs_count> montgomery_r_inv = {0x014afa37, 0xed84884a, 0x0278edf8, 0xeb202285,
                                                               0xb74492d9, 0xcf63e9cf, 0x59e5c639, 0x2e671571};
 
     // i^2, the square of the imaginary unit for the extension field

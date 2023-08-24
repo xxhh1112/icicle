@@ -255,7 +255,7 @@ func GenerateG2Points(count int) []G2PointAffine {
 	return points[:count]
 }
 
-func TestMsmG2BLS12381(t *testing.T) {
+func TestMsmG2BLS12_381(t *testing.T) {
 	for _, v := range []int{24} {
 		count := 1 << v
 		points := GenerateG2Points(count)
@@ -270,7 +270,7 @@ func TestMsmG2BLS12381(t *testing.T) {
 	}
 }
 
-func BenchmarkMsmG2BLS12381(b *testing.B) {
+func BenchmarkMsmG2BLS12_381(b *testing.B) {
 	LOG_MSM_SIZES := []int{20, 21, 22, 23, 24, 25, 26}
 
 	for _, logMsmSize := range LOG_MSM_SIZES {

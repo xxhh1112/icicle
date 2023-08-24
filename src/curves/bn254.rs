@@ -43,6 +43,15 @@ impl<const NUM_LIMBS: usize> Field_BN254<NUM_LIMBS> {
             .flatten()
             .collect::<Vec<_>>()
     }
+
+    pub fn from_bytes_le(bytes: &[u8]) -> Self {
+        let mut s = [0u32; NUM_LIMBS];
+        for i in (0..NUM_LIMBS) {
+            s[i] = u32::from_le_bytes(bytes[i*4..i*4+4].try_into().unwrap());
+        }
+        
+        Field_BN254 { s }
+    }
 }
 
 pub const BASE_LIMBS_BN254: usize = 8;

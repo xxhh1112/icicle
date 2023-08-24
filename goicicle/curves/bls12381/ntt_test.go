@@ -23,7 +23,7 @@ import (
 	"testing"
 )
 
-func TestNttBLS12381BBB(t *testing.T) {
+func TestNttBLS12_381Batch(t *testing.T) {
 	count := 1 << 20
 	scalars := GenerateScalars(count, false)
 
@@ -37,7 +37,7 @@ func TestNttBLS12381BBB(t *testing.T) {
 	assert.Equal(t, nttResult, nttResult)
 }
 
-func TestNttBLS12381CompareToGnarkDIF(t *testing.T) {
+func TestNttBLS12_381CompareToGnarkDIF(t *testing.T) {
 	count := 1 << 2
 	scalars := GenerateScalars(count, false)
 
@@ -51,7 +51,7 @@ func TestNttBLS12381CompareToGnarkDIF(t *testing.T) {
 	assert.Equal(t, nttResult, nttResult)
 }
 
-func TestINttBLS12381CompareToGnarkDIT(t *testing.T) {
+func TestINttBLS12_381CompareToGnarkDIT(t *testing.T) {
 	count := 1 << 3
 	scalars := GenerateScalars(count, false)
 
@@ -65,7 +65,7 @@ func TestINttBLS12381CompareToGnarkDIT(t *testing.T) {
 	assert.Equal(t, nttResult, nttResult)
 }
 
-func TestNttBLS12381(t *testing.T) {
+func TestNttBLS12_381(t *testing.T) {
 	count := 1 << 3
 
 	scalars := GenerateScalars(count, false)
@@ -85,7 +85,7 @@ func TestNttBLS12381(t *testing.T) {
 	assert.Equal(t, inttResult, scalars)
 }
 
-func TestNttBatchBLS12381(t *testing.T) {
+func TestNttBatchBLS12_381(t *testing.T) {
 	count := 1 << 5
 	batches := 4
 

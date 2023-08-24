@@ -23,7 +23,7 @@ import (
 	"testing"
 )
 
-func TestNttBLS12_377BBB(t *testing.T) {
+func TestNttBLS12_377Batch(t *testing.T) {
 	count := 1 << 20
 	scalars := GenerateScalars(count, false)
 

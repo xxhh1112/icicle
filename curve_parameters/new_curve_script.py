@@ -34,6 +34,10 @@ def compute_values(modulus, modulus_bit_count, limbs):
     one = to_hex(1,limb_size)
     zero = to_hex(0,limb_size)
 
+    field_size = 256 if modulus_bit_count < 256 else 384
+    mont_r = to_hex(pow(2, field_size, modulus), limb_size)
+    mont_r_inv = to_hex(pow(2, -field_size, modulus), limb_size)
+
     return (
         modulus_,
         modulus_2,
@@ -44,7 +48,9 @@ def compute_values(modulus, modulus_bit_count, limbs):
         modulus_squared_4,
         m,
         one,
-        zero
+        zero,
+        mont_r,
+        mont_r_inv
     )
 
 
@@ -59,7 +65,9 @@ def get_fq_params(modulus, modulus_bit_count, limbs, g1_gen_x, g1_gen_y, g2_gen_
         modulus_squared_4,
         m,
         one,
-        zero
+        zero,
+        mont_r,
+        mont_r_inv
     ) = compute_values(modulus, modulus_bit_count, limbs)
 
     limb_size = 8*limbs
@@ -74,6 +82,8 @@ def get_fq_params(modulus, modulus_bit_count, limbs, g1_gen_x, g1_gen_y, g2_gen_
         'fq_m': m,
         'fq_one': one,
         'fq_zero': zero,
+        'fq_mont_r': mont_r,
+        'fq_mont_r_inv': mont_r_inv,
         'fq_gen_x': to_hex(g1_gen_x, limb_size),
         'fq_gen_y': to_hex(g1_gen_y, limb_size),
         'fq_gen_x_re': to_hex(g2_gen_x_re, limb_size),
@@ -94,7 +104,9 @@ def get_fp_params(modulus, modulus_bit_count, limbs, root_of_unity, size=0):
         modulus_squared_4,
         m,
         one,
-        zero
+        zero,
+        mont_r,
+        mont_r_inv
     ) = compute_values(modulus, modulus_bit_count, limbs)
     limb_size = 8*limbs
     if size > 0:
@@ -129,6 +141,8 @@ def get_fp_params(modulus, modulus_bit_count, limbs, root_of_unity, size=0):
         'fp_m': m,
         'fp_one': one,
         'fp_zero': zero,
+        'fp_mont_r': mont_r,
+        'fp_mont_r_inv': mont_r_inv,
         'omega': omega[:-1],
         'omega_inv': omega_inv[:-1],
         'inv': inv[:-1],
@@ -274,43 +288,43 @@ with open('./icicle/curves/index.cu', 'r+') as f:
 
 # Create Rust interface and tests
 
-if limb_p == limb_q: 
-    with open("./src/curve_templates/curve_same_limbs.rs", "r") as curve_file:
-        content = curve_file.read()
-        content = content.replace("CURVE_NAME_U",curve_name_upper)
-        content = content.replace("CURVE_NAME_L",curve_name_lower)
-        content = content.replace("_limbs_p",str(limb_p * 8 * 4))
-        content = content.replace("limbs_p",str(limb_p))
-        text_file = open("./src/curves/"+curve_name_lower+".rs", "w")
-        n = text_file.write(content)
-        text_file.close()
-else:
-    with open("./src/curve_templates/curve_different_limbs.rs", "r") as curve_file:
-        content = curve_file.read()
-        content = content.replace("CURVE_NAME_U",curve_name_upper)
-        content = content.replace("CURVE_NAME_L",curve_name_lower)
-        content = content.replace("_limbs_p",str(limb_p * 8 * 4))
-        content = content.replace("limbs_p",str(limb_p))
-        content = content.replace("_limbs_q",str(limb_q * 8 * 4))
-        content = content.replace("limbs_q",str(limb_q))
-        text_file = open("./src/curves/"+curve_name_lower+".rs", "w")
-        n = text_file.write(content)
-        text_file.close()
+# if limb_p == limb_q: 
+#     with open("./src/curve_templates/curve_same_limbs.rs", "r") as curve_file:
+#         content = curve_file.read()
+#         content = content.replace("CURVE_NAME_U",curve_name_upper)
+#         content = content.replace("CURVE_NAME_L",curve_name_lower)
+#         content = content.replace("_limbs_p",str(limb_p * 8 * 4))
+#         content = content.replace("limbs_p",str(limb_p))
+#         text_file = open("./src/curves/"+curve_name_lower+".rs", "w")
+#         n = text_file.write(content)
+#         text_file.close()
+# else:
+#     with open("./src/curve_templates/curve_different_limbs.rs", "r") as curve_file:
+#         content = curve_file.read()
+#         content = content.replace("CURVE_NAME_U",curve_name_upper)
+#         content = content.replace("CURVE_NAME_L",curve_name_lower)
+#         content = content.replace("_limbs_p",str(limb_p * 8 * 4))
+#         content = content.replace("limbs_p",str(limb_p))
+#         content = content.replace("_limbs_q",str(limb_q * 8 * 4))
+#         content = content.replace("limbs_q",str(limb_q))
+#         text_file = open("./src/curves/"+curve_name_lower+".rs", "w")
+#         n = text_file.write(content)
+#         text_file.close()
 
-with open("./src/curve_templates/test.rs", "r") as test_file:
-    content = test_file.read()
-    content = content.replace("CURVE_NAME_U",curve_name_upper)
-    content = content.replace("CURVE_NAME_L",curve_name_lower)
-    text_file = open("./src/test_"+curve_name_lower+".rs", "w")
-    n = text_file.write(content)
-    text_file.close()
+# with open("./src/curve_templates/test.rs", "r") as test_file:
+#     content = test_file.read()
+#     content = content.replace("CURVE_NAME_U",curve_name_upper)
+#     content = content.replace("CURVE_NAME_L",curve_name_lower)
+#     text_file = open("./src/test_"+curve_name_lower+".rs", "w")
+#     n = text_file.write(content)
+#     text_file.close()
     
-with open('./src/curves/mod.rs', 'r+') as f:
-    mod_text = f.read()
-    if mod_text.find(curve_name_lower) == -1:
-        f.write('\npub mod ' + curve_name_lower + ';')
+# with open('./src/curves/mod.rs', 'r+') as f:
+#     mod_text = f.read()
+#     if mod_text.find(curve_name_lower) == -1:
+#         f.write('\npub mod ' + curve_name_lower + ';')
 
-with open('./src/lib.rs', 'r+') as f:
-    lib_text = f.read()
-    if lib_text.find(curve_name_lower) == -1:
-        f.write('\npub mod ' + curve_name_lower + ';')
+# with open('./src/lib.rs', 'r+') as f:
+#     lib_text = f.read()
+#     if lib_text.find(curve_name_lower) == -1:
+#         f.write('\npub mod ' + curve_name_lower + ';')
