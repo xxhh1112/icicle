@@ -4,6 +4,7 @@
 #include "curve_config.cuh"
 #include <cuda.h>
 #include <stdexcept>
+#include <omp.h>
 
 extern "C" int msm_cuda_bn254(
   BN254::projective_t* out,
@@ -15,6 +16,11 @@ extern "C" int msm_cuda_bn254(
   cudaStream_t stream = 0)
 {
   try {
+    cudaError_t setDeviceErr = cudaSetDevice(device_id);
+    if (setDeviceErr != cudaSuccess) {
+      throw std::runtime_error(cudaGetErrorString(setDeviceErr));
+    }
+
     cudaStreamCreate(&stream);
     large_msm<BN254::scalar_t, BN254::projective_t, BN254::affine_t>(
       scalars, points, count, out, false, false, large_bucket_factor, stream);
