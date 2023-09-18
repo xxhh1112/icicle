@@ -13,7 +13,9 @@ extern "C" int msm_cuda_bn254(
   size_t count,
   unsigned large_bucket_factor,
   size_t device_id = 0,
-  cudaStream_t stream = 0)
+  cudaStream_t stream = 0,
+  bool on_device = false
+  )
 {
   try {
     cudaError_t setDeviceErr = cudaSetDevice(device_id);
@@ -23,7 +25,7 @@ extern "C" int msm_cuda_bn254(
 
     cudaStreamCreate(&stream);
     large_msm<BN254::scalar_t, BN254::projective_t, BN254::affine_t>(
-      scalars, points, count, out, false, false, large_bucket_factor, stream);
+      scalars, points, count, out, on_device, false, large_bucket_factor, stream);
     cudaStreamSynchronize(stream);
     return CUDA_SUCCESS;
   } catch (const std::runtime_error& ex) {

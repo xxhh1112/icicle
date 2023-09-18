@@ -22,10 +22,15 @@ int main() {
     // scalars[i] = i < N/2? test_scalar::rand_host() : test_scalar::one();
     // points[i] = test_projective::to_affine(test_projective::rand_host());
   }
+
+
   std::cout << "finished generating" << std::endl;
 
   projective_t response1[batch_size * 2];
   projective_t response2[batch_size * 2];
+  projective_t response3[batch_size * 2];
+  projective_t response4[batch_size * 2];
+  
   scalar_t* scalars_d;
   affine_t* points_d;
   projective_t* large_res_d;
@@ -36,26 +41,73 @@ int main() {
   cudaMemcpy(scalars_d, scalars, sizeof(scalar_t) * msm_size, cudaMemcpyHostToDevice);
   cudaMemcpy(points_d, points, sizeof(affine_t) * msm_size, cudaMemcpyHostToDevice);
 
+
+  scalar_t* scalars_d2;
+  affine_t* points_d2;
+  projective_t* large_res_d2;
+
+  cudaMalloc(&scalars_d2, sizeof(scalar_t) * msm_size);
+  cudaMalloc(&points_d2, sizeof(affine_t) * msm_size);
+  cudaMalloc(&large_res_d2, sizeof(projective_t));
+  cudaMemcpy(scalars_d2, scalars, sizeof(scalar_t) * msm_size, cudaMemcpyHostToDevice);
+  cudaMemcpy(points_d2, points, sizeof(affine_t) * msm_size, cudaMemcpyHostToDevice);
+
+
+  scalar_t* scalars_d3;
+  affine_t* points_d3;
+  projective_t* large_res_d3;
+
+  cudaMalloc(&scalars_d3, sizeof(scalar_t) * msm_size);
+  cudaMalloc(&points_d3, sizeof(affine_t) * msm_size);
+  cudaMalloc(&large_res_d3, sizeof(projective_t));
+  cudaMemcpy(scalars_d3, scalars, sizeof(scalar_t) * msm_size, cudaMemcpyHostToDevice);
+  cudaMemcpy(points_d3, points, sizeof(affine_t) * msm_size, cudaMemcpyHostToDevice);
   std::cout << "finished copying" << std::endl;
   
   cudaStream_t stream1;
   cudaStream_t stream2;
+  cudaStream_t stream3;
+  cudaStream_t stream4;
 
-  // Create threads
+  auto begin = std::chrono::high_resolution_clock::now();
+  msm_cuda_bn254(response1, points, scalars, msm_size, 10, 0, stream1);  
+  msm_cuda_bn254(response2, points, scalars, msm_size, 10, 0, stream2);
+  auto end = std::chrono::high_resolution_clock::now();
+  auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+  printf("Time taken with memcpy in sync: %.3f seconds.\n", elapsed.count() * 1e-9);
+
+
+  auto begin = std::chrono::high_resolution_clock::now();
+  msm_cuda_bn254(response1, points_d3, scalars_d3, msm_size, 10, 0, stream1);  
+  msm_cuda_bn254(response2, points_d3, scalars_d3, msm_size, 10, 0, stream2);
+  auto end = std::chrono::high_resolution_clock::now();
+  auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+  printf("Time taken in sync: %.3f seconds.\n", elapsed.count() * 1e-9);
+
+  auto beginmultithread = std::chrono::high_resolution_clock::now();
+
   std::thread thread1([&]() {
-    msm_cuda_bn254(response1, points, scalars, msm_size, 10, 0, stream1);
-
-    std::cout << "Total runtime of both threads: " << response1->x.export_limbs() << " milliseconds" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
+    msm_cuda_bn254(response3, points_d, scalars_d, msm_size, 10, 0, stream3, true);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    printf("Thread 1 time taken: %.3f seconds.\n", elapsed.count() * 1e-9);
   });
+
   std::thread thread2([&]() {
-    msm_cuda_bn254(response2, points, scalars, msm_size, 10, 1, stream2);
-
-    std::cout << "Total runtime of both threads: " << response2->x.export_limbs() << " milliseconds" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
+    msm_cuda_bn254(response4, points_d2, scalars_d2, msm_size, 10, 1, stream4, true);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    printf("Thread 2 time taken: %.3f seconds.\n", elapsed.count() * 1e-9);
   });
 
-  
-  // Wait for both threads to finish
+
   thread1.join();
   thread2.join();
+
+  auto endmultithread = std::chrono::high_resolution_clock::now();
+  auto elapsedmultithread = std::chrono::duration_cast<std::chrono::nanoseconds>(endmultithread - beginmultithread);
+  printf("Time taken in parrlell: %.3f seconds.\n", elapsedmultithread.count() * 1e-9);
 }
 
