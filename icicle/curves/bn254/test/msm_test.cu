@@ -70,7 +70,7 @@ int main() {
     CHECK_CUDA_ERROR(cudaMemcpy(points_d, points, sizeof(affine_t) * msm_size, cudaMemcpyHostToDevice));
 
     auto begin = std::chrono::high_resolution_clock::now();
-    commit_cuda_bn254(response1, scalars_d, points_d, msm_size, 10, 0, stream1);
+    msm_cuda_bn254(large_res_d, points_d, scalars_d, msm_size, 10, 0, stream1, true);
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
     printf("Thread 1 time taken: %.3f seconds.\n", elapsed.count() * 1e-9);
