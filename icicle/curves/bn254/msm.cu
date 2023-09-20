@@ -6,6 +6,20 @@
 #include <stdexcept>
 #include <omp.h>
 
+#define CHECK_LAST_CUDA_ERROR() checkLast(__FILE__, __LINE__)
+void checkLast(const char* const file, const int line)
+{
+    cudaError_t err{cudaGetLastError()};
+    if (err != cudaSuccess)
+    {
+        std::cerr << "CUDA Runtime Error at: " << file << ":" << line
+                  << std::endl;
+        std::cerr << cudaGetErrorString(err) << std::endl;
+        // We don't exit when we encounter CUDA errors in this example.
+        // std::exit(EXIT_FAILURE);
+    }
+}
+
 extern "C" int msm_cuda_bn254(
   BN254::projective_t* out,
   BN254::affine_t points[],
@@ -26,7 +40,15 @@ extern "C" int msm_cuda_bn254(
     cudaStreamCreate(&stream);
     large_msm<BN254::scalar_t, BN254::projective_t, BN254::affine_t>(
       scalars, points, count, out, on_device, false, large_bucket_factor, stream);
-    cudaStreamSynchronize(stream);
+
+    CHECK_LAST_CUDA_ERROR();
+    //cudaError_t sres = cudaStreamSynchronize(stream);
+    //cudaError_t dres = cudaDeviceSynchronize();
+    //cudaError_t lastres = cudaGetLastError();
+//
+    //printf("cudaStreamSynchronize %s \n", cudaGetErrorString(sres));
+    //printf("cudaDeviceSynchronize %s \n", cudaGetErrorString(dres));
+    //printf("cudaGetLastError %s \n", cudaGetErrorString(lastres));
     return CUDA_SUCCESS;
   } catch (const std::runtime_error& ex) {
     printf("error %s", ex.what());

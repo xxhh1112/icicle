@@ -331,6 +331,20 @@ __global__ void final_accumulation_kernel(
     final_results[tid] = final_result + final_sums[tid * nof_bms];
 }
 
+#define CHECK_LAST_CUDA_ERRORR() checkLastt(__FILE__, __LINE__)
+void checkLastt(const char* const file, const int line)
+{
+    cudaError_t err{cudaGetLastError()};
+    if (err != cudaSuccess)
+    {
+        std::cerr << "CUDA Runtime Error at: " << file << ":" << line
+                  << std::endl;
+        std::cerr << cudaGetErrorString(err) << std::endl;
+        // We don't exit when we encounter CUDA errors in this example.
+        // std::exit(EXIT_FAILURE);
+    }
+}
+
 // this function computes msm using the bucket method
 template <typename S, typename P, typename A>
 void bucket_method_msm(
@@ -375,6 +389,8 @@ void bucket_method_msm(
   unsigned NUM_BLOCKS = (nof_buckets + NUM_THREADS - 1) / NUM_THREADS;
   initialize_buckets_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, nof_buckets);
 
+  CHECK_LAST_CUDA_ERRORR();
+
   // accumulate ones
   P* ones_results; // fix whole division, in last run in kernel too
   const unsigned nof_runs = msm_log_size > 10 ? (1 << (msm_log_size - 6)) : 16;
@@ -390,6 +406,8 @@ void bucket_method_msm(
     single_stage_multi_reduction_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(
       ones_results, ones_results, s * 2, 0, 0, 0);
   }
+
+  CHECK_LAST_CUDA_ERRORR();
 
   unsigned* bucket_indices;
   unsigned* point_indices;
@@ -427,6 +445,8 @@ void bucket_method_msm(
   }
   cudaFreeAsync(sort_indices_temp_storage, stream);
 
+  CHECK_LAST_CUDA_ERRORR();
+
   // find bucket_sizes
   unsigned* single_bucket_indices;
   unsigned* bucket_sizes;
@@ -444,6 +464,8 @@ void bucket_method_msm(
     encode_temp_storage, encode_temp_storage_bytes, bucket_indices, single_bucket_indices, bucket_sizes,
     nof_buckets_to_compute, nof_bms * size, stream);
   cudaFreeAsync(encode_temp_storage, stream);
+
+  CHECK_LAST_CUDA_ERRORR();
 
   // get offsets - where does each new bucket begin
   unsigned* bucket_offsets;
@@ -473,6 +495,8 @@ void bucket_method_msm(
 
     return;
   }
+
+  CHECK_LAST_CUDA_ERRORR();
 
   unsigned* sorted_bucket_sizes;
   cudaMallocAsync(&sorted_bucket_sizes, sizeof(unsigned) * h_nof_buckets_to_compute, stream);
@@ -509,6 +533,8 @@ void bucket_method_msm(
   cudaMallocAsync(&nof_large_buckets, sizeof(unsigned), stream);
   cudaMemset(nof_large_buckets, 0, sizeof(unsigned));
 
+  CHECK_LAST_CUDA_ERRORR();
+
   unsigned TOTAL_THREADS = 129000; // todo - device dependant
   unsigned cutoff_run_length = max(2, h_nof_buckets_to_compute / TOTAL_THREADS);
   unsigned cutoff_nof_runs = (h_nof_buckets_to_compute + cutoff_run_length - 1) / cutoff_run_length;
@@ -534,6 +560,8 @@ void bucket_method_msm(
   cudaStream_t stream2;
   cudaStreamCreate(&stream2);
   P* large_buckets;
+
+  CHECK_LAST_CUDA_ERRORR();
 
   if (large_buckets_to_compute > 0 && bucket_th > 0) {
     unsigned threads_per_bucket =
@@ -565,6 +593,8 @@ void bucket_method_msm(
   } else {
     h_nof_large_buckets = 0;
   }
+
+  CHECK_LAST_CUDA_ERRORR();
 
   // launch the accumulation kernel with maximum threads
   if (h_nof_buckets_to_compute > h_nof_large_buckets) {
@@ -675,18 +705,26 @@ void bucket_method_msm(
   // launch the double and add kernel, a single thread
   final_accumulation_kernel<P, S>
     <<<1, 1, 0, stream>>>(final_results, ones_results, on_device ? final_result : d_final_result, 1, nof_bms, c, true);
+  CHECK_LAST_CUDA_ERRORR();
   cudaFreeAsync(final_results, stream);
   cudaStreamSynchronize(stream);
 
+  CHECK_LAST_CUDA_ERRORR();
   if (!on_device) cudaMemcpyAsync(final_result, d_final_result, sizeof(P), cudaMemcpyDeviceToHost, stream);
+
+  CHECK_LAST_CUDA_ERRORR();
 
   // free memory
   if (!on_device) {
     cudaFreeAsync(d_points, stream);
     cudaFreeAsync(d_scalars, stream);
     cudaFreeAsync(d_final_result, stream);
+
+    CHECK_LAST_CUDA_ERRORR();
   }
   cudaFreeAsync(buckets, stream);
+
+  CHECK_LAST_CUDA_ERRORR();
 #ifndef PHASE1_TEST
   cudaFreeAsync(bucket_indices, stream);
   cudaFreeAsync(point_indices, stream);
@@ -694,6 +732,8 @@ void bucket_method_msm(
   cudaFreeAsync(bucket_sizes, stream);
   cudaFreeAsync(nof_buckets_to_compute, stream);
   cudaFreeAsync(bucket_offsets, stream);
+
+  CHECK_LAST_CUDA_ERRORR();
 #endif
   cudaFreeAsync(sorted_bucket_sizes, stream);
   cudaFreeAsync(sorted_bucket_offsets, stream);
@@ -704,6 +744,8 @@ void bucket_method_msm(
   cudaFreeAsync(ones_results, stream);
 
   cudaStreamSynchronize(stream);
+
+  CHECK_LAST_CUDA_ERRORR();
 }
 
 // this function computes multiple msms using the bucket method
