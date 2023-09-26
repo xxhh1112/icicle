@@ -100,6 +100,8 @@ int main() {
     scalar_t* scalars_d;
     affine_t* points_d;
     projective_t* large_res_d;
+    
+    cuda_ctx ctx(0);
 
     cudaSetDevice(1);
     CHECK_CUDA_ERROR(cudaMalloc(&scalars_d, sizeof(scalar_t) * msm_size));

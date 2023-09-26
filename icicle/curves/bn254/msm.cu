@@ -42,13 +42,6 @@ extern "C" int msm_cuda_bn254(
       scalars, points, count, out, on_device, false, large_bucket_factor, stream);
 
     CHECK_LAST_CUDA_ERROR();
-    //cudaError_t sres = cudaStreamSynchronize(stream);
-    //cudaError_t dres = cudaDeviceSynchronize();
-    //cudaError_t lastres = cudaGetLastError();
-//
-    //printf("cudaStreamSynchronize %s \n", cudaGetErrorString(sres));
-    //printf("cudaDeviceSynchronize %s \n", cudaGetErrorString(dres));
-    //printf("cudaGetLastError %s \n", cudaGetErrorString(lastres));
     return CUDA_SUCCESS;
   } catch (const std::runtime_error& ex) {
     printf("error %s", ex.what());
