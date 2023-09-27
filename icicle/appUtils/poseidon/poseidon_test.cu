@@ -1,4 +1,5 @@
-// #define DEBUG
+//#define DEBUG
+//#define POSEIDON_DEBUG
 
 #include "../../curves/bls12_381/curve_config.cuh"
 #include "../../curves/bls12_381/poseidon.cu"

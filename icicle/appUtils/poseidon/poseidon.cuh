@@ -45,22 +45,53 @@ struct PoseidonConfiguration {
   S *round_constants, *mds_matrix, *non_sparse_matrix, *sparse_matrices;
 };
 
+/// This class describes the logic of calculating CUDA kernels parameters
+/// such as the number of threads and the number of blocks
+class ParallelPoseidonConfiguration
+{
+  uint32_t t;
+public:
+  int number_of_threads, hashes_per_block, singlehash_block_size;
+
+  ParallelPoseidonConfiguration(const uint32_t t) {
+    this->t = t;
+    // The logic behind this is that 1 thread only works on 1 element
+    // We have {t} elements in each state, and {number_of_states} states total
+    number_of_threads = (256 / t) * t;
+    hashes_per_block = number_of_threads / t;
+    this->t = t;
+
+    // The partial rounds operates on the whole state, so we define
+    // the parallelism params for processing a single hash preimage per thread
+    singlehash_block_size = 128;
+  }
+
+  int number_of_full_blocks(size_t number_of_states) {
+    int total_number_of_threads = number_of_states * t;
+    return total_number_of_threads / number_of_threads + static_cast<bool>(total_number_of_threads % number_of_threads);
+  }
+
+  int number_of_singlehash_blocks(size_t number_of_states) {
+    return number_of_states / singlehash_block_size + static_cast<bool>(number_of_states % singlehash_block_size);
+  }
+};
+
 template <typename S>
 class Poseidon
 {
 public:
-  uint32_t t, arity;
+  uint32_t arity;
   PoseidonConfiguration<S> config;
+  ParallelPoseidonConfiguration kernel_params;
 
   enum HashType {
-      ConstInputLen,
+    ConstInputLen,
     MerkleTree,
   };
 
-  Poseidon(const uint32_t arity, cudaStream_t stream) {
+  Poseidon(const uint32_t arity, cudaStream_t stream) : kernel_params(arity + 1) {
     this->arity = arity;
-    this->t = arity + 1;
-    this->config.t = t;
+    config.t = arity + 1;
     this->stream = stream;
 
     // Pre-calculate domain tags
@@ -75,12 +106,12 @@ public:
     // const_input_no_pad_domain_tag = S::one() << 64;
     // const_input_no_pad_domain_tag *= S::from(arity);
 
-    this->config.full_rounds_half = FULL_ROUNDS_DEFAULT;
-    this->config.partial_rounds = partial_rounds_number_from_arity(arity);
+    config.full_rounds_half = FULL_ROUNDS_DEFAULT;
+    config.partial_rounds = partial_rounds_number_from_arity(arity);
 
-    uint32_t round_constants_len = t * this->config.full_rounds_half * 2 + this->config.partial_rounds;
-    uint32_t mds_matrix_len = t * t;
-    uint32_t sparse_matrices_len = (t * 2 - 1) * this->config.partial_rounds;
+    uint32_t round_constants_len = config.t * config.full_rounds_half * 2 + this->config.partial_rounds;
+    uint32_t mds_matrix_len = config.t * config.t;
+    uint32_t sparse_matrices_len = (config.t * 2 - 1) * config.partial_rounds;
 
     // All the constants are stored in a single file
     S* constants = load_constants<S>(arity);
@@ -90,7 +121,7 @@ public:
     S* sparse_matrices_offset = non_sparse_offset + mds_matrix_len;
 
 #if !defined(__CUDA_ARCH__) && defined(DEBUG)
-    std::cout << "P: " << this->config.partial_rounds << " F: " << this->config.full_rounds_half << std::endl;
+    std::cout << "P: " << config.partial_rounds << " F: " << config.full_rounds_half << std::endl;
 #endif
 
     // Create streams for copying constants
@@ -148,6 +179,8 @@ public:
     cudaFreeAsync(this->config.sparse_matrices, this->stream);
   }
   
+  /// This function will apply a single Poseidon permutation to mulitple states in parallel 
+  void permute_many(S * states, size_t number_of_states, cudaStream_t stream);
   /// This function will copy input from host and copy the result from device
   void hash_blocks(const S * inp, size_t blocks, S * out, HashType hash_type, cudaStream_t stream);
   /// This function is called by `hash_blocks`. It will interpret all the pointers as device memory
