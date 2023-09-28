@@ -187,29 +187,52 @@ __global__ void accumulate_buckets_kernel(
 {
   constexpr unsigned sign_mask = 0x80000000;
   unsigned tid = (blockIdx.x * blockDim.x) + threadIdx.x;
-  if (tid >= nof_buckets_to_compute) return;
+
+  if (tid == 0) {
+    printf("Kernel launched!\n");
+  }
+
+  if (tid >= nof_buckets_to_compute) {
+    if (tid == 0) {
+        printf("Exiting early due to tid >= nof_buckets_to_compute.\n");
+    }
+    return;
+  }
+
   if ((single_bucket_indices[tid] & ((1 << c) - 1)) == 0) {
+    if (tid == 0) {
+        printf("Skipping zero bucket.\n");
+    }
     return; // skip zero buckets
   }
-#ifdef SIGNED_DIG // todo - fix
-  const unsigned msm_index = single_bucket_indices[tid] >> msm_idx_shift;
-  const unsigned bm_index = (single_bucket_indices[tid] & ((1 << msm_idx_shift) - 1)) >> c;
-  const unsigned bucket_index =
-    msm_index * nof_buckets + bm_index * ((1 << (c - 1)) + 1) + (single_bucket_indices[tid] & ((1 << c) - 1));
-#else
-  unsigned msm_index = single_bucket_indices[tid] >> msm_idx_shift;
-  unsigned bucket_index = msm_index * nof_buckets + (single_bucket_indices[tid] & ((1 << msm_idx_shift) - 1));
-#endif
-  const unsigned bucket_offset = bucket_offsets[tid];
-  const unsigned bucket_size = bucket_sizes[tid];
 
-  P bucket; // get rid of init buckets? no.. because what about buckets with no points
-  for (unsigned i = 0; i < bucket_size;
-       i++) { // add the relevant points starting from the relevant offset up to the bucket size
+#ifdef SIGNED_DIG
+    const unsigned msm_index = single_bucket_indices[tid] >> msm_idx_shift;
+    const unsigned bm_index = (single_bucket_indices[tid] & ((1 << msm_idx_shift) - 1)) >> c;
+    const unsigned bucket_index = msm_index * nof_buckets + bm_index * ((1 << (c - 1)) + 1) + (single_bucket_indices[tid] & ((1 << c) - 1));
+    printf("tid=%d, msm_index=%u, bm_index=%u, bucket_index=%u\n", tid, msm_index, bm_index, bucket_index);
+#else
+    unsigned msm_index = single_bucket_indices[tid] >> msm_idx_shift;
+    unsigned bucket_index = msm_index * nof_buckets + (single_bucket_indices[tid] & ((1 << msm_idx_shift) - 1));
+    printf("tid=%d, msm_index=%u, bucket_index=%u\n", tid, msm_index, bucket_index);
+#endif
+
+  const unsigned bucket_offset = bucket_offsets[tid];
+  printf("tid=%d, bucket_offset=%u\n", tid, bucket_offset);
+
+  const unsigned bucket_size = bucket_sizes[tid];
+  printf("tid=%d, bucket_size=%u\n", tid, bucket_size);
+
+  P bucket;
+
+  for (unsigned i = 0; i < bucket_size; i++) {
     unsigned point_ind = point_indices[bucket_offset + i];
+    printf("tid=%d, loop i=%u, point_ind=%u\n", tid, i, point_ind);
+
 #ifdef SIGNED_DIG
     unsigned sign = point_ind & sign_mask;
     point_ind &= ~sign_mask;
+    printf("tid=%d, loop i=%u, sign-adjusted point_ind=%u\n", tid, i, point_ind);
     A point = points[point_ind];
     if (sign) point = A::neg(point);
 #else
@@ -217,8 +240,10 @@ __global__ void accumulate_buckets_kernel(
 #endif
     bucket = i ? bucket + point : P::from_affine(point);
   }
+  printf("tid=%d, Final bucket value = [Your Bucket Display Logic Here]\n", tid); // You need to implement how P is displayed.
   buckets[bucket_index] = bucket;
 }
+
 
 template <typename P, typename A>
 __global__ void accumulate_large_buckets_kernel(
@@ -314,7 +339,7 @@ __global__ void last_pass_kernel(P* final_buckets, P* final_sums, unsigned num_s
 template <typename P, typename S>
 __global__ void final_accumulation_kernel(
   P* final_sums, P* ones_result, P* final_results, unsigned nof_msms, unsigned nof_bms, unsigned c, bool add_ones)
-{
+{ 
   unsigned tid = (blockIdx.x * blockDim.x) + threadIdx.x;
   if (tid > nof_msms) return;
   P final_result = P::zero();
@@ -345,6 +370,21 @@ void checkLastt(const char* const file, const int line)
     }
 }
 
+#define CHECK_CUDA_ERRORR(val) checkF((val), #val, __FILE__, __LINE__)
+template <typename T>
+void checkF(T err, const char* const func, const char* const file,
+           const int line)
+{
+    if (err != cudaSuccess)
+    {
+        std::cerr << "CUDA Runtime Error at: " << file << ":" << line
+                  << std::endl;
+        std::cerr << cudaGetErrorString(err) << " " << func << std::endl;
+        // We don't exit when we encounter CUDA errors in this example.
+        // std::exit(EXIT_FAILURE);
+    }
+}
+
 // this function computes msm using the bucket method
 template <typename S, typename P, typename A>
 void bucket_method_msm(
@@ -359,6 +399,7 @@ void bucket_method_msm(
   unsigned large_bucket_factor,
   cudaStream_t stream)
 {
+  printf("SCREAM \n");
   S* d_scalars;
   A* d_points;
   if (!on_device) {
@@ -528,7 +569,9 @@ void bucket_method_msm(
 
   // find large buckets
   unsigned avarage_size = size / (1 << c);
+  printf("avarage_size = %d...\n", avarage_size);
   unsigned bucket_th = large_bucket_factor * avarage_size;
+  printf("bucket_th = %d...\n", bucket_th);
   unsigned* nof_large_buckets;
   cudaMallocAsync(&nof_large_buckets, sizeof(unsigned), stream);
   cudaMemset(nof_large_buckets, 0, sizeof(unsigned));
@@ -544,14 +587,15 @@ void bucket_method_msm(
     sorted_bucket_sizes, h_nof_buckets_to_compute, bucket_th, cutoff_run_length, nof_large_buckets);
 
   unsigned h_nof_large_buckets;
-  cudaMemcpyAsync(&h_nof_large_buckets, nof_large_buckets, sizeof(unsigned), cudaMemcpyDeviceToHost, stream);
+  CHECK_CUDA_ERRORR(cudaMemcpyAsync(&h_nof_large_buckets, nof_large_buckets, sizeof(unsigned), cudaMemcpyDeviceToHost, stream));
+  printf("nof_large_buckets = %d...\n", h_nof_large_buckets);
 
   unsigned* max_res;
-  cudaMallocAsync(&max_res, sizeof(unsigned) * 2, stream);
+  CHECK_CUDA_ERRORR(cudaMallocAsync(&max_res, sizeof(unsigned) * 2, stream));
   find_max_size<<<1, 1, 0, stream>>>(sorted_bucket_sizes, sorted_single_bucket_indices, c, max_res);
 
   unsigned h_max_res[2];
-  cudaMemcpyAsync(h_max_res, max_res, sizeof(unsigned) * 2, cudaMemcpyDeviceToHost, stream);
+  CHECK_CUDA_ERRORR(cudaMemcpyAsync(h_max_res, max_res, sizeof(unsigned) * 2, cudaMemcpyDeviceToHost, stream));
   unsigned h_largest_bucket_size = h_max_res[0];
   unsigned h_nof_zero_large_buckets = h_max_res[1];
   unsigned large_buckets_to_compute =
@@ -566,9 +610,10 @@ void bucket_method_msm(
   if (large_buckets_to_compute > 0 && bucket_th > 0) {
     unsigned threads_per_bucket =
       1 << (unsigned)ceil(log2((h_largest_bucket_size + bucket_th - 1) / bucket_th)); // global param
+    printf("threads_per_bucket = %d...\n", threads_per_bucket);
     unsigned max_bucket_size_run_length = (h_largest_bucket_size + threads_per_bucket - 1) / threads_per_bucket;
     unsigned total_large_buckets_size = large_buckets_to_compute * threads_per_bucket;
-    cudaMallocAsync(&large_buckets, sizeof(P) * total_large_buckets_size, stream);
+    CHECK_CUDA_ERRORR(cudaMallocAsync(&large_buckets, sizeof(P) * total_large_buckets_size, stream));
 
     NUM_THREADS = min(1 << 8, total_large_buckets_size);
     NUM_BLOCKS = (total_large_buckets_size + NUM_THREADS - 1) / NUM_THREADS;
@@ -577,6 +622,7 @@ void bucket_method_msm(
       sorted_single_bucket_indices + h_nof_zero_large_buckets, point_indices, d_points, nof_buckets,
       large_buckets_to_compute, c + bm_bitsize, c, threads_per_bucket, max_bucket_size_run_length);
 
+    CHECK_LAST_CUDA_ERRORR();
     // reduce
     for (int s = total_large_buckets_size >> 1; s > large_buckets_to_compute - 1; s >>= 1) {
       NUM_THREADS = min(MAX_TH, s);
@@ -604,26 +650,29 @@ void bucket_method_msm(
       buckets, sorted_bucket_offsets + h_nof_large_buckets, sorted_bucket_sizes + h_nof_large_buckets,
       sorted_single_bucket_indices + h_nof_large_buckets, point_indices, d_points, nof_buckets,
       h_nof_buckets_to_compute - h_nof_large_buckets, c + bm_bitsize, c);
+    CHECK_LAST_CUDA_ERRORR();
   }
 
   // all the large buckets need to be accumulated before the final summation
-  cudaStreamSynchronize(stream2);
-  cudaStreamDestroy(stream2);
+  CHECK_CUDA_ERRORR(cudaStreamSynchronize(stream2));
+  CHECK_CUDA_ERRORR(cudaStreamDestroy(stream2));
 
-#ifdef SSM_SUM
-  // sum each bucket
-  NUM_THREADS = 1 << 10;
-  NUM_BLOCKS = (nof_buckets + NUM_THREADS - 1) / NUM_THREADS;
-  ssm_buckets_kernel<fake_point, fake_scalar>
-    <<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, single_bucket_indices, nof_buckets, c);
+  CHECK_LAST_CUDA_ERRORR();
 
-  // sum each bucket module
-  P* final_results;
-  cudaMallocAsync(&final_results, sizeof(P) * nof_bms, stream);
-  NUM_THREADS = 1 << c;
-  NUM_BLOCKS = nof_bms;
-  sum_reduction_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, final_results);
-#endif
+  #ifdef SSM_SUM
+    // sum each bucket
+    NUM_THREADS = 1 << 10;
+    NUM_BLOCKS = (nof_buckets + NUM_THREADS - 1) / NUM_THREADS;
+    ssm_buckets_kernel<fake_point, fake_scalar>
+      <<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, single_bucket_indices, nof_buckets, c);
+
+    // sum each bucket module
+    P* final_results;
+    cudaMallocAsync(&final_results, sizeof(P) * nof_bms, stream);
+    NUM_THREADS = 1 << c;
+    NUM_BLOCKS = nof_bms;
+    sum_reduction_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, final_results);
+  #endif
 
   P* d_final_result;
   if (!on_device) cudaMallocAsync(&d_final_result, sizeof(P), stream);
@@ -634,12 +683,12 @@ void bucket_method_msm(
     // launch the bucket module sum kernel - a thread for each bucket module
     NUM_THREADS = nof_bms;
     NUM_BLOCKS = 1;
-#ifdef SIGNED_DIG
-    big_triangle_sum_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(
-      buckets, final_results, nof_bms, c - 1); // sighed digits
-#else
-    big_triangle_sum_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, final_results, nof_bms, c);
-#endif
+  #ifdef SIGNED_DIG
+      big_triangle_sum_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(
+        buckets, final_results, nof_bms, c - 1); // sighed digits
+  #else
+      big_triangle_sum_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(buckets, final_results, nof_bms, c);
+  #endif
   } else {
     unsigned source_bits_count = c;
     bool odd_source_c = source_bits_count % 2;
@@ -654,9 +703,9 @@ void bucket_method_msm(
       const unsigned target_bits_count = (source_bits_count + 1) >> 1;                 // c/2=8
       const unsigned target_windows_count = source_windows_count << 1;                 // nof bms*2 = 32
       const unsigned target_buckets_count = target_windows_count << target_bits_count; // bms*2^c = 32*2^8
-      cudaMallocAsync(&target_buckets, sizeof(P) * target_buckets_count, stream);      // 32*2^8*2^7 buckets
-      cudaMallocAsync(&temp_buckets1, sizeof(P) * source_buckets_count / 2, stream);   // 32*2^8*2^7 buckets
-      cudaMallocAsync(&temp_buckets2, sizeof(P) * source_buckets_count / 2, stream);   // 32*2^8*2^7 buckets
+      CHECK_CUDA_ERRORR(cudaMallocAsync(&target_buckets, sizeof(P) * target_buckets_count, stream));      // 32*2^8*2^7 buckets
+      CHECK_CUDA_ERRORR(cudaMallocAsync(&temp_buckets1, sizeof(P) * source_buckets_count / 2, stream));   // 32*2^8*2^7 buckets
+      CHECK_CUDA_ERRORR(cudaMallocAsync(&temp_buckets2, sizeof(P) * source_buckets_count / 2, stream));   // 32*2^8*2^7 buckets
 
       if (source_bits_count > 0) {
         for (unsigned j = 0; j < target_bits_count; j++) {
@@ -682,15 +731,15 @@ void bucket_method_msm(
         NUM_BLOCKS = (nof_bms + NUM_THREADS - 1) / NUM_THREADS;
         last_pass_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream>>>(target_buckets, final_results, nof_bms);
         c = 1;
-        cudaFreeAsync(source_buckets, stream);
-        cudaFreeAsync(target_buckets, stream);
-        cudaFreeAsync(temp_buckets1, stream);
-        cudaFreeAsync(temp_buckets2, stream);
+        CHECK_CUDA_ERRORR(cudaFreeAsync(source_buckets, stream));
+        CHECK_CUDA_ERRORR(cudaFreeAsync(target_buckets, stream));
+        CHECK_CUDA_ERRORR(cudaFreeAsync(temp_buckets1, stream));
+        CHECK_CUDA_ERRORR(cudaFreeAsync(temp_buckets2, stream));
         break;
       }
-      cudaFreeAsync(source_buckets, stream);
-      cudaFreeAsync(temp_buckets1, stream);
-      cudaFreeAsync(temp_buckets2, stream);
+      CHECK_CUDA_ERRORR(cudaFreeAsync(source_buckets, stream));
+      CHECK_CUDA_ERRORR(cudaFreeAsync(temp_buckets1, stream));
+      CHECK_CUDA_ERRORR(cudaFreeAsync(temp_buckets2, stream));
       source_buckets = target_buckets;
       target_buckets = nullptr;
       temp_buckets1 = nullptr;
@@ -702,6 +751,7 @@ void bucket_method_msm(
     }
   }
 
+  CHECK_LAST_CUDA_ERRORR();
   // launch the double and add kernel, a single thread
   final_accumulation_kernel<P, S>
     <<<1, 1, 0, stream>>>(final_results, ones_results, on_device ? final_result : d_final_result, 1, nof_bms, c, true);
