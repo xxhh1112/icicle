@@ -1,4 +1,5 @@
-#include "poseidon.cuh"
+#include "../poseidon.cuh"
+#include "constants.cuh"
 
 template <typename S>
 class OptimizedPoseidon: public Poseidon<S>

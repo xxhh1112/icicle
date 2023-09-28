@@ -1,6 +1,6 @@
 #ifndef _BLS12_381_POSEIDON
 #define _BLS12_381_POSEIDON
-#include "../../appUtils/poseidon/opt_poseidon.cu"
+#include "../../appUtils/poseidon/optimized/opt_poseidon.cu"
 #include "curve_config.cuh"
 #include <cuda.h>
 #include <stdexcept>

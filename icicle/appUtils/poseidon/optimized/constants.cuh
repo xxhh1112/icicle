@@ -1,9 +1,9 @@
 #pragma once
 
-#include "constants/constants_11.h"
-#include "constants/constants_2.h"
-#include "constants/constants_4.h"
-#include "constants/constants_8.h"
+#include "constants/bn254/constants_11.h"
+#include "constants/bn254/constants_2.h"
+#include "constants/bn254/constants_4.h"
+#include "constants/bn254/constants_8.h"
 #include <cassert>
 #include <map>
 #include <stdexcept>

@@ -1,5 +1,4 @@
 #pragma once
-#include "constants.cuh"
 
 #define FIRST_FULL_ROUNDS true
 #define SECOND_FULL_ROUNDS false
