@@ -1,6 +1,9 @@
 #pragma once
 #include "constants.cuh"
 
+#define FIRST_FULL_ROUNDS true
+#define SECOND_FULL_ROUNDS false
+
 #if !defined(__CUDA_ARCH__) && defined(DEBUG)
 #include <chrono>
 #include <iomanip>
@@ -76,117 +79,109 @@ public:
   }
 };
 
+/// Interface class
 template <typename S>
 class Poseidon
 {
 public:
-  uint32_t arity;
-  PoseidonConfiguration<S> config;
-  ParallelPoseidonConfiguration kernel_params;
-
   enum HashType {
     ConstInputLen,
     MerkleTree,
   };
+  uint32_t t, arity;
 
-  Poseidon(const uint32_t arity, cudaStream_t stream) : kernel_params(arity + 1) {
+  Poseidon(uint32_t arity) {
     this->arity = arity;
-    config.t = arity + 1;
-    this->stream = stream;
-
-    // Pre-calculate domain tags
-    // Domain tags will vary for different applications of Poseidon
-    uint32_t tree_domain_tag_value = 1;
-    tree_domain_tag_value = (tree_domain_tag_value << arity) - tree_domain_tag_value;
-    tree_domain_tag = S::from(tree_domain_tag_value);
-
-    const_input_no_pad_domain_tag = S::one();
-
-    // TO-DO: implement binary shifts for scalar type
-    // const_input_no_pad_domain_tag = S::one() << 64;
-    // const_input_no_pad_domain_tag *= S::from(arity);
-
-    config.full_rounds_half = FULL_ROUNDS_DEFAULT;
-    config.partial_rounds = partial_rounds_number_from_arity(arity);
-
-    uint32_t round_constants_len = config.t * config.full_rounds_half * 2 + this->config.partial_rounds;
-    uint32_t mds_matrix_len = config.t * config.t;
-    uint32_t sparse_matrices_len = (config.t * 2 - 1) * config.partial_rounds;
-
-    // All the constants are stored in a single file
-    S* constants = load_constants<S>(arity);
-
-    S* mds_offset = constants + round_constants_len;
-    S* non_sparse_offset = mds_offset + mds_matrix_len;
-    S* sparse_matrices_offset = non_sparse_offset + mds_matrix_len;
-
-#if !defined(__CUDA_ARCH__) && defined(DEBUG)
-    std::cout << "P: " << config.partial_rounds << " F: " << config.full_rounds_half << std::endl;
-#endif
-
-    // Create streams for copying constants
-    cudaStream_t stream_copy_round_constants, stream_copy_mds_matrix, stream_copy_non_sparse,
-      stream_copy_sparse_matrices;
-    cudaStreamCreate(&stream_copy_round_constants);
-    cudaStreamCreate(&stream_copy_mds_matrix);
-    cudaStreamCreate(&stream_copy_non_sparse);
-    cudaStreamCreate(&stream_copy_sparse_matrices);
-
-    // Create events for copying constants
-    cudaEvent_t event_copied_round_constants, event_copy_mds_matrix, event_copy_non_sparse, event_copy_sparse_matrices;
-    cudaEventCreateWithFlags(&event_copied_round_constants, cudaEventDisableTiming);
-    cudaEventCreateWithFlags(&event_copy_mds_matrix, cudaEventDisableTiming);
-    cudaEventCreateWithFlags(&event_copy_non_sparse, cudaEventDisableTiming);
-    cudaEventCreateWithFlags(&event_copy_sparse_matrices, cudaEventDisableTiming);
-
-    // Malloc memory for copying constants
-    cudaMallocAsync(&this->config.round_constants, sizeof(S) * round_constants_len, stream_copy_round_constants);
-    cudaMallocAsync(&this->config.mds_matrix, sizeof(S) * mds_matrix_len, stream_copy_mds_matrix);
-    cudaMallocAsync(&this->config.non_sparse_matrix, sizeof(S) * mds_matrix_len, stream_copy_non_sparse);
-    cudaMallocAsync(&this->config.sparse_matrices, sizeof(S) * sparse_matrices_len, stream_copy_sparse_matrices);
-
-    // Copy constants
-    cudaMemcpyAsync(
-      this->config.round_constants, constants, sizeof(S) * round_constants_len, cudaMemcpyHostToDevice,
-      stream_copy_round_constants);
-    cudaMemcpyAsync(
-      this->config.mds_matrix, mds_offset, sizeof(S) * mds_matrix_len, cudaMemcpyHostToDevice, stream_copy_mds_matrix);
-    cudaMemcpyAsync(
-      this->config.non_sparse_matrix, non_sparse_offset, sizeof(S) * mds_matrix_len, cudaMemcpyHostToDevice,
-      stream_copy_non_sparse);
-    cudaMemcpyAsync(
-      this->config.sparse_matrices, sparse_matrices_offset, sizeof(S) * sparse_matrices_len, cudaMemcpyHostToDevice,
-      stream_copy_sparse_matrices);
-
-    // Record finished copying event for streams
-    cudaEventRecord(event_copied_round_constants, stream_copy_round_constants);
-    cudaEventRecord(event_copy_mds_matrix, stream_copy_mds_matrix);
-    cudaEventRecord(event_copy_non_sparse, stream_copy_non_sparse);
-    cudaEventRecord(event_copy_sparse_matrices, stream_copy_sparse_matrices);
-
-    // Main stream waits for copying to finish
-    cudaStreamWaitEvent(stream, event_copied_round_constants);
-    cudaStreamWaitEvent(stream, event_copy_mds_matrix);
-    cudaStreamWaitEvent(stream, event_copy_non_sparse);
-    cudaStreamWaitEvent(stream, event_copy_sparse_matrices);
+    this->t = arity + 1;
   }
 
-  ~Poseidon()
-  {
-    cudaFreeAsync(this->config.round_constants, this->stream);
-    cudaFreeAsync(this->config.mds_matrix, this->stream);
-    cudaFreeAsync(this->config.non_sparse_matrix, this->stream);
-    cudaFreeAsync(this->config.sparse_matrices, this->stream);
-  }
-  
   /// This function will apply a single Poseidon permutation to mulitple states in parallel 
-  void permute_many(S * states, size_t number_of_states, cudaStream_t stream);
+  virtual void permute_many(S * states, size_t number_of_states, cudaStream_t stream) {
+    std::cout << "PERMUTE MANY" << std::endl;
+  }
+
   /// This function will copy input from host and copy the result from device
-  void hash_blocks(const S * inp, size_t blocks, S * out, HashType hash_type, cudaStream_t stream);
-  /// This function is called by `hash_blocks`. It will interpret all the pointers as device memory
-  void poseidon_hash(S * states, size_t blocks, S * out, HashType hash_type, cudaStream_t stream, bool aligned, bool loop_results);
+  void hash_blocks(const S * inp, size_t number_of_states, S * out, HashType hash_type, cudaStream_t stream) {
+      S * states, * out_device;
+      // allocate memory for {number_of_states} states of {t} scalars each
+      if (cudaMallocAsync(&states, number_of_states * t * sizeof(S), stream) != cudaSuccess) {
+          throw std::runtime_error("Failed memory allocation on the device");
+      }
+      if (cudaMallocAsync(&out_device, number_of_states * sizeof(S), stream) != cudaSuccess) {
+          throw std::runtime_error("Failed memory allocation on the device");
+      }
+
+      // This is where the input matrix of size Arity x NumberOfBlocks is
+      // padded and coppied to device in a T x NumberOfBlocks matrix
+      cudaMemcpy2DAsync(states, t * sizeof(S),  // Device pointer and device pitch
+                    inp, (t - 1) * sizeof(S),    // Host pointer and pitch
+                    (t - 1) * sizeof(S), number_of_states, // Size of the source matrix (Arity x NumberOfBlocks)
+                    cudaMemcpyHostToDevice, stream);
+
+      poseidon_hash(states, number_of_states, out_device, hash_type, stream, false, false);
+
+      cudaFreeAsync(states, stream);
+      cudaMemcpyAsync(out, out_device, number_of_states * sizeof(S), cudaMemcpyDeviceToHost, stream);
+      cudaFreeAsync(out_device, stream);
+
+    #if !defined(__CUDA_ARCH__) && defined(POSEIDON_DEBUG)
+      cudaDeviceReset();
+    #endif
+  }
+
+  // Compute the poseidon hash over a sequence of preimages
+  ///
+  ///=====================================================
+  /// # Arguments
+  /// * `states`  - a device pointer to the states memory. Expected to be of size `number_of_states * t` elements. States should contain the leaves values
+  /// * `number_of_states`  - number of preimages number_of_states. Each block is of size t
+  /// * `out` - a device pointer to the digests memory. Expected to be of size `sum(arity ^ (i)) for i in [0..height-1]`
+  /// * `hash_type`  - this will determine the domain_tag value
+  /// * `stream` - a cuda stream to run the kernels
+  /// * `aligned` - if set to `true`, the algorithm expects the states to contain leaves in an aligned form
+  /// * `loop_results` - if set to `true`, the resulting hash will be also copied into the states memory in aligned form.
+  ///
+  /// Aligned form (for arity = 2):
+  /// [0, X1, X2, 0, X3, X4, ...]
+  ///
+  /// Not aligned form (for arity = 2) (you will get this format
+  ///                                   after copying leaves with cudaMemcpy2D):
+  /// [X1, X2, 0, X3, X4, 0]
+  /// Note: elements denoted by 0 doesn't need to be set to 0, the algorithm
+  /// will replace them with domain tags.
+  ///
+  /// # Algorithm
+  /// The function will split large trees into many subtrees of size that will fit `STREAM_CHUNK_SIZE`.
+  /// The subtrees will be constructed in streams pool. Each stream will handle a subtree
+  /// After all subtrees are constructed - the function will combine the resulting sub-digests into the final top-tree
+  ///======================================================
+  void poseidon_hash(S * states, size_t number_of_states, S * out, Poseidon<S>::HashType hash_type, cudaStream_t stream, bool aligned, bool loop_results) {
+    // Pick the domain_tag accordinaly
+    S domain_tag;
+    switch (hash_type) {
+    case HashType::ConstInputLen:
+      // Temporary solution
+      domain_tag = S::one();
+      break;
+
+    case HashType::MerkleTree:
+      uint32_t tree_domain_tag_value = 1;
+      tree_domain_tag_value = (tree_domain_tag_value << arity) - tree_domain_tag_value;
+      domain_tag = S::from(tree_domain_tag_value);
+    }
+
+    prepare_states(states, number_of_states, domain_tag, aligned);
+
+    permute_many(states, number_of_states, stream);
+
+    process_results(states, number_of_states, out, loop_results);
+  }
 
 private:
-  S tree_domain_tag, const_input_no_pad_domain_tag;
-  cudaStream_t stream;
+  virtual void prepare_states(S * states, size_t number_of_states, S domain_tag, bool aligned) {
+    std::cout << "PERMUTE MANY" << std::endl;
+  }
+  virtual void process_results(S * states, size_t number_of_states, S * out, bool loop_results) {
+    std::cout << "PERMUTE MANY" << std::endl;
+  }
 };

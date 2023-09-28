@@ -1,11 +1,11 @@
 #ifndef _BLS12_381_POSEIDON
 #define _BLS12_381_POSEIDON
-#include "../../appUtils/poseidon/poseidon.cu"
+#include "../../appUtils/poseidon/opt_poseidon.cu"
 #include "curve_config.cuh"
 #include <cuda.h>
 #include <stdexcept>
 
-template class Poseidon<BLS12_381::scalar_t>;
+template class OptimizedPoseidon<BLS12_381::scalar_t>;
 
 extern "C" int poseidon_multi_cuda_bls12_381(
   BLS12_381::scalar_t input[],
@@ -24,8 +24,8 @@ extern "C" int poseidon_multi_cuda_bls12_381(
     cudaEventCreate(&start_event);
     cudaEventCreate(&end_event);
     cudaEventRecord(start_event, stream);
-    Poseidon<BLS12_381::scalar_t> poseidon(arity, stream);
-    poseidon.hash_blocks(input, number_of_blocks, out, Poseidon<BLS12_381::scalar_t>::HashType::MerkleTree, stream);
+    OptimizedPoseidon<BLS12_381::scalar_t> poseidon(arity, stream);
+    poseidon.hash_blocks(input, number_of_blocks, out, OptimizedPoseidon<BLS12_381::scalar_t>::HashType::MerkleTree, stream);
     cudaEventRecord(end_event, stream);
     cudaEventSynchronize(end_event);
 
