@@ -27,6 +27,9 @@ public:
     S* sparse_matrices_offset = non_sparse_offset + mds_matrix_len;
 
 #if !defined(__CUDA_ARCH__) && defined(DEBUG)
+    for (int i = 0; i < mds_matrix_len; i++) {
+      std::cout << mds_offset[i] << std::endl;
+    }
     std::cout << "P: " << config.partial_rounds << " F: " << config.full_rounds_half << std::endl;
 #endif
 

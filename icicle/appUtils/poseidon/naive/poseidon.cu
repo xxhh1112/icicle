@@ -1,4 +1,4 @@
-#include "opt_poseidon.cuh"
+#include "poseidon.cuh"
 
 template <typename S>
 __global__ void
@@ -31,10 +31,9 @@ prepare_poseidon_states(S* states, size_t number_of_states, S domain_tag, const 
 }
 
 template <typename S>
-__device__ __forceinline__ S sbox_alpha_five(S element)
+__device__ __forceinline__ S sbox_cube(S element)
 {
   S result = S::sqr(element);
-  result = S::sqr(result);
   return result * element;
 }
 
@@ -54,35 +53,28 @@ __device__ S vecs_mul_matrix(S element, S* matrix, int element_number, int vec_n
 }
 
 template <typename S>
-__device__ S full_round(
+__device__ S round(
   S element,
   size_t rc_offset,
+  bool is_full_round,
   int local_state_number,
   int element_number,
-  bool multiply_by_mds,
-  bool add_pre_round_constants,
-  bool skip_rc,
   S* shared_states,
   const PoseidonConfiguration<S> config)
 {
-  if (add_pre_round_constants) {
-    element = element + config.round_constants[rc_offset + element_number];
-    rc_offset += config.t;
-  }
-  element = sbox_alpha_five(element);
-  if (!skip_rc) {
-    element = element + config.round_constants[rc_offset + element_number];
+  if (is_full_round || element_number == (config.t - 1)) {
+    element = element + config.round_constants[rc_offset + element_number * is_full_round];
+    element = sbox_cube(element);
   }
 
   // Multiply all the states by mds matrix
-  S* matrix = multiply_by_mds ? config.mds_matrix : config.non_sparse_matrix;
-  return vecs_mul_matrix(element, matrix, element_number, local_state_number, config.t, shared_states);
+  return vecs_mul_matrix(element, config.mds_matrix, element_number, local_state_number, config.t, shared_states);
 }
 
 // Execute full rounds
 template <typename S>
-__global__ void full_rounds(
-  S* states, size_t number_of_states, size_t rc_offset, bool first_half, const PoseidonConfiguration<S> config)
+__global__ void rounds(
+  S* states, size_t number_of_states, size_t rc_offset, bool is_full_rounds, const PoseidonConfiguration<S> config)
 {
   extern __shared__ S shared_states[];
 
@@ -92,54 +84,10 @@ __global__ void full_rounds(
   int local_state_number = threadIdx.x / config.t;
   int element_number = idx % config.t;
 
-  bool add_pre_round_constants = first_half;
-  for (int i = 0; i < config.full_rounds_half; i++) {
-    states[idx] =
-      full_round(states[idx], rc_offset, local_state_number,
-                 element_number, !first_half || (i < (config.full_rounds_half - 1)),
-                 add_pre_round_constants, !first_half && (i == config.full_rounds_half - 1), shared_states, config);
-    rc_offset += config.t;
-
-    if (add_pre_round_constants) {
-      rc_offset += config.t;
-      add_pre_round_constants = false;
-    }
-  }
-}
-
-template <typename S>
-__device__ S partial_round(S* state, size_t rc_offset, int round_number, const PoseidonConfiguration<S> config)
-{
-  S element = state[0];
-  element = sbox_alpha_five(element);
-  element = element + config.round_constants[rc_offset];
-
-  S* sparse_matrix = &config.sparse_matrices[(config.t * 2 - 1) * round_number];
-
-  typename S::Wide state_0_wide = S::mul_wide(element, sparse_matrix[0]);
-  for (int i = 1; i < config.t; i++) {
-    state_0_wide = state_0_wide + S::mul_wide(state[i], sparse_matrix[i]);
-  }
-  state[0] = S::reduce(state_0_wide);
-
-  for (int i = 1; i < config.t; i++) {
-    state[i] = state[i] + (element * sparse_matrix[config.t + i - 1]);
-  }
-}
-
-// Execute partial rounds
-template <typename S>
-__global__ void
-partial_rounds(S* states, size_t number_of_states, size_t rc_offset, const PoseidonConfiguration<S> config)
-{
-  int idx = (blockIdx.x * blockDim.x) + threadIdx.x;
-  if (idx >= number_of_states) { return; }
-
-  S* state = &states[idx * config.t];
-
-  for (int i = 0; i < config.partial_rounds; i++) {
-    partial_round(state, rc_offset, i, config);
-    rc_offset++;
+  for (int i = 0; i < (is_full_rounds ? config.full_rounds_half : config.partial_rounds); i++) {
+    states[idx] = round(states[idx], rc_offset, is_full_rounds,
+                        local_state_number, element_number, shared_states, config);
+    rc_offset += (is_full_rounds ? config.t : 1);
   }
 }
 

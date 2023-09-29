@@ -717,7 +717,7 @@ public:
     std::stringstream hex_string;
     hex_string << std::hex << std::setfill('0');
 
-    for (int i = 0; i < TLC; i++) {
+    for (int i = TLC - 1; i >= 0; i--) {
       hex_string << std::setw(8) << xs.limbs_storage.limbs[i];
     }
 

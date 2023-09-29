@@ -95,9 +95,7 @@ public:
   }
 
   /// This function will apply a single Poseidon permutation to mulitple states in parallel 
-  virtual void permute_many(S * states, size_t number_of_states, cudaStream_t stream) {
-    std::cout << "PERMUTE MANY" << std::endl;
-  }
+  virtual void permute_many(S * states, size_t number_of_states, cudaStream_t stream) {}
 
   /// This function will copy input from host and copy the result from device
   void hash_blocks(const S * inp, size_t number_of_states, S * out, HashType hash_type, cudaStream_t stream) {
@@ -122,10 +120,6 @@ public:
       cudaFreeAsync(states, stream);
       cudaMemcpyAsync(out, out_device, number_of_states * sizeof(S), cudaMemcpyDeviceToHost, stream);
       cudaFreeAsync(out_device, stream);
-
-    #if !defined(__CUDA_ARCH__) && defined(POSEIDON_DEBUG)
-      cudaDeviceReset();
-    #endif
   }
 
   // Compute the poseidon hash over a sequence of preimages
@@ -160,7 +154,7 @@ public:
     switch (hash_type) {
     case HashType::ConstInputLen:
       // Temporary solution
-      domain_tag = S::one();
+      domain_tag = S::zero();
       break;
 
     case HashType::MerkleTree:
@@ -177,10 +171,6 @@ public:
   }
 
 private:
-  virtual void prepare_states(S * states, size_t number_of_states, S domain_tag, bool aligned) {
-    std::cout << "PERMUTE MANY" << std::endl;
-  }
-  virtual void process_results(S * states, size_t number_of_states, S * out, bool loop_results) {
-    std::cout << "PERMUTE MANY" << std::endl;
-  }
+  virtual void prepare_states(S * states, size_t number_of_states, S domain_tag, bool aligned) {}
+  virtual void process_results(S * states, size_t number_of_states, S * out, bool loop_results) {}
 };
