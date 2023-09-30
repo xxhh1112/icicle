@@ -1,5 +1,5 @@
-#define DEBUG
-#define POSEIDON_DEBUG
+// #define DEBUG
+// #define POSEIDON_DEBUG
 
 #include "../../../curves/bls12_381/curve_config.cuh"
 #include "../../../curves/bls12_381/poseidon.cu"
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
   auto elapsed_time1 = std::chrono::duration_cast<std::chrono::microseconds>(end_time1 - start_time1);
   printf("Elapsed time poseidon: %.0f us\n", FpMicroseconds(elapsed_time1).count());
 
-  int number_of_blocks = 1;
+  int number_of_blocks = 1024 * 1024 * 128;
 
   BLS12_381::scalar_t input = BLS12_381::scalar_t::zero();
   BLS12_381::scalar_t* in_ptr =
