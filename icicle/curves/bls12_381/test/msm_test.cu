@@ -69,7 +69,7 @@ int main()
 {
     printf("Starting benchmark...\n");
     unsigned batch_size = 1;
-    unsigned msm_size = 65536; // FIXME: this produces CUDA 700 error with value of '65535+1'
+    unsigned msm_size = 65537; // FIXME: this produces CUDA 700 error with value of '65535+1'
     unsigned N = batch_size * msm_size;
 
     scalar_t* scalars = (scalar_t*)malloc(N * sizeof(scalar_t));
@@ -100,7 +100,7 @@ int main()
     CHECK_CUDA_ERROR(cudaMemcpy(points_d, points, sizeof(affine_t) * msm_size, cudaMemcpyHostToDevice));
     cudaDeviceSynchronize();
     CHECK_LAST_CUDA_ERROR();
-    msm_wrapper(out_d, points_d, scalars_d, msm_size, 10, 0, stream1, true);
+    msm_wrapper(out_d, points_d, scalars_d, msm_size, 1, 0, stream1, true);
     cudaMemcpy(out, out_d, sizeof(projective_t), cudaMemcpyDeviceToHost);
     CHECK_LAST_CUDA_ERROR();
     std::cout << projective_t::to_affine(out[0]) << std::endl;

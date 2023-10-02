@@ -26,17 +26,21 @@ __global__ void single_stage_multi_reduction_kernel(
   P* v, P* v_r, unsigned block_size, unsigned write_stride, unsigned write_phase, unsigned padding)
 {
   int tid = blockIdx.x * blockDim.x + threadIdx.x;
-  int tid_p = padding ? (tid / (2 * padding)) * padding + tid % padding : tid;
+  int tid_p = padding ? (tid / (2 * padding)) * padding + tid % padding : tid; //0
   int jump = block_size / 2;
+
+  if (tid >= jump) {
+    return;
+  }
+
   int block_id = tid_p / jump;
   int block_tid = tid_p % jump;
   unsigned read_ind = block_size * block_id + block_tid;
   unsigned write_ind = tid;
-  v_r
-    [write_stride ? ((write_ind / write_stride) * 2 + write_phase) * write_stride + write_ind % write_stride
-                  : write_ind] =
-      padding ? (tid % (2 * padding) < padding) ? v[read_ind] + v[read_ind + jump] : P::zero()
-              : v[read_ind] + v[read_ind + jump];
+  unsigned v_r_key = write_stride ? ((write_ind / write_stride) * 2 + write_phase) * write_stride + write_ind % write_stride : write_ind;
+  P v_r_value = padding ? (tid % (2 * padding) < padding) ? v[read_ind] + v[read_ind + jump] : P::zero() : v[read_ind] + v[read_ind + jump];
+  
+  v_r[v_r_key] = v_r_value;
 }
 
 // this kernel performs single scalar multiplication
@@ -210,24 +214,24 @@ __global__ void accumulate_buckets_kernel(
     const unsigned msm_index = single_bucket_indices[tid] >> msm_idx_shift;
     const unsigned bm_index = (single_bucket_indices[tid] & ((1 << msm_idx_shift) - 1)) >> c;
     const unsigned bucket_index = msm_index * nof_buckets + bm_index * ((1 << (c - 1)) + 1) + (single_bucket_indices[tid] & ((1 << c) - 1));
-    printf("tid=%d, msm_index=%u, bm_index=%u, bucket_index=%u\n", tid, msm_index, bm_index, bucket_index);
+    //printf("tid=%d, msm_index=%u, bm_index=%u, bucket_index=%u\n", tid, msm_index, bm_index, bucket_index);
 #else
     unsigned msm_index = single_bucket_indices[tid] >> msm_idx_shift;
     unsigned bucket_index = msm_index * nof_buckets + (single_bucket_indices[tid] & ((1 << msm_idx_shift) - 1));
-    printf("tid=%d, msm_index=%u, bucket_index=%u\n", tid, msm_index, bucket_index);
+    //printf("tid=%d, msm_index=%u, bucket_index=%u\n", tid, msm_index, bucket_index);
 #endif
 
   const unsigned bucket_offset = bucket_offsets[tid];
-  printf("tid=%d, bucket_offset=%u\n", tid, bucket_offset);
+  //printf("tid=%d, bucket_offset=%u\n", tid, bucket_offset);
 
   const unsigned bucket_size = bucket_sizes[tid];
-  printf("tid=%d, bucket_size=%u\n", tid, bucket_size);
+  //printf("tid=%d, bucket_size=%u\n", tid, bucket_size);
 
   P bucket;
 
   for (unsigned i = 0; i < bucket_size; i++) {
     unsigned point_ind = point_indices[bucket_offset + i];
-    printf("tid=%d, loop i=%u, point_ind=%u\n", tid, i, point_ind);
+    //printf("tid=%d, loop i=%u, point_ind=%u\n", tid, i, point_ind);
 
 #ifdef SIGNED_DIG
     unsigned sign = point_ind & sign_mask;
@@ -240,7 +244,7 @@ __global__ void accumulate_buckets_kernel(
 #endif
     bucket = i ? bucket + point : P::from_affine(point);
   }
-  printf("tid=%d, Final bucket value = [Your Bucket Display Logic Here]\n", tid); // You need to implement how P is displayed.
+  //printf("tid=%d, Final bucket value = [Your Bucket Display Logic Here]\n", tid); // You need to implement how P is displayed.
   buckets[bucket_index] = bucket;
 }
 
@@ -613,6 +617,7 @@ void bucket_method_msm(
     printf("threads_per_bucket = %d...\n", threads_per_bucket);
     unsigned max_bucket_size_run_length = (h_largest_bucket_size + threads_per_bucket - 1) / threads_per_bucket;
     unsigned total_large_buckets_size = large_buckets_to_compute * threads_per_bucket;
+
     CHECK_CUDA_ERRORR(cudaMallocAsync(&large_buckets, sizeof(P) * total_large_buckets_size, stream));
 
     NUM_THREADS = min(1 << 8, total_large_buckets_size);
@@ -629,6 +634,20 @@ void bucket_method_msm(
       NUM_BLOCKS = (s + NUM_THREADS - 1) / NUM_THREADS;
       single_stage_multi_reduction_kernel<<<NUM_BLOCKS, NUM_THREADS, 0, stream2>>>(
         large_buckets, large_buckets, s * 2, 0, 0, 0);
+
+       // Check for kernel launch errors
+      cudaError_t err = cudaGetLastError();
+      if (err != cudaSuccess) {
+          fprintf(stderr, "Failed to launch kernel: %s\n", cudaGetErrorString(err));
+          exit(EXIT_FAILURE);
+      }
+
+      // Synchronize and check for execution errors
+      err = cudaDeviceSynchronize();
+      if (err != cudaSuccess) {
+          fprintf(stderr, "Kernel execution failed: %s\n", cudaGetErrorString(err));
+          exit(EXIT_FAILURE);
+      }
     }
 
     // distribute
