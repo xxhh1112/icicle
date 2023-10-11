@@ -372,6 +372,15 @@ uint32_t ntt_end2end_batch_template(E* arr, uint32_t arr_size, uint32_t n, bool 
   } else {
     d_twiddles = fill_twiddle_factors_array(n_twiddles, S::omega(logn), stream);
   }
+
+  // std::cout << "Twiddles generated:" << std::endl;
+  // for (int i = 0; i < n_twiddles; i++) {
+  //   S * buffer = (S *)malloc(n_twiddles * sizeof(S));
+  //   // cudaMallocAsync(&buffer, n_twiddles * sizeof(S), stream);
+  //   cudaMemcpyAsync(buffer, d_twiddles, n_twiddles * sizeof(S), cudaMemcpyDeviceToHost, stream);
+  //   std::cout << buffer[i] << std::endl;
+  // }
+
   E* d_arr;
   cudaMallocAsync(&d_arr, size_E, stream);
   cudaMemcpyAsync(d_arr, arr, size_E, cudaMemcpyHostToDevice, stream);

@@ -7,11 +7,27 @@ use rustacuda_core::DeviceCopy;
 use rustacuda_derive::DeviceCopy;
 use std::ffi::c_uint;
 use std::mem::transmute;
+use std::fmt;
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone)]
 #[repr(C)]
 pub struct Field_BN254<const NUM_LIMBS: usize> {
     pub s: [u32; NUM_LIMBS],
+}
+
+impl<const NUM_LIMBS: usize> fmt::Debug for Field_BN254<NUM_LIMBS> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut res = [0; 32];
+        for i in 0..NUM_LIMBS {
+            res[i*4..(i + 1)*4].copy_from_slice(&self.s[i].to_le_bytes());
+        }
+
+        write!(f, "0x")?;
+        for &b in res.iter().rev() {
+            write!(f, "{:02x}", b)?;
+        }
+        Ok(())
+    }
 }
 
 unsafe impl<const NUM_LIMBS: usize> DeviceCopy for Field_BN254<NUM_LIMBS> {}

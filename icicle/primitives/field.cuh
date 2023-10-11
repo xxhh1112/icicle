@@ -718,7 +718,7 @@ public:
     hex_string << std::hex << std::setfill('0');
 
     for (int i = 0; i < TLC; i++) {
-      hex_string << std::setw(8) << xs.limbs_storage.limbs[i];
+      hex_string << std::setw(8) << xs.limbs_storage.limbs[TLC - i - 1];
     }
 
     os << "0x" << hex_string.str();

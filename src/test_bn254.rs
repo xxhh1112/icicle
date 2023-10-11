@@ -232,6 +232,16 @@ extern "C" {
         n_elements: usize,
         device_id: usize,
     ) -> c_int;
+
+    fn from_montgomery_scalars_cuda_bn254(
+        inout: DevicePointer<ScalarField_BN254>,
+        n_elements: usize,
+    );
+
+    fn from_montgomery_aff_points_cuda_bn254(
+        inout: DevicePointer<PointAffineNoInfinity_BN254>,
+        n_elements: usize,
+    );
 }
 
 pub fn msm_bn254(
@@ -743,6 +753,24 @@ pub fn mult_matrix_by_vec_bn254(
         );
     }
     c
+}
+
+pub fn from_montgomery_aff_points_bn254(points: &mut DeviceBuffer<PointAffineNoInfinity_BN254>) {
+    unsafe {
+        from_montgomery_aff_points_cuda_bn254(
+            points.as_device_ptr(),
+            points.len(),
+        )
+    }
+}
+
+pub fn from_montgomery_scalars_bn254(scalars: &mut DeviceBuffer<ScalarField_BN254>) {
+    unsafe {
+        from_montgomery_scalars_cuda_bn254(
+            scalars.as_device_ptr(),
+            scalars.len()
+        )
+    }
 }
 
 pub fn clone_buffer_bn254<T: DeviceCopy>(buf: &mut DeviceBuffer<T>) -> DeviceBuffer<T> {
